@@ -1,0 +1,104 @@
+{
+    "env": {
+        "es6": true,
+        "jest": true,
+        "node": true
+    },
+    "extends": [
+        "eslint:recommended",
+        "plugin:react/recommended",
+        "plugin:promise/recommended",
+        "plugin:import/errors",
+        "standard"
+    ],
+    "globals": {
+        "Atomics": "readonly",
+        "SharedArrayBuffer": "readonly",
+        "__DEV__": true
+    },
+    "parser": "babel-eslint",
+    "parserOptions": {
+        "ecmaFeatures": {
+            "jsx": true
+        },
+        "ecmaVersion": 2018,
+        "sourceType": "module"
+    },
+    "plugins": [
+        "react",
+        "import",
+        "node",
+        "promise",
+        "react",
+        "react-native",
+        "standard"
+    ],
+    "rules": {
+        "react/prop-types": "off",
+        "react/display-name": "off",
+        "import/named": "off",
+        "no-unused-vars": "warn",
+        "no-console": "warn",
+        "no-extra-semi":"error",
+        "no-return-await":"error",
+        "node/no-deprecated-api":"warn",
+        "node/no-unpublished-require":"warn",
+        "promise/always-return":"warn",
+        "promise/catch-or-return":"warn",
+        "no-multi-spaces": [
+            "error",
+            {
+                "ignoreEOLComments": true,
+                "exceptions": {
+                    "Property": true,
+                    "VariableDeclarator": true
+                }
+            }
+        ],
+        "semi": [
+            "error",
+            "always"
+        ],
+        "indent": [
+            "error",
+            2,
+            {
+                "SwitchCase": 1
+            }
+        ],
+        "linebreak-style": [
+            "off"
+        ],
+        "max-len": [
+            2,
+            {
+                "code": 1000
+            }
+        ]  
+    },
+    "settings": {
+        "react": {
+            "createClass": "createReactClass",
+            "pragma": "React",
+            "version": "detect",
+            "flowVersion": "0.53"
+        },
+        "propWrapperFunctions": [
+            "forbidExtraProps",
+            {
+                "property": "freeze",
+                "object": "Object"
+            },
+            {
+                "property": "myFavoriteWrapper"
+            }
+        ],
+        "linkComponents": [
+            "Hyperlink",
+            {
+                "name": "Link",
+                "linkAttribute": "to"
+            }
+        ]
+    }
+}

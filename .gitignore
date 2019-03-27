@@ -1,0 +1,7 @@
+node_modules
+.expo
+.vscode
+.idea
+
+# Use local folder for anything you don't want git to ever track:
+local
