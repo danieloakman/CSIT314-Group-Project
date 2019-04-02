@@ -39,12 +39,18 @@
         "import/named": "off",
         "no-unused-vars": "warn",
         "no-console": "warn",
-        "no-extra-semi":"error",
-        "no-return-await":"error",
-        "node/no-deprecated-api":"warn",
-        "node/no-unpublished-require":"warn",
-        "promise/always-return":"warn",
-        "promise/catch-or-return":"warn",
+        "no-extra-semi": "error",
+        "no-return-await": "error",
+        "node/no-deprecated-api": "warn",
+        "node/no-unpublished-require": "warn",
+        "promise/always-return": "warn",
+        "promise/catch-or-return": "warn",
+        "object-curly-spacing": [
+            "off",
+            {
+                "objectsInObjects": true
+            }
+        ],
         "no-multi-spaces": [
             "error",
             {

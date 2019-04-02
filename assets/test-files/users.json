@@ -1,0 +1,43 @@
+{
+  "driver@test.com": {
+    "constructor": "Driver",
+    "account": {
+      "firstName": "John",
+      "lastName": "Lennon",
+      "email": "driver@test.com",
+      "password": "test123",
+      "vehicles": []
+    }
+  },
+  "driver2@test.com": {
+    "constructor": "Driver",
+    "account": {
+      "firstName": "Paul",
+      "lastName": "Mccartney",
+      "email": "driver2@test.com",
+      "password": "test123",
+      "vehicles": []
+    }
+  },
+  "mechanic@test.com": {
+    "constructor": "Mechanic",
+    "account": {
+      "firstName": "George",
+      "lastName": "Harrison",
+      "email": "mechanic@test.com",
+      "password": "test123",
+      "verifiedMechanic": false,
+      "jobs": []
+    }
+  },
+  "admin@test.com": {
+    "constructor": "Admin",
+    "account": {
+      "firstName": "Ringo",
+      "lastName": "Star",
+      "email": "admin@test.com",
+      "password": "test123",
+      "jobs": []
+    }
+  }
+}
