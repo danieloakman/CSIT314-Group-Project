@@ -6,6 +6,7 @@ import TabBarIcon from '../components/TabBarIcon';
 import HomeScreen from '../screens/HomeScreen';
 import LinksScreen from '../screens/LinksScreen';
 import SettingsScreen from '../screens/SettingsScreen';
+import SignInCreateAccScreen from '../screens/SignInCreateAccScreen';
 
 const HomeStack = createStackNavigator({
   Home: HomeScreen
@@ -53,7 +54,22 @@ SettingsStack.navigationOptions = {
   )
 };
 
+const SignInCreateAccStack = createStackNavigator({
+  SignInCreateAcc: SignInCreateAccScreen
+});
+
+SignInCreateAccStack.navigationOptions = {
+  tabBarLabel: 'Account',
+  tabBarIcon: ({ focused }) => (
+    <TabBarIcon
+      focused={focused}
+      name={Platform.OS === 'ios' ? 'ios-contacts' : 'md-contacts'}
+    />
+  )
+};
+
 export default createBottomTabNavigator({
+  SignInCreateAccStack,
   HomeStack,
   LinksStack,
   SettingsStack
