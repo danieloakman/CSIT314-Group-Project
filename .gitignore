@@ -2,6 +2,7 @@ node_modules
 .expo
 .vscode
 .idea
+__tests__/__snapshots__
 
 # Use local folder for anything you don't want git to ever track:
 local
