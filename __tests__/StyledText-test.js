@@ -1,6 +1,6 @@
 import 'react-native';
 import React from 'react';
-import { MonoText } from '../components/StyledText';
+import { MonoText } from '../src/components/StyledText';
 import renderer from 'react-test-renderer';
 
 it('renders correctly', () => {

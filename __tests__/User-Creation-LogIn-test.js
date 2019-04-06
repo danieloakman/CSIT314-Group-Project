@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
-const Driver = require('../components/users/Driver');
-const Mechanic = require('../components/users/Mechanic');
-const Admin = require('../components/users/Admin');
+const Driver = require('../src/components/users/Driver');
+const Mechanic = require('../src/components/users/Mechanic');
+const Admin = require('../src/components/users/Admin');
 let allUsers = require('../assets/test-files/users');
 const fs = require('fs');
 
@@ -26,7 +26,7 @@ describe('User creation and login tests', () => {
     usersToRemove.forEach(user => {
       if (allUsers[user]) delete allUsers[user];
     });
-    fs.writeFileSync('./assets/test-files/users.json', JSON.stringify(allUsers, null, 2), {flag: 'w'});
+    fs.writeFileSync('./assets/test-files/users.json', JSON.stringify(allUsers, null, 2), { flag: 'w' });
     console.log(`Succesfully deleted: ${JSON.stringify(usersToRemove, null, 2)}`);
   });
 
