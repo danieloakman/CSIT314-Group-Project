@@ -80,9 +80,16 @@
             {
                 "code": 1000
             }
-        ]  
+        ],
+        "comma-dangle": [
+            "error",
+            "only-multiline"
+        ]
     },
     "settings": {
+        "import/resolver": {
+            "babel-module": {}
+        },
         "react": {
             "createClass": "createReactClass",
             "pragma": "React",
