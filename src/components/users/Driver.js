@@ -1,4 +1,4 @@
-const User = require('./User');
+const User = require("./User");
 
 module.exports = class Driver extends User {
   constructor (firstName, lastName, email, password) {

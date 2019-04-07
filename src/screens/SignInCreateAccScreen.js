@@ -1,227 +1,251 @@
-import React from 'react';
+import React from "react";
 import {
   Image,
-  Platform,
   ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
   Button,
-  Alert
-} from 'react-native';
-import { WebBrowser } from 'expo';
-
-import { MonoText } from '../components/StyledText';
+  Alert,
+  Picker,
+  TextInput
+} from "react-native";
 
 export default class SignInCreateAccScreen extends React.Component {
   static navigationOptions = {
     header: null
-    // title: 'Sign in or create an account.'
+    // title: "Sign in or create an account."
   };
+
+  state = {
+    selected: "CreateAccount",
+    crAccType: "Driver",
+    crAccFirstName: "",
+    crAccLastName: "",
+    crAccEmail: "",
+    crAccPassword: "",
+    crAccPhone: "",
+    crAccErrorText: "",
+    signInEmail: "",
+    signInPassword: "",
+    signInErrorText: ""
+  }
 
   render () {
     return (
       <View style={styles.container}>
         <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-          {/* <Text style={styles.getStartedText}>Sign in or a create an account.</Text> */}
           <View style={styles.topButtonsContainer}>
-            <Button
-              onPress={() => {
-                Alert.alert('Clicked sing in.');
-              }}
-              title='Sign In'
+            <Button // todo: Set non-selected button's colour to darker than normal
+              onPress={() => this.setState({selected: "SignIn"})}
+              title="Sign In"
               style={styles.topButton}
             />
             <Button
-              onPress={() => {
-                Alert.alert('Clicked create account.');
-              }}
-              title='Create Account'
+              onPress={() => this.setState({selected: "CreateAccount"})}
+              title="Create Account"
               style={styles.topButton}
             />
+          </View>
+          <View>
+            {this._renderMainScreen()}
           </View>
         </ScrollView>
       </View>
     );
   }
-  // render () {
-  //   return (
-  //     <View style={styles.container}>
-  //       <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-  //         <View style={styles.welcomeContainer}>
-  //           <Image
-  //             source={
-  //               __DEV__
-  //                 ? require('../assets/images/robot-dev.png')
-  //                 : require('../assets/images/robot-prod.png')
-  //             }
-  //             style={styles.welcomeImage}
-  //           />
-  //         </View>
 
-  //         <View style={styles.getStartedContainer}>
-  //           {this._maybeRenderDevelopmentModeWarning()}
-
-  //           <Text style={styles.getStartedText}>Get started by opening</Text>
-
-  //           <View style={[styles.codeHighlightContainer, styles.homeScreenFilename]}>
-  //             <MonoText style={styles.codeHighlightText}>screens/HomeScreen.js</MonoText>
-  //           </View>
-
-  //           <Text style={styles.getStartedText}>
-  //             Change this text and your app will automatically reload.
-  //           </Text>
-  //         </View>
-
-  //         <View style={styles.helpContainer}>
-  //           <TouchableOpacity onPress={this._handleHelpPress} style={styles.helpLink}>
-  //             <Text style={styles.helpLinkText}>Help, it didn’t automatically reload!</Text>
-  //           </TouchableOpacity>
-  //         </View>
-  //       </ScrollView>
-
-  //       <View style={styles.tabBarInfoContainer}>
-  //         <Text style={styles.tabBarInfoText}>This is a tab bar. You can edit it in:</Text>
-
-  //         <View style={[styles.codeHighlightContainer, styles.navigationFilename]}>
-  //           <MonoText style={styles.codeHighlightText}>navigation/MainTabNavigator.js</MonoText>
-  //         </View>
-  //       </View>
-  //     </View>
-  //   );
-  // }
-
-  _maybeRenderDevelopmentModeWarning () {
-    if (__DEV__) {
-      const learnMoreButton = (
-        <Text onPress={this._handleLearnMorePress} style={styles.helpLinkText}>
-          Learn more
-        </Text>
-      );
-
+  _renderMainScreen () {
+    if (this.state.selected === "SignIn") {
       return (
-        <Text style={styles.developmentModeText}>
-          Development mode is enabled, your app will be slower but you can use useful development
-          tools. {learnMoreButton}
-        </Text>
+        <View style={{flex: 1, flexDirection: "column", backgroundColor: "#fff"}}>
+          <Image
+            source={require("../../assets/images/icon.png")}
+            style={styles.iconImage}
+          />
+          <Text style={styles.titleText}>Sign In</Text>
+          <View style={styles.centeredRowContainer}>
+            <Text style={styles.textBesideInput}>Email</Text>
+            <TextInput
+              style={styles.textInput}
+              editable={true}
+              onChangeText={email => this.setState({signInEmail: email})}
+              returnKeyType="next"
+              value={this.state.signInEmail}
+            />
+          </View>
+          <View style={styles.centeredRowContainer}>
+            <Text style={styles.textBesideInput}>Password</Text>
+            <TextInput
+              style={styles.textInput}
+              editable={true}
+              onChangeText={password => this.setState({signInPassword: password})}
+              returnKeyType="go"
+              secureTextEntry={true}
+              value={this.state.signInPassword}
+            />
+          </View>
+          <View style={styles.centeredRowContainer}>
+            <Button // todo: Center and stretch this button properly as in the design
+              onPress={() => {
+                Alert.alert("todo: log in the user");
+                // todo: Regex all input fields, modify errorText
+                this.props.navigation.navigate("Main");
+                console.log(`state: ${JSON.stringify(this.state, null, 2)}`);
+              }}
+              title="Sign In"
+              style={{justifyContent: "center", alignSelf: "center"}}
+            />
+          </View>
+          <Text style={styles.errorText}>{this.state.signInErrorText}</Text>
+        </View>
       );
     } else {
-      return (
-        <Text style={styles.developmentModeText}>
-          You are not in development mode, your app will run at full speed.
-        </Text>
+      return ( // todo: make keyboard not hide input fields
+        <View style={{flex: 1, flexDirection: "column", backgroundColor: "#fff"}}>
+          <Image
+            source={require("../../assets/images/icon.png")}
+            style={styles.iconImage}
+          />
+          <Text style={styles.titleText}>Create Account</Text>
+          <View style={styles.centeredRowContainer}>
+            <Text style={styles.textBesideInput}>Type</Text>
+            <Picker
+              selectedValue={this.state.crAccType}
+              style={{width: 150}} // height: 50
+              itemStyle={{fontSize: 20}}
+              onValueChange={(itemValue, itemIndex) =>
+                this.setState({crAccType: itemValue})
+              }>
+              <Picker.Item label="Driver" value="Driver"/>
+              <Picker.Item label="Mechanic" value="Mechanic"/>
+            </Picker>
+          </View>
+          <View style={styles.centeredRowContainer}>
+            <Text style={styles.textBesideInput}>First Name</Text>
+            <TextInput
+              style={styles.textInput}
+              editable={true}
+              onChangeText={firstName => this.setState({crAccFirstName: firstName})}
+              // placeholder="FirstName" // Perhaps just use this instead of textBesideInput
+              returnKeyType="next"
+              value={this.state.crAccFirstName}
+            />
+          </View>
+          <View style={styles.centeredRowContainer}>
+            <Text style={styles.textBesideInput}>Last Name</Text>
+            <TextInput
+              style={styles.textInput}
+              editable={true}
+              onChangeText={lastName => this.setState({crAccLastName: lastName})}
+              returnKeyType="next"
+              value={this.state.crAccLastName}
+            />
+          </View>
+          <View style={styles.centeredRowContainer}>
+            <Text style={styles.textBesideInput}>Email</Text>
+            <TextInput
+              style={styles.textInput}
+              editable={true}
+              onChangeText={email => this.setState({crAccEmail: email})}
+              returnKeyType="next"
+              value={this.state.crAccEmail}
+            />
+          </View>
+          <View style={styles.centeredRowContainer}>
+            <Text style={styles.textBesideInput}>Password</Text>
+            <TextInput
+              style={styles.textInput}
+              editable={true}
+              onChangeText={password => this.setState({crAccPassword: password})}
+              returnKeyType="next"
+              secureTextEntry={true}
+              value={this.state.crAccPassword}
+            />
+          </View>
+          <View style={styles.centeredRowContainer}>
+            <Text style={styles.textBesideInput}>Phone</Text>
+            <TextInput
+              style={styles.textInput}
+              editable={true}
+              onChangeText={phoneNo => this.setState({crAccPhoneNo: phoneNo})}
+              returnKeyType="go"
+              value={this.state.crAccPhoneNo}
+            />
+          </View>
+          <View style={styles.centeredRowContainer}>
+            <Button // todo: Center and stretch this button properly as in the design
+              onPress={() => {
+                Alert.alert("todo: create the user here");
+                console.log(`state: ${JSON.stringify(this.state, null, 2)}`);
+                // todo: Regex all input fields, modify errorText
+                this.props.navigation.navigate("Main");
+              }}
+              title="Create Account"
+              style={{justifyContent: "center", alignSelf: "center"}}
+            />
+          </View>
+          <Text style={styles.errorText}>{this.state.crAccErrorText}</Text>
+        </View>
       );
     }
   }
-
-  _handleLearnMorePress = () => {
-    WebBrowser.openBrowserAsync('https://docs.expo.io/versions/latest/guides/development-mode');
-  };
-
-  _handleHelpPress = () => {
-    WebBrowser.openBrowserAsync(
-      'https://docs.expo.io/versions/latest/guides/up-and-running.html#can-t-see-your-changes'
-    );
-  };
 }
 
-const styles = StyleSheet.create({
-  topButtonsContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'center'
-    // alignItems: 'stretch'
+const styles = StyleSheet.create({ // todo: tidy up styles, combine some, etc.
+  iconImage: {
+    width: 100,
+    height: 80,
+    resizeMode: "contain",
+    marginTop: 10,
+    alignSelf: "center"
   },
-  topButton: {
-    // width: '40%',
-    height: 40,
-    alignItems: 'stretch'
+  titleText: {
+    marginTop: 10,
+    fontSize: 30,
+    alignSelf: "center"
+  },
+  textBesideInput: {
+    fontSize: 20
+  },
+  centeredRowContainer: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 5,
+    marginBottom: 5,
+    marginLeft: 20,
+    marginRight: 20
+  },
+  textInput: {
+    fontSize: 20,
+    borderWidth: 1,
+    borderRadius: 3,
+    marginLeft: 5,
+    width: 150,
+    paddingLeft: 5
   },
   container: {
     flex: 1,
-    backgroundColor: '#fff'
+    backgroundColor: "#fff"
   },
-  developmentModeText: {
-    marginBottom: 20,
-    color: 'rgba(0,0,0,0.4)',
-    fontSize: 14,
-    lineHeight: 19,
-    textAlign: 'center'
+  topButtonsContainer: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "center"
+    // alignItems: "stretch"
+  },
+  errorText: {
+    color: "red",
+    fontSize: 20
+  },
+  topButton: {
+    // width: "40%",
+    height: 40,
+    alignItems: "stretch"
   },
   contentContainer: {
     paddingTop: 30
-  },
-  welcomeContainer: {
-    alignItems: 'center',
-    marginTop: 10,
-    marginBottom: 20
-  },
-  welcomeImage: {
-    width: 100,
-    height: 80,
-    resizeMode: 'contain',
-    marginTop: 3,
-    marginLeft: -10
-  },
-  getStartedContainer: {
-    alignItems: 'center',
-    marginHorizontal: 50
-  },
-  homeScreenFilename: {
-    marginVertical: 7
-  },
-  codeHighlightText: {
-    color: 'rgba(96,100,109, 0.8)'
-  },
-  codeHighlightContainer: {
-    backgroundColor: 'rgba(0,0,0,0.05)',
-    borderRadius: 3,
-    paddingHorizontal: 4
-  },
-  getStartedText: {
-    fontSize: 17,
-    color: 'rgba(96,100,109, 1)',
-    lineHeight: 24,
-    textAlign: 'center'
-  },
-  tabBarInfoContainer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    ...Platform.select({
-      ios: {
-        shadowColor: 'black',
-        shadowOffset: { height: -3 },
-        shadowOpacity: 0.1,
-        shadowRadius: 3
-      },
-      android: {
-        elevation: 20
-      }
-    }),
-    alignItems: 'center',
-    backgroundColor: '#fbfbfb',
-    paddingVertical: 20
-  },
-  tabBarInfoText: {
-    fontSize: 17,
-    color: 'rgba(96,100,109, 1)',
-    textAlign: 'center'
-  },
-  navigationFilename: {
-    marginTop: 5
-  },
-  helpContainer: {
-    marginTop: 15,
-    alignItems: 'center'
-  },
-  helpLink: {
-    paddingVertical: 15
-  },
-  helpLinkText: {
-    fontSize: 14,
-    color: '#2e78b7'
   }
 });

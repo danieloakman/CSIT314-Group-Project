@@ -1,18 +1,18 @@
 module.exports = function (api) {
   api.cache(true);
   return {
-    presets: ['babel-preset-expo'],
+    presets: ["babel-preset-expo"],
     env: {
       development: {
         plugins: [
-          ['module-resolver',
+          ["module-resolver",
             {
-              root: ['./src'
+              root: ["./src"
               ],
               alias: {
-                '@assets': './assets',
-                '@src': './src',
-                '@components': './src/components'
+                "@assets": "./assets",
+                "@src": "./src",
+                "@components": "./src/components"
               },
             }
           ],
