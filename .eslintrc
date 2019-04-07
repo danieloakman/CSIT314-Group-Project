@@ -84,6 +84,22 @@
         "comma-dangle": [
             "error",
             "only-multiline"
+        ],
+        "quotes": [
+            "warn",
+            "double",
+            {
+                "avoidEscape": true
+            }
+        ],
+        "quote-props": [
+            "error",
+            "consistent-as-needed",
+            {
+                "keywords": true,
+                "numbers": true,
+                "unnecessary": false
+            }
         ]
     },
     "settings": {
