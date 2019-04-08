@@ -16,7 +16,6 @@ export default function FlexContainer (props) {
       borderWidth: 1,
     };
   }
-  return (
-    <View style={[style, props.style]}>{props.children}</View>
-  );
+  const component = <View style={[style, props.style]}>{props.children}</View>;
+  return component;
 }
