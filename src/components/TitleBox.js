@@ -12,6 +12,7 @@ import {
   StatusBar,
   Platform
 } from "react-native";
+import { BlurView } from "expo";
 // import { Constants } from "expo";
 
 import FlexContainer from "./FlexContainer";
@@ -21,7 +22,7 @@ export default function TitleBox (props) {
   const styles = StyleSheet.create({
     topNav: {
       flexDirection: "row",
-      backgroundColor: props.navColor || "#AAA",
+      // backgroundColor: props.navColor || "#AAA",
       height: navHeight,
       width: "100 %"
     },
@@ -43,8 +44,8 @@ export default function TitleBox (props) {
   });
 
   return (
-    <View style={styles.container}>
-      <View style={styles.topNav}>
+    <View style={styles.container} >
+      <BlurView style={styles.topNav} tint="light" intensity={50}>
         <FlexContainer style={[styles.titleComponent, styles.sideButtons]}>
           {props.navLeft}
         </FlexContainer>
@@ -54,7 +55,7 @@ export default function TitleBox (props) {
         <FlexContainer style={[styles.titleComponent, styles.sideButtons]}>
           {props.navRight}
         </FlexContainer>
-      </View>
+      </BlurView>
       <View style={styles.bodyBox}>
         {props.children}
       </View>

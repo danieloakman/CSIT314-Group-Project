@@ -10,6 +10,7 @@ import {
   Picker,
   TextInput
 } from "react-native";
+import WindowBox from "@components/WindowBox";
 
 export default class SignInCreateAccScreen extends React.Component {
   static navigationOptions = {
@@ -33,32 +34,34 @@ export default class SignInCreateAccScreen extends React.Component {
 
   render () {
     return (
-      <View style={styles.container}>
-        <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-          <View style={styles.topButtonsContainer}>
-            <Button // todo: Set non-selected button's colour to darker than normal
-              onPress={() => this.setState({selected: "SignIn"})}
-              title="Sign In"
-              style={styles.topButton}
-            />
-            <Button
-              onPress={() => this.setState({selected: "CreateAccount"})}
-              title="Create Account"
-              style={styles.topButton}
-            />
-          </View>
-          <View>
-            {this._renderMainScreen()}
-          </View>
-        </ScrollView>
-      </View>
+      <WindowBox>
+        <View style={styles.container}>
+          <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+            <View style={styles.topButtonsContainer}>
+              <Button // todo: Set non-selected button's colour to darker than normal
+                onPress={() => this.setState({ selected: "SignIn" })}
+                title="Sign In"
+                style={styles.topButton}
+              />
+              <Button
+                onPress={() => this.setState({ selected: "CreateAccount" })}
+                title="Create Account"
+                style={styles.topButton}
+              />
+            </View>
+            <View>
+              {this._renderMainScreen()}
+            </View>
+          </ScrollView>
+        </View>
+      </WindowBox>
     );
   }
 
   _renderMainScreen () {
     if (this.state.selected === "SignIn") {
       return (
-        <View style={{flex: 1, flexDirection: "column", backgroundColor: "#fff"}}>
+        <View style={{ flex: 1, flexDirection: "column", backgroundColor: "#fff" }}>
           <Image
             source={require("../../assets/images/icon.png")}
             style={styles.iconImage}
@@ -69,7 +72,7 @@ export default class SignInCreateAccScreen extends React.Component {
             <TextInput
               style={styles.textInput}
               editable={true}
-              onChangeText={email => this.setState({signInEmail: email})}
+              onChangeText={email => this.setState({ signInEmail: email })}
               returnKeyType="next"
               value={this.state.signInEmail}
             />
@@ -79,7 +82,7 @@ export default class SignInCreateAccScreen extends React.Component {
             <TextInput
               style={styles.textInput}
               editable={true}
-              onChangeText={password => this.setState({signInPassword: password})}
+              onChangeText={password => this.setState({ signInPassword: password })}
               returnKeyType="go"
               secureTextEntry={true}
               value={this.state.signInPassword}
@@ -94,7 +97,7 @@ export default class SignInCreateAccScreen extends React.Component {
                 console.log(`state: ${JSON.stringify(this.state, null, 2)}`);
               }}
               title="Sign In"
-              style={{justifyContent: "center", alignSelf: "center"}}
+              style={{ justifyContent: "center", alignSelf: "center" }}
             />
           </View>
           <Text style={styles.errorText}>{this.state.signInErrorText}</Text>
@@ -102,7 +105,7 @@ export default class SignInCreateAccScreen extends React.Component {
       );
     } else {
       return ( // todo: make keyboard not hide input fields
-        <View style={{flex: 1, flexDirection: "column", backgroundColor: "#fff"}}>
+        <View style={{ flex: 1, flexDirection: "column", backgroundColor: "#fff" }}>
           <Image
             source={require("../../assets/images/icon.png")}
             style={styles.iconImage}
@@ -112,13 +115,13 @@ export default class SignInCreateAccScreen extends React.Component {
             <Text style={styles.textBesideInput}>Type</Text>
             <Picker
               selectedValue={this.state.crAccType}
-              style={{width: 150}} // height: 50
-              itemStyle={{fontSize: 20}}
+              style={{ width: 150 }} // height: 50
+              itemStyle={{ fontSize: 20 }}
               onValueChange={(itemValue, itemIndex) =>
-                this.setState({crAccType: itemValue})
+                this.setState({ crAccType: itemValue })
               }>
-              <Picker.Item label="Driver" value="Driver"/>
-              <Picker.Item label="Mechanic" value="Mechanic"/>
+              <Picker.Item label="Driver" value="Driver" />
+              <Picker.Item label="Mechanic" value="Mechanic" />
             </Picker>
           </View>
           <View style={styles.centeredRowContainer}>
@@ -126,7 +129,7 @@ export default class SignInCreateAccScreen extends React.Component {
             <TextInput
               style={styles.textInput}
               editable={true}
-              onChangeText={firstName => this.setState({crAccFirstName: firstName})}
+              onChangeText={firstName => this.setState({ crAccFirstName: firstName })}
               // placeholder="FirstName" // Perhaps just use this instead of textBesideInput
               returnKeyType="next"
               value={this.state.crAccFirstName}
@@ -137,7 +140,7 @@ export default class SignInCreateAccScreen extends React.Component {
             <TextInput
               style={styles.textInput}
               editable={true}
-              onChangeText={lastName => this.setState({crAccLastName: lastName})}
+              onChangeText={lastName => this.setState({ crAccLastName: lastName })}
               returnKeyType="next"
               value={this.state.crAccLastName}
             />
@@ -147,7 +150,7 @@ export default class SignInCreateAccScreen extends React.Component {
             <TextInput
               style={styles.textInput}
               editable={true}
-              onChangeText={email => this.setState({crAccEmail: email})}
+              onChangeText={email => this.setState({ crAccEmail: email })}
               returnKeyType="next"
               value={this.state.crAccEmail}
             />
@@ -157,7 +160,7 @@ export default class SignInCreateAccScreen extends React.Component {
             <TextInput
               style={styles.textInput}
               editable={true}
-              onChangeText={password => this.setState({crAccPassword: password})}
+              onChangeText={password => this.setState({ crAccPassword: password })}
               returnKeyType="next"
               secureTextEntry={true}
               value={this.state.crAccPassword}
@@ -168,7 +171,7 @@ export default class SignInCreateAccScreen extends React.Component {
             <TextInput
               style={styles.textInput}
               editable={true}
-              onChangeText={phoneNo => this.setState({crAccPhoneNo: phoneNo})}
+              onChangeText={phoneNo => this.setState({ crAccPhoneNo: phoneNo })}
               returnKeyType="go"
               value={this.state.crAccPhoneNo}
             />
@@ -182,7 +185,7 @@ export default class SignInCreateAccScreen extends React.Component {
                 this.props.navigation.navigate("Main");
               }}
               title="Create Account"
-              style={{justifyContent: "center", alignSelf: "center"}}
+              style={{ justifyContent: "center", alignSelf: "center" }}
             />
           </View>
           <Text style={styles.errorText}>{this.state.crAccErrorText}</Text>

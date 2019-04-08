@@ -24,7 +24,7 @@ export default function WindowBox (props) {
 
   return (
     <View style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor={"#fff"} translucent={false} />
+      <StatusBar barStyle="light-content" backgroundColor={"#fff"} />
       <View style={styles.statusBarUnderlay}></View>
       {props.children}
     </View>
