@@ -11,6 +11,8 @@ import {
   TextInput
 } from "react-native";
 import WindowBox from "@components/WindowBox";
+import Patterns from "@src/constants/UserInputRegex";
+import UserDatabaseService from "@src/services/UserDatabaseService";
 
 export default class SignInCreateAccScreen extends React.Component {
   static navigationOptions = {
@@ -19,7 +21,7 @@ export default class SignInCreateAccScreen extends React.Component {
   };
 
   state = {
-    selected: "CreateAccount",
+    selected: "SignIn",
     crAccType: "Driver",
     crAccFirstName: "",
     crAccLastName: "",
@@ -64,7 +66,7 @@ export default class SignInCreateAccScreen extends React.Component {
         <View style={{ flex: 1, flexDirection: "column", backgroundColor: "#fff" }}>
           <Image
             source={require("../../assets/images/icon.png")}
-            style={styles.iconImage}
+            style={[styles.iconImage, {height: 150, width: 150}]}
           />
           <Text style={styles.titleText}>Sign In</Text>
           <View style={styles.centeredRowContainer}>
@@ -73,8 +75,14 @@ export default class SignInCreateAccScreen extends React.Component {
               style={styles.textInput}
               editable={true}
               onChangeText={email => this.setState({ signInEmail: email })}
+              onEndEditing={() => {
+                if (!this.state.signInEmail.trim().match(Patterns.email)) {
+                  this.setState({signInErrorText: "Invalid email, please correct it."});
+                } else this.setState({signInErrorText: ""});
+              }}
               returnKeyType="next"
               value={this.state.signInEmail}
+              autoCapitalize="none"
             />
           </View>
           <View style={styles.centeredRowContainer}>
@@ -83,23 +91,41 @@ export default class SignInCreateAccScreen extends React.Component {
               style={styles.textInput}
               editable={true}
               onChangeText={password => this.setState({ signInPassword: password })}
+              onEndEditing={() => {
+                if (!this.state.signInPassword.trim().match(Patterns.password)) {
+                  this.setState({signInErrorText: "Password must be between 6 and 20 digits long, and with at least 1 number."});
+                } else this.setState({signInErrorText: ""});
+              }}
               returnKeyType="go"
               secureTextEntry={true}
               value={this.state.signInPassword}
+              autoCapitalize="none"
             />
           </View>
           <View style={styles.centeredRowContainer}>
             <Button // todo: Center and stretch this button properly as in the design
-              onPress={() => {
-                Alert.alert("todo: log in the user");
-                // todo: Regex all input fields, modify errorText
-                this.props.navigation.navigate("Main");
-                console.log(`state: ${JSON.stringify(this.state, null, 2)}`);
+              onPress={async () => {
+                // Check for invalid or empty fields:
+                if (this.state.signInErrorText || !this.state.signInEmail || !this.state.signInPassword) {
+                  Alert.alert("Error, one or more of the fields is empty or invalid.");
+                  return;
+                }
+                // Attempt to sign the user in:
+                const result = await UserDatabaseService.signInUser(this.state.signInEmail, this.state.signInPassword);
+                console.log(JSON.stringify(result));
+                if (!result.pass) this.setState({signInErrorText: result.reason});
+                else {
+                  // Change screen to Main:
+                  this.props.navigation.navigate("Main");
+                }
               }}
               title="Sign In"
               style={{ justifyContent: "center", alignSelf: "center" }}
             />
           </View>
+          {this._renderDevQuickSignInButton("driver@test.com", "test123")}
+          {this._renderDevQuickSignInButton("mechanic@test.com", "test123")}
+          {this._renderDevQuickSignInButton("admin@test.com", "test123")}
           <Text style={styles.errorText}>{this.state.signInErrorText}</Text>
         </View>
       );
@@ -153,6 +179,7 @@ export default class SignInCreateAccScreen extends React.Component {
               onChangeText={email => this.setState({ crAccEmail: email })}
               returnKeyType="next"
               value={this.state.crAccEmail}
+              autoCapitalize="none"
             />
           </View>
           <View style={styles.centeredRowContainer}>
@@ -164,6 +191,7 @@ export default class SignInCreateAccScreen extends React.Component {
               returnKeyType="next"
               secureTextEntry={true}
               value={this.state.crAccPassword}
+              autoCapitalize="none"
             />
           </View>
           <View style={styles.centeredRowContainer}>
@@ -174,6 +202,7 @@ export default class SignInCreateAccScreen extends React.Component {
               onChangeText={phoneNo => this.setState({ crAccPhoneNo: phoneNo })}
               returnKeyType="go"
               value={this.state.crAccPhoneNo}
+              autoCapitalize="none"
             />
           </View>
           <View style={styles.centeredRowContainer}>
@@ -189,6 +218,28 @@ export default class SignInCreateAccScreen extends React.Component {
             />
           </View>
           <Text style={styles.errorText}>{this.state.crAccErrorText}</Text>
+        </View>
+      );
+    }
+  }
+
+  _renderDevQuickSignInButton (email, password) {
+    if (__DEV__) {
+      return (
+        <View style={styles.centeredRowContainer}>
+          <Button
+            onPress={async () => {
+              // Attempt to sign the user in:
+              const result = await UserDatabaseService.signInUser(email, password);
+              if (!result.pass) this.setState({ signInErrorText: result.reason });
+              else {
+                // Change screen to Main:
+                this.props.navigation.navigate("Main");
+              }
+            }}
+            title={`DEV_OPTION: Sign in with ${email}`}
+            style={{ justifyContent: "center", alignSelf: "center" }}
+          />
         </View>
       );
     }

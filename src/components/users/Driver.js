@@ -1,9 +1,13 @@
 const User = require("./User");
 
 module.exports = class Driver extends User {
-  constructor (firstName, lastName, email, password) {
-    super(firstName, lastName, email, password);
-    this.vehicles = []; // owned vehicles
+  constructor (userRecord) {
+    super();
+
+    // Attributes:
+    this.vehicles = [];
+
+    this.restoreAttributesFromUserRecord(userRecord);
   }
 
   addVehicle (regoPlate, make, model, insurer) {

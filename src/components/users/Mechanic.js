@@ -1,10 +1,13 @@
 const User = require("./User");
 
 module.exports = class Mechanic extends User {
-  constructor (firstName, lastName, email, password) {
-    super(firstName, lastName, email, password);
-    this.verifiedMechanic = false;
+  constructor (userRecord) {
+    super();
+
+    // Attributes:
     this.jobs = [];
+
+    this.restoreAttributesFromUserRecord(userRecord);
   }
 
   /**
