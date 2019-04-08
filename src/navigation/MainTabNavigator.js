@@ -7,6 +7,25 @@ import TabBarIcon from "../components/TabBarIcon";
 import HomeScreen from "../screens/HomeScreen";
 import LinksScreen from "../screens/LinksScreen";
 import SettingsScreen from "../screens/SettingsScreen";
+import DriverProfileScreen from "../screens/DriverProfileScreen";
+
+const ProfileStack = createStackNavigator({
+  Home: DriverProfileScreen
+});
+
+ProfileStack.navigationOptions = {
+  tabBarLabel: "Profile",
+  tabBarIcon: ({ focused }) => (
+    <TabBarIcon
+      focused={focused}
+      name={
+        Platform.OS === "ios"
+          ? `ios-person${focused ? "" : "-outline"}`
+          : "md-person"
+      }
+    />
+  )
+};
 
 const HomeStack = createStackNavigator({
   Home: HomeScreen
@@ -55,6 +74,7 @@ SettingsStack.navigationOptions = {
 };
 
 export default createBottomTabNavigator({
+  ProfileStack,
   HomeStack,
   LinksStack,
   SettingsStack
