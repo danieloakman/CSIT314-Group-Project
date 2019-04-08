@@ -8,8 +8,6 @@ class App extends React.Component {
     isLoadingComplete: false
   };
 
-  static user = null;
-
   render () {
     if (!this.state.isLoadingComplete && !this.props.skipLoadingScreen) {
       return (
@@ -65,3 +63,4 @@ const styles = StyleSheet.create({
 });
 
 export default registerRootComponent(App);
+export {App as AppTest};
