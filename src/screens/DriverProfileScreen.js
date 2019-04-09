@@ -6,14 +6,11 @@ import React from "react";
 import {
   StyleSheet,
   View,
-  Button,
-  TextInput,
   Text,
   Image,
   ScrollView,
   Alert
 } from "react-native";
-import { Constants } from "expo";
 
 import WindowBox from "@components/WindowBox";
 import FlexContainer from "@components/FlexContainer";
@@ -36,7 +33,7 @@ export default class DriverProfileScreen extends React.Component {
       <WindowBox navColor={"white"}>
         <TitleBox
           navColor="white"
-          navLeft={<Text>slideout</Text>} // Will open the left slideout menu with stuff that doesn't fit on bottom navigation bar (should be visible on nearly every page)
+          // navLeft={<Text>slideout</Text>} // Will open the left slideout menu with stuff that doesn't fit on bottom navigation bar (should be visible on nearly every page)
           navMid={<Text style={{ fontSize: 20 }}>User Profile</Text>} // Maybe should align left?
           navRight={<Text>dropdown</Text>} // Small dropdown with options such as edit (and others we think of)
         >

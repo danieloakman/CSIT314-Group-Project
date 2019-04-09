@@ -6,16 +6,11 @@ import React from "react";
 import {
   StyleSheet,
   View,
-  // Button,
-  // TextInput,
-  Text,
-  StatusBar,
-  Platform
 } from "react-native";
 import { BlurView } from "expo";
-// import { Constants } from "expo";
 
 import FlexContainer from "./FlexContainer";
+import DrawerButton from "./DrawerButton";
 
 export default function TitleBox (props) {
   const navHeight = 60;
@@ -47,7 +42,7 @@ export default function TitleBox (props) {
     <View style={styles.container} >
       <BlurView style={styles.topNav} tint="light" intensity={50}>
         <FlexContainer style={[styles.titleComponent, styles.sideButtons]}>
-          {props.navLeft}
+          {props.navLeft ? props.navLeft : <DrawerButton />}
         </FlexContainer>
         <FlexContainer size={1} style={styles.titleComponent}>
           {props.navMid}

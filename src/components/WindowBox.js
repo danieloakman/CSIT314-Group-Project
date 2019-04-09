@@ -2,13 +2,9 @@ import React from "react";
 import {
   StyleSheet,
   View,
-  // Button,
-  // TextInput,
-  // Text,
   StatusBar,
   Platform
 } from "react-native";
-// import { Constants } from "expo";
 
 export default function WindowBox (props) {
   const styles = StyleSheet.create({
