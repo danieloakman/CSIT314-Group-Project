@@ -1,9 +1,7 @@
 import {AsyncStorage} from "react-native";
-/* eslint-disable no-unused-vars */
 const Driver = require("@src/components/users/Driver");
-const Mechanic = require("@src/components/users/Mechanic"); // These are being used.
+const Mechanic = require("@src/components/users/Mechanic");
 const Admin = require("@src/components/users/Admin");
-/* eslint-enable no-unused-vars */
 
 // todo: change this so it accesses a local file, not one in the project directory
 // Use some file writing package for react-native, since fs doesn't work in it.
@@ -15,9 +13,31 @@ export default class UserDatabaseService {
    * Use this to then edit the user.
    * Remember to call writeAllUsersToFile() after any edits that need to be saved.
    */
-  static getUserClass (email) {
+  static getUser (email) {
     const userRecord = allUsers[email];
-    return new [userRecord.constructor](userRecord.account);
+    switch (userRecord.constructor) {
+      case "Driver":
+        return new Driver(userRecord.account);
+      case "Mechanic":
+        return new Mechanic(userRecord.account);
+      case "Admin":
+        return new Admin(userRecord.account);
+    }
+  }
+
+  /**
+   * Returns the currently logged in user
+   */
+  static async getLoggedInUser () {
+    try {
+      return this.getUser(
+        await AsyncStorage.getItem("userEmail")
+      );
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error(err.stack);
+      return null;
+    }
   }
 
   /**
