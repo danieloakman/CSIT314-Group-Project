@@ -1,4 +1,5 @@
 /*
+  DEPRECATED. use header from react navigation instead
   A large component container with a top three-section container and a large main container
 */
 
