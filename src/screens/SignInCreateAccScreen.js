@@ -8,7 +8,8 @@ import {
   Button,
   Alert,
   Picker,
-  TextInput
+  TextInput,
+  KeyboardAvoidingView
 } from "react-native";
 import WindowBox from "@components/WindowBox";
 import Patterns from "@src/constants/UserInputRegex";
@@ -27,7 +28,7 @@ export default class SignInCreateAccScreen extends React.Component {
     crAccLastName: "",
     crAccEmail: "",
     crAccPassword: "",
-    crAccPhone: "",
+    crAccPhoneNo: "",
     crAccErrorText: "",
     signInEmail: "",
     signInPassword: "",
@@ -63,12 +64,15 @@ export default class SignInCreateAccScreen extends React.Component {
   _renderMainScreen () {
     if (this.state.selected === "SignIn") {
       return (
-        <View style={{ flex: 1, flexDirection: "column", backgroundColor: "#fff" }}>
+        <KeyboardAvoidingView
+          style={{ flex: 1, flexDirection: "column", backgroundColor: "#fff" }}
+          behavior="position">
           <Image
             source={require("../../assets/images/icon.png")}
             style={[styles.iconImage, {height: 150, width: 150}]}
           />
           <Text style={styles.titleText}>Sign In</Text>
+
           <View style={styles.centeredRowContainer}>
             <Text style={styles.textBesideInput}>Email</Text>
             <TextInput
@@ -83,8 +87,10 @@ export default class SignInCreateAccScreen extends React.Component {
               returnKeyType="next"
               value={this.state.signInEmail}
               autoCapitalize="none"
+              keyboardType="email-address"
             />
           </View>
+
           <View style={styles.centeredRowContainer}>
             <Text style={styles.textBesideInput}>Password</Text>
             <TextInput
@@ -102,6 +108,7 @@ export default class SignInCreateAccScreen extends React.Component {
               autoCapitalize="none"
             />
           </View>
+
           <View style={styles.centeredRowContainer}>
             <Button // todo: Center and stretch this button properly as in the design
               onPress={async () => {
@@ -123,20 +130,26 @@ export default class SignInCreateAccScreen extends React.Component {
               style={{ justifyContent: "center", alignSelf: "center" }}
             />
           </View>
+
+          <Text style={styles.errorText}>{this.state.signInErrorText}</Text>
+
           {this._renderDevQuickSignInButton("driver@test.com", "test123")}
           {this._renderDevQuickSignInButton("mechanic@test.com", "test123")}
           {this._renderDevQuickSignInButton("admin@test.com", "test123")}
-          <Text style={styles.errorText}>{this.state.signInErrorText}</Text>
-        </View>
+        </KeyboardAvoidingView>
       );
     } else {
-      return ( // todo: make keyboard not hide input fields
-        <View style={{ flex: 1, flexDirection: "column", backgroundColor: "#fff" }}>
+      return (
+        <KeyboardAvoidingView
+          style={{ flex: 1, flexDirection: "column", backgroundColor: "#fff" }}
+          behavior="position"
+          keyboardVerticalOffset="80">
           <Image
             source={require("../../assets/images/icon.png")}
             style={styles.iconImage}
           />
           <Text style={styles.titleText}>Create Account</Text>
+
           <View style={styles.centeredRowContainer}>
             <Text style={styles.textBesideInput}>Type</Text>
             <Picker
@@ -150,61 +163,94 @@ export default class SignInCreateAccScreen extends React.Component {
               <Picker.Item label="Mechanic" value="Mechanic" />
             </Picker>
           </View>
+
           <View style={styles.centeredRowContainer}>
             <Text style={styles.textBesideInput}>First Name</Text>
             <TextInput
               style={styles.textInput}
               editable={true}
               onChangeText={firstName => this.setState({ crAccFirstName: firstName })}
+              onEndEditing={() => {
+                if (!this.state.crAccFirstName.trim().match(Patterns.name)) {
+                  this.setState({crAccErrorText: "Invalid first name, please correct it."});
+                } else this.setState({crAccErrorText: ""});
+              }}
               // placeholder="FirstName" // Perhaps just use this instead of textBesideInput
               returnKeyType="next"
               value={this.state.crAccFirstName}
             />
           </View>
+
           <View style={styles.centeredRowContainer}>
             <Text style={styles.textBesideInput}>Last Name</Text>
             <TextInput
               style={styles.textInput}
               editable={true}
               onChangeText={lastName => this.setState({ crAccLastName: lastName })}
+              onEndEditing={() => {
+                if (!this.state.crAccLastName.trim().match(Patterns.name)) {
+                  this.setState({crAccErrorText: "Invalid last name, please correct it."});
+                } else this.setState({crAccErrorText: ""});
+              }}
               returnKeyType="next"
               value={this.state.crAccLastName}
             />
           </View>
+
           <View style={styles.centeredRowContainer}>
             <Text style={styles.textBesideInput}>Email</Text>
             <TextInput
               style={styles.textInput}
               editable={true}
               onChangeText={email => this.setState({ crAccEmail: email })}
+              onEndEditing={() => {
+                if (!this.state.crAccEmail.trim().match(Patterns.email)) {
+                  this.setState({crAccErrorText: "Invalid email, please correct it."});
+                } else this.setState({crAccErrorText: ""});
+              }}
               returnKeyType="next"
               value={this.state.crAccEmail}
               autoCapitalize="none"
+              keyboardType="email-address"
             />
           </View>
+
           <View style={styles.centeredRowContainer}>
             <Text style={styles.textBesideInput}>Password</Text>
             <TextInput
               style={styles.textInput}
               editable={true}
               onChangeText={password => this.setState({ crAccPassword: password })}
+              onEndEditing={() => {
+                if (!this.state.crAccPassword.trim().match(Patterns.password)) {
+                  this.setState({crAccErrorText: "Password must be between 6 and 20 digits long, and with at least 1 number."});
+                } else this.setState({crAccErrorText: ""});
+              }}
               returnKeyType="next"
               secureTextEntry={true}
               value={this.state.crAccPassword}
               autoCapitalize="none"
             />
           </View>
+
           <View style={styles.centeredRowContainer}>
             <Text style={styles.textBesideInput}>Phone</Text>
             <TextInput
               style={styles.textInput}
               editable={true}
               onChangeText={phoneNo => this.setState({ crAccPhoneNo: phoneNo })}
+              onEndEditing={() => {
+                if (!this.state.crAccPhoneNo.trim().match(Patterns.phoneNo)) {
+                  this.setState({crAccErrorText: "Phone number invalid, please correct it."});
+                } else this.setState({crAccErrorText: ""});
+              }}
               returnKeyType="go"
               value={this.state.crAccPhoneNo}
               autoCapitalize="none"
+              keyboardType="phone-pad"
             />
           </View>
+
           <View style={styles.centeredRowContainer}>
             <Button // todo: Center and stretch this button properly as in the design
               onPress={() => {
@@ -217,8 +263,9 @@ export default class SignInCreateAccScreen extends React.Component {
               style={{ justifyContent: "center", alignSelf: "center" }}
             />
           </View>
+
           <Text style={styles.errorText}>{this.state.crAccErrorText}</Text>
-        </View>
+        </KeyboardAvoidingView>
       );
     }
   }
