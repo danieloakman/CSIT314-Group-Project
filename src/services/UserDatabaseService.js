@@ -45,13 +45,13 @@ export default class UserDatabaseService {
    * If checks pass then stores the user's email and name in persistent app storage.
    */
   static async signInUser (email, password) {
-    const userRecord = allUsers[email].account;
-    if (!userRecord) {
+    if (allUsers[email] === undefined) {
       return {pass: false, reason: "An account with that email doesn't exist."};
-    } else if (userRecord.password !== password) {
+    } else if (allUsers[email].account.password !== password) {
       return {pass: false, reason: "Incorrect password."};
     }
 
+    const userRecord = allUsers[email].account;
     try {
       await AsyncStorage.multiSet([
         ["userEmail", userRecord.email],
@@ -88,10 +88,34 @@ export default class UserDatabaseService {
     }
   }
 
-  static async createUser (userRecord) {
-    // todo:
-    this.writeAllUsersToFile();
-    return {pass: true};
+  /**
+   * Checks if a user with that email already exists.
+   * If check passes then the userRecord is saved to allUsers.
+   * It then stores the user's email and name in persistent app storage.
+   */
+  static async createUserAndLogIn (userRecord) {
+    if (allUsers[userRecord.account.email] !== undefined) {
+      return {pass: false, reason: "An account with that email already exists."};
+    }
+
+    allUsers[userRecord.account.email] = userRecord;
+
+    try {
+      await AsyncStorage.multiSet([
+        ["userEmail", userRecord.account.email],
+        ["userFirstName", userRecord.account.firstName],
+        ["userLastName", userRecord.account.lastName]
+      ]);
+      // this.writeAllUsersToFile(); // todo
+      return {pass: true};
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error(err.stack);
+      return {
+        pass: false,
+        reason: __DEV__ ? err.stack : "Internal app error at UserDatabaseService.createUserAndLogIn()"
+      };
+    }
   }
 
   static async writeAllUsersToFile () {

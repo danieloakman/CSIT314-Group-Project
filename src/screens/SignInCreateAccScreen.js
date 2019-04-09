@@ -79,11 +79,8 @@ export default class SignInCreateAccScreen extends React.Component {
               style={styles.textInput}
               editable={true}
               onChangeText={email => this.setState({ signInEmail: email })}
-              onEndEditing={() => {
-                if (!this.state.signInEmail.trim().match(Patterns.email)) {
-                  this.setState({signInErrorText: "Invalid email, please correct it."});
-                } else this.setState({signInErrorText: ""});
-              }}
+              onSubmitEditing={() => this.textInputSignInPassword.focus()}
+              placeholder="email@gmail.com"
               returnKeyType="next"
               value={this.state.signInEmail}
               autoCapitalize="none"
@@ -96,11 +93,11 @@ export default class SignInCreateAccScreen extends React.Component {
             <TextInput
               style={styles.textInput}
               editable={true}
+              ref={input => { this.textInputSignInPassword = input; }}
               onChangeText={password => this.setState({ signInPassword: password })}
-              onEndEditing={() => {
-                if (!this.state.signInPassword.trim().match(Patterns.password)) {
-                  this.setState({signInErrorText: "Password must be between 6 and 20 digits long, and with at least 1 number."});
-                } else this.setState({signInErrorText: ""});
+              onSubmitEditing={async () => {
+                await this._validateTextInputs();
+                await this._signInButtonPress();
               }}
               returnKeyType="go"
               secureTextEntry={true}
@@ -112,19 +109,8 @@ export default class SignInCreateAccScreen extends React.Component {
           <View style={styles.centeredRowContainer}>
             <Button // todo: Center and stretch this button properly as in the design
               onPress={async () => {
-                // Check for invalid or empty fields:
-                if (this.state.signInErrorText || !this.state.signInEmail || !this.state.signInPassword) {
-                  Alert.alert("Error, one or more of the fields is empty or invalid.");
-                  return;
-                }
-                // Attempt to sign the user in:
-                const result = await UserDatabaseService.signInUser(this.state.signInEmail, this.state.signInPassword);
-                console.log(JSON.stringify(result));
-                if (!result.pass) this.setState({signInErrorText: result.reason});
-                else {
-                  // Change screen to Main:
-                  this.props.navigation.navigate("Main");
-                }
+                await this._validateTextInputs();
+                await this._signInButtonPress();
               }}
               title="Sign In"
               style={{ justifyContent: "center", alignSelf: "center" }}
@@ -170,12 +156,8 @@ export default class SignInCreateAccScreen extends React.Component {
               style={styles.textInput}
               editable={true}
               onChangeText={firstName => this.setState({ crAccFirstName: firstName })}
-              onEndEditing={() => {
-                if (!this.state.crAccFirstName.trim().match(Patterns.name)) {
-                  this.setState({crAccErrorText: "Invalid first name, please correct it."});
-                } else this.setState({crAccErrorText: ""});
-              }}
-              // placeholder="FirstName" // Perhaps just use this instead of textBesideInput
+              onSubmitEditing={() => this.textInputCrAccLastName.focus()}
+              placeholder="John"
               returnKeyType="next"
               value={this.state.crAccFirstName}
             />
@@ -186,12 +168,10 @@ export default class SignInCreateAccScreen extends React.Component {
             <TextInput
               style={styles.textInput}
               editable={true}
+              ref={input => { this.textInputCrAccLastName = input; }}
               onChangeText={lastName => this.setState({ crAccLastName: lastName })}
-              onEndEditing={() => {
-                if (!this.state.crAccLastName.trim().match(Patterns.name)) {
-                  this.setState({crAccErrorText: "Invalid last name, please correct it."});
-                } else this.setState({crAccErrorText: ""});
-              }}
+              onSubmitEditing={() => this.textInputCrAccEmail.focus()}
+              placeholder="Smith"
               returnKeyType="next"
               value={this.state.crAccLastName}
             />
@@ -202,12 +182,10 @@ export default class SignInCreateAccScreen extends React.Component {
             <TextInput
               style={styles.textInput}
               editable={true}
+              ref={input => { this.textInputCrAccEmail = input; }}
               onChangeText={email => this.setState({ crAccEmail: email })}
-              onEndEditing={() => {
-                if (!this.state.crAccEmail.trim().match(Patterns.email)) {
-                  this.setState({crAccErrorText: "Invalid email, please correct it."});
-                } else this.setState({crAccErrorText: ""});
-              }}
+              onSubmitEditing={() => this.textInputCrAccPassword.focus()}
+              placeholder="email@gmail.com"
               returnKeyType="next"
               value={this.state.crAccEmail}
               autoCapitalize="none"
@@ -220,12 +198,9 @@ export default class SignInCreateAccScreen extends React.Component {
             <TextInput
               style={styles.textInput}
               editable={true}
+              ref={input => { this.textInputCrAccPassword = input; }}
               onChangeText={password => this.setState({ crAccPassword: password })}
-              onEndEditing={() => {
-                if (!this.state.crAccPassword.trim().match(Patterns.password)) {
-                  this.setState({crAccErrorText: "Password must be between 6 and 20 digits long, and with at least 1 number."});
-                } else this.setState({crAccErrorText: ""});
-              }}
+              onSubmitEditing={() => this.textInputCrAccPhoneNo.focus()}
               returnKeyType="next"
               secureTextEntry={true}
               value={this.state.crAccPassword}
@@ -238,11 +213,11 @@ export default class SignInCreateAccScreen extends React.Component {
             <TextInput
               style={styles.textInput}
               editable={true}
+              ref={input => { this.textInputCrAccPhoneNo = input; }}
               onChangeText={phoneNo => this.setState({ crAccPhoneNo: phoneNo })}
-              onEndEditing={() => {
-                if (!this.state.crAccPhoneNo.trim().match(Patterns.phoneNo)) {
-                  this.setState({crAccErrorText: "Phone number invalid, please correct it."});
-                } else this.setState({crAccErrorText: ""});
+              onSubmitEditing={async () => {
+                await this._validateTextInputs();
+                await this._createAccountButtonPress();
               }}
               returnKeyType="go"
               value={this.state.crAccPhoneNo}
@@ -253,11 +228,9 @@ export default class SignInCreateAccScreen extends React.Component {
 
           <View style={styles.centeredRowContainer}>
             <Button // todo: Center and stretch this button properly as in the design
-              onPress={() => {
-                Alert.alert("todo: create the user here");
-                console.log(`state: ${JSON.stringify(this.state, null, 2)}`);
-                // todo: Regex all input fields, modify errorText
-                this.props.navigation.navigate("Main");
+              onPress={async () => {
+                await this._validateTextInputs();
+                await this._createAccountButtonPress();
               }}
               title="Create Account"
               style={{ justifyContent: "center", alignSelf: "center" }}
@@ -267,6 +240,72 @@ export default class SignInCreateAccScreen extends React.Component {
           <Text style={styles.errorText}>{this.state.crAccErrorText}</Text>
         </KeyboardAvoidingView>
       );
+    }
+  }
+
+  async _signInButtonPress () {
+    // Check for invalid or empty fields:
+    if (this.state.signInErrorText || !this.state.signInEmail || !this.state.signInPassword) {
+      // Alert.alert("Error, one or more of the fields is empty or invalid.");
+      return;
+    }
+    // Attempt to sign the user in:
+    const result = await UserDatabaseService.signInUser(this.state.signInEmail, this.state.signInPassword);
+    if (!result.pass) this.setState({signInErrorText: result.reason});
+    else {
+      // Change screen to Main:
+      this.props.navigation.navigate("Main");
+    }
+  }
+
+  async _createAccountButtonPress () {
+    // Check for invalid or empty fields:
+    if (
+      this.state.crAccErrorText || !this.state.crAccFirstName || !this.state.crAccLastName ||
+      !this.state.crAccEmail || !this.state.crAccPassword || !this.state.crAccPhoneNo
+    ) {
+      // Alert.alert("Error, one or more of the fields is empty or invalid.");
+      return;
+    }
+    // Attempt to create the user:
+    const result = await UserDatabaseService.createUserAndLogIn({
+      constructor: this.state.crAccType,
+      account: {
+        firstName: this.state.crAccFirstName,
+        lastName: this.state.crAccLastName,
+        email: this.state.crAccEmail,
+        password: this.state.crAccPassword,
+        phoneNo: this.state.phoneNo,
+      }
+    });
+    if (!result.pass) this.setState({crAccErrorText: result.reason});
+    else {
+      // Change to main screen:
+      this.props.navigation.navigate("Main");
+    }
+  }
+
+  _validateTextInputs () {
+    if (this.state.selected === "SignIn") {
+      // Validate sign in text inputs:
+      if (!this.state.signInEmail.trim().match(Patterns.email)) {
+        this.setState({signInErrorText: "Invalid email, please correct it."});
+      } else if (!this.state.signInPassword.trim().match(Patterns.password)) {
+        this.setState({signInErrorText: "Password must be between 6 and 20 digits long, and with at least 1 number."});
+      } else this.setState({signInErrorText: ""});
+    } else {
+      // Validate create account text inputs:
+      if (!this.state.crAccFirstName.trim().match(Patterns.name)) {
+        this.setState({ crAccErrorText: "Invalid first name, please correct it." });
+      } else if (!this.state.crAccLastName.trim().match(Patterns.name)) {
+        this.setState({ crAccErrorText: "Invalid last name, please correct it." });
+      } else if (!this.state.crAccEmail.trim().match(Patterns.email)) {
+        this.setState({ crAccErrorText: "Invalid email, please correct it." });
+      } else if (!this.state.crAccPassword.trim().match(Patterns.password)) {
+        this.setState({ crAccErrorText: "Password must be between 6 and 20 digits long, and with at least 1 number." });
+      } else if (!this.state.crAccPhoneNo.trim().match(Patterns.phoneNo)) {
+        this.setState({ crAccErrorText: "Phone number invalid, please correct it." });
+      } else this.setState({ crAccErrorText: "" });
     }
   }
 
