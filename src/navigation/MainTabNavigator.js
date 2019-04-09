@@ -10,7 +10,7 @@ import SettingsScreen from "../screens/SettingsScreen";
 import DriverProfileScreen from "../screens/DriverProfileScreen";
 
 const ProfileStack = createStackNavigator({
-  Home: DriverProfileScreen
+  Profile: DriverProfileScreen
 });
 
 ProfileStack.navigationOptions = {
