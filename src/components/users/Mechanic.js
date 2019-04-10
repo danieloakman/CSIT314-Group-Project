@@ -5,6 +5,7 @@ module.exports = class Mechanic extends User {
     super();
 
     // Attributes:
+    this.verifiedMechanic = false;
     this.jobs = [];
 
     this.restoreAttributesFromUserRecord(userRecord);

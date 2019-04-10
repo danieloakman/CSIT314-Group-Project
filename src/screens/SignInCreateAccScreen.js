@@ -268,16 +268,12 @@ export default class SignInCreateAccScreen extends React.Component {
       return;
     }
     // Attempt to create the user:
-    const result = await UserDatabaseService.createUserAndLogIn({
-      constructor: this.state.crAccType,
-      account: {
-        firstName: this.state.crAccFirstName,
-        lastName: this.state.crAccLastName,
-        email: this.state.crAccEmail,
-        password: this.state.crAccPassword,
-        phoneNo: this.state.phoneNo,
-      }
-    });
+    const result = await UserDatabaseService.createUser(
+      this.state.crAccType, this.state.crAccFirstName,
+      this.state.crAccLastName, this.state.crAccEmail,
+      this.state.crAccPassword, this.state.crAccPhoneNo,
+      true // Flag to sign them in as well
+    );
     if (!result.pass) this.setState({crAccErrorText: result.reason});
     else {
       // Change to main screen:
