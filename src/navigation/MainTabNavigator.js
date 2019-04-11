@@ -8,6 +8,7 @@ import HomeScreen from "../screens/HomeScreen";
 import LinksScreen from "../screens/LinksScreen";
 import SettingsScreen from "../screens/SettingsScreen";
 import DriverProfileScreen from "../screens/DriverProfileScreen";
+import DriverHomeScreen from "../screens/DriverHomeScreen";
 
 const ProfileStack = createStackNavigator({
   Profile: DriverProfileScreen
@@ -15,6 +16,22 @@ const ProfileStack = createStackNavigator({
 
 ProfileStack.navigationOptions = {
   tabBarLabel: "Profile",
+  tabBarIcon: ({ focused }) => (
+    <TabBarIcon
+      focused={focused}
+      name={
+        Platform.OS === "ios"
+          ? `ios-person${focused ? "" : "-outline"}`
+          : "md-person"
+      }
+    />
+  )
+};
+const DHomeStack = createStackNavigator({
+  DHome: {screen: DriverHomeScreen}
+});
+DHomeStack.navigationOptions = {
+  tabBarLabel: "DriverHome",
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
@@ -77,5 +94,6 @@ export default createBottomTabNavigator({
   ProfileStack,
   HomeStack,
   LinksStack,
-  SettingsStack
+  SettingsStack,
+  DHomeStack
 });
