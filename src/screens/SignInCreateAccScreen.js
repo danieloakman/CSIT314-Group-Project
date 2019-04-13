@@ -6,19 +6,19 @@ import {
   Text,
   View,
   Button,
-  Alert,
   Picker,
   TextInput,
-  KeyboardAvoidingView
+  KeyboardAvoidingView,
+  TouchableOpacity
 } from "react-native";
 import WindowBox from "@components/WindowBox";
 import Patterns from "@src/constants/UserInputRegex";
 import UserDatabaseService from "@src/services/UserDatabaseService";
+import Colors from "@src/constants/Colors";
 
 export default class SignInCreateAccScreen extends React.Component {
   static navigationOptions = {
     header: null
-    // title: "Sign in or create an account."
   };
 
   state = {
@@ -30,33 +30,51 @@ export default class SignInCreateAccScreen extends React.Component {
     crAccPassword: "",
     crAccPhoneNo: "",
     crAccErrorText: "",
+    crAccButtonColor: Colors.screenBackground,
+    crAccButtonTextColor: "black",
     signInEmail: "",
     signInPassword: "",
-    signInErrorText: ""
+    signInErrorText: "",
+    signInButtonColor: Colors.wideButton,
+    signInButtonTextColor: "white"
   }
 
   render () {
     return (
       <WindowBox>
-        <View style={styles.container}>
-          <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-            <View style={styles.topButtonsContainer}>
-              <Button // todo: Set non-selected button's colour to darker than normal
-                onPress={() => this.setState({ selected: "SignIn" })}
-                title="Sign In"
-                style={styles.topButton}
-              />
-              <Button
-                onPress={() => this.setState({ selected: "CreateAccount" })}
-                title="Create Account"
-                style={styles.topButton}
-              />
+        <ScrollView style={styles.container}>
+          <View style={styles.topTab}>
+            <View style={styles.topButtonContainer}>
+              <TouchableOpacity
+                style={[styles.topButton, {backgroundColor: this.state.signInButtonColor}]}
+                onPress={() => this.setState({
+                  selected: "SignIn",
+                  signInButtonColor: Colors.wideButton,
+                  signInButtonTextColor: "white",
+                  crAccButtonColor: Colors.screenBackground,
+                  crAccButtonTextColor: "black"
+                })}>
+                <Text style={[styles.topButtonText, {color: this.state.signInButtonTextColor}]}>Sign In</Text>
+              </TouchableOpacity>
             </View>
-            <View>
-              {this._renderMainScreen()}
+            <View style={styles.topButtonContainer}>
+              <TouchableOpacity
+                style={[styles.topButton, {backgroundColor: this.state.crAccButtonColor}]}
+                onPress={() => this.setState({
+                  selected: "CreateAccount",
+                  crAccButtonColor: Colors.wideButton,
+                  crAccButtonTextColor: "white",
+                  signInButtonColor: Colors.screenBackground,
+                  signInButtonTextColor: "black"
+                })}>
+                <Text style={[styles.topButtonText, {color: this.state.crAccButtonTextColor}]}>
+                  Create Account
+                </Text>
+              </TouchableOpacity>
             </View>
-          </ScrollView>
-        </View>
+          </View>
+          {this._renderMainScreen()}
+        </ScrollView>
       </WindowBox>
     );
   }
@@ -65,7 +83,7 @@ export default class SignInCreateAccScreen extends React.Component {
     if (this.state.selected === "SignIn") {
       return (
         <KeyboardAvoidingView
-          style={{ flex: 1, flexDirection: "column", backgroundColor: "#fff" }}
+          style={{ flex: 1, flexDirection: "column", backgroundColor: Colors.backgroundColor }}
           behavior="position">
           <Image
             source={require("../../assets/images/icon.png")}
@@ -106,15 +124,15 @@ export default class SignInCreateAccScreen extends React.Component {
             />
           </View>
 
-          <View style={styles.centeredRowContainer}>
-            <Button // todo: Center and stretch this button properly as in the design
+          <View style={styles.wideButtonContainer}>
+            <TouchableOpacity
               onPress={async () => {
                 await this._validateTextInputs();
                 await this._signInButtonPress();
               }}
-              title="Sign In"
-              style={{ justifyContent: "center", alignSelf: "center" }}
-            />
+              style={styles.wideButton}>
+              <Text style={{color: "white", fontSize: 22, textAlign: "center"}}>Sign In</Text>
+            </TouchableOpacity>
           </View>
 
           <Text style={styles.errorText}>{this.state.signInErrorText}</Text>
@@ -127,9 +145,8 @@ export default class SignInCreateAccScreen extends React.Component {
     } else {
       return (
         <KeyboardAvoidingView
-          style={{ flex: 1, flexDirection: "column", backgroundColor: "#fff" }}
-          behavior="position"
-          keyboardVerticalOffset="80">
+          style={{ flex: 1, flexDirection: "column", backgroundColor: Colors.screenBackground }}
+          behavior="position">
           <Image
             source={require("../../assets/images/icon.png")}
             style={styles.iconImage}
@@ -138,16 +155,19 @@ export default class SignInCreateAccScreen extends React.Component {
 
           <View style={styles.centeredRowContainer}>
             <Text style={styles.textBesideInput}>Type</Text>
-            <Picker
-              selectedValue={this.state.crAccType}
-              style={{ width: 150 }} // height: 50
-              itemStyle={{ fontSize: 20 }}
-              onValueChange={(itemValue, itemIndex) =>
-                this.setState({ crAccType: itemValue })
-              }>
-              <Picker.Item label="Driver" value="Driver" />
-              <Picker.Item label="Mechanic" value="Mechanic" />
-            </Picker>
+            <View style={{borderWidth: 1, borderRadius: 5}}>
+              <Picker
+                selectedValue={this.state.crAccType}
+                style={{width: 150}}
+                itemStyle={{fontSize: 20}}
+                mode="dropdown"
+                onValueChange={(itemValue, itemIndex) =>
+                  this.setState({ crAccType: itemValue })
+                }>
+                <Picker.Item label="Driver" value="Driver" />
+                <Picker.Item label="Mechanic" value="Mechanic" />
+              </Picker>
+            </View>
           </View>
 
           <View style={styles.centeredRowContainer}>
@@ -226,15 +246,15 @@ export default class SignInCreateAccScreen extends React.Component {
             />
           </View>
 
-          <View style={styles.centeredRowContainer}>
-            <Button // todo: Center and stretch this button properly as in the design
+          <View style={styles.wideButtonContainer}>
+            <TouchableOpacity
               onPress={async () => {
                 await this._validateTextInputs();
                 await this._createAccountButtonPress();
               }}
-              title="Create Account"
-              style={{ justifyContent: "center", alignSelf: "center" }}
-            />
+              style={styles.wideButton}>
+              <Text style={{color: "white", fontSize: 22, textAlign: "center"}}>Create Account</Text>
+            </TouchableOpacity>
           </View>
 
           <Text style={styles.errorText}>{this.state.crAccErrorText}</Text>
@@ -308,7 +328,7 @@ export default class SignInCreateAccScreen extends React.Component {
   _renderDevQuickSignInButton (email, password) {
     if (__DEV__) {
       return (
-        <View style={styles.centeredRowContainer}>
+        <View style={styles.wideButtonContainer}>
           <Button
             onPress={async () => {
               // Attempt to sign the user in:
@@ -320,7 +340,7 @@ export default class SignInCreateAccScreen extends React.Component {
               }
             }}
             title={`DEV_OPTION: Sign in with ${email}`}
-            style={{ justifyContent: "center", alignSelf: "center" }}
+            style={styles.wideButton}
           />
         </View>
       );
@@ -328,13 +348,14 @@ export default class SignInCreateAccScreen extends React.Component {
   }
 }
 
-const styles = StyleSheet.create({ // todo: tidy up styles, combine some, etc.
+const styles = StyleSheet.create({
   iconImage: {
     width: 100,
     height: 80,
     resizeMode: "contain",
     marginTop: 10,
-    alignSelf: "center"
+    alignSelf: "center",
+    zIndex: 0
   },
   titleText: {
     marginTop: 10,
@@ -359,29 +380,59 @@ const styles = StyleSheet.create({ // todo: tidy up styles, combine some, etc.
     borderWidth: 1,
     borderRadius: 3,
     marginLeft: 5,
-    width: 150,
-    paddingLeft: 5
+    width: "60%",
+    paddingLeft: 5,
+    backgroundColor: "white"
   },
   container: {
     flex: 1,
-    backgroundColor: "#fff"
+    backgroundColor: Colors.screenBackground,
+    zIndex: 5,
   },
-  topButtonsContainer: {
+  topTab: {
     flex: 1,
+    backgroundColor: Colors.tabBar,
+    borderWidth: 0.5,
+    // borderColor: "green",
+    zIndex: 5,
+    paddingTop: 30,
+    paddingBottom: 10,
+    paddingLeft: 10,
+    paddingRight: 10,
     flexDirection: "row",
-    justifyContent: "center"
-    // alignItems: "stretch"
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  topButtonContainer: {
+    flex: 1,
+    paddingLeft: 1,
+    paddingRight: 1
+  },
+  topButton: {
+    borderRadius: 7,
+    borderWidth: 1
+  },
+  topButtonText: {
+    textAlign: "center",
+    fontSize: 22,
+    padding: 10
   },
   errorText: {
     color: "red",
-    fontSize: 20
+    fontSize: 20,
+    paddingLeft: 20,
+    paddingRight: 20
   },
-  topButton: {
-    // width: "40%",
-    height: 40,
-    alignItems: "stretch"
+  wideButtonContainer: {
+    paddingLeft: 20,
+    paddingRight: 20,
+    paddingTop: 5,
+    paddingBottom: 5
   },
-  contentContainer: {
-    paddingTop: 30
+  wideButton: {
+    backgroundColor: Colors.wideButton,
+    borderWidth: 1,
+    borderRadius: 4,
+    padding: 5
   }
 });
