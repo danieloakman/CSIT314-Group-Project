@@ -15,7 +15,10 @@ import {
 import WindowBox from "@components/WindowBox";
 import Patterns from "@src/constants/UserInputRegex";
 import UserDatabaseService from "@src/services/UserDatabaseService";
+import {createStackNavigator, createAppContainer} from "react-navigation";
+// import RequestScreen from "../screens/MakeRequestScreen";
 
+// const App = createAppContainer(MainNavigator);
 // todo: make button work
 
 /*
@@ -25,18 +28,52 @@ import UserDatabaseService from "@src/services/UserDatabaseService";
   <View style={{width: 50, height: 50, backgroundColor: "steelblue"}} />
 </View>
 */
-export default class DriverHomeScreen extends React.Component {
+class DriverHomeScreen extends React.Component {
   static navigationOptions = {
     header: null
-    // title: "Sign in or create an account."
   };
   render () {
+    /* const {navigate} = this.props.navigation; */
     return (
       <View>
         <Text style={styles.heading}>Home</Text>
-        <Button onPress={() => { Alert.alert("button was pressed"); } } title="Request Assistance"/>
+        <Button
+          title="Request Assistance"
+          onPress={() => this.props.navigation.navigate("Request") }
+        />
       </View>
     );
+  }
+}
+
+class RequestScreen extends React.Component {
+  render () {
+    return (
+      <View>
+        <Text style={styles.heading}>Request Assistance</Text>
+        <Button
+          title="Go to Home"
+          onPress={() => this.props.navigation.navigate("Home")}
+        />
+      </View>
+
+    );
+  }
+}
+
+const MainNavigator = createStackNavigator(
+  {
+    Home: DriverHomeScreen,
+    Request: RequestScreen
+  },
+  {
+    initialRouteName: "Home"
+  }
+);
+const AppContainer = createAppContainer(MainNavigator);
+export default class App extends React.Component {
+  render () {
+    return <AppContainer />;
   }
 }
 const styles = StyleSheet.create({
