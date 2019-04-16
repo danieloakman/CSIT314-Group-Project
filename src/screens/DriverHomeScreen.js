@@ -1,33 +1,17 @@
 import React from "react";
 import {
-  Image,
-  ScrollView,
-  Platform,
   StyleSheet,
   Text,
   View,
   Button,
-  Alert,
-  Picker,
   TextInput,
-  KeyboardAvoidingView
+  Alert,
+  Picker
+  // TouchableOpacity,
+  // Colors
 } from "react-native";
-import WindowBox from "@components/WindowBox";
-import Patterns from "@src/constants/UserInputRegex";
-import UserDatabaseService from "@src/services/UserDatabaseService";
 import {createStackNavigator, createAppContainer} from "react-navigation";
-// import RequestScreen from "../screens/MakeRequestScreen";
-
-// const App = createAppContainer(MainNavigator);
-// todo: make button work
-
-/*
-<View style={{flex: 1, flexDirection: "row"}}>
-  <View style={{width: 50, height: 50, backgroundColor: "powderblue"}} />
-  <View style={{width: 50, height: 50, backgroundColor: "skyblue"}} />
-  <View style={{width: 50, height: 50, backgroundColor: "steelblue"}} />
-</View>
-*/
+// todo: make buttons work, fix description input (hard to close, making too many lines makes box too big)
 class DriverHomeScreen extends React.Component {
   static navigationOptions = {
     header: null
@@ -47,16 +31,103 @@ class DriverHomeScreen extends React.Component {
 }
 
 class RequestScreen extends React.Component {
+  static navigationOptions = {
+    header: null
+  };
+  state = {
+    address: "",
+    suburb: "",
+    descripton: "",
+    selectedState: "NSW",
+    car: "car 1"
+  }
   render () {
     return (
       <View>
-        <Text style={styles.heading}>Request Assistance</Text>
+        <Text style={styles.heading}>Roadside Assistance Request</Text>
+        <View style={styles.centeredRowContainer}>
+          <Text style={styles.textBesideInput}>Address:</Text>
+          <TextInput
+            style={styles.textInput}
+            placeholder="123 street name"
+            onChangeText={address => this.setState({ address })}
+          />
+        </View>
+        <View style={styles.centeredRowContainer}>
+          <Text style={styles.textBesideInput}>Suburb:</Text>
+          <TextInput
+            style={styles.textInput}
+            onChangeText={suburb => this.setState({ suburb })}
+          />
+        </View>
+        <View style={styles.centeredRowContainer}>
+          <Text style={styles.textBesideInput}>State:</Text>
+          <View style={{borderWidth: 1, borderRadius: 5}}>
+            <Picker
+              selectedValue={this.state.selectedState}
+              style={{width: 150}}
+              itemStyle={{fontSize: 20}}
+              mode="dropdown"
+              onValueChange={selectedState => this.setState({ selectedState })}
+            >
+              <Picker.Item label="NSW" value="NSW" />
+              <Picker.Item label="VIC" value="VIC" />
+              <Picker.Item label="QLD" value="QLD" />
+              <Picker.Item label="WA" value="WA" />
+              <Picker.Item label="SA" value="SA" />
+              <Picker.Item label="NT" value="NT" />
+              <Picker.Item label="ACT" value="ACT" />
+            </Picker>
+          </View>
+        </View>
+
         <Button
-          title="Go to Home"
-          onPress={() => this.props.navigation.navigate("Home")}
+          style="buttons"
+          title="Use GPS Location"
+          onPress={() => Alert.alert("not implemented yet")}
+          /* NOTE: for google maps integration */
+          /* can probably remove address, suburb, state if using GPS/google maps instead */
+        />
+        {/* need dropdown for car selection */}
+        <View style={styles.centeredRowContainer}>
+          <Text style={styles.textBesideInput}>State:</Text>
+          <View style={{borderWidth: 1, borderRadius: 5}}>
+            <Picker
+              selectedValue={this.state.car}
+              style={{width: 150}}
+              itemStyle={{fontSize: 20}}
+              mode="dropdown"
+              onValueChange={car => this.setState({ car })
+              }>
+              <Picker.Item label="car 1" value="car 1" />
+              <Picker.Item label="car 2" value="car 2" />
+              <Picker.Item label="car 3" value="car 3" />
+            </Picker>
+          </View>
+        </View>
+        <Text style={{fontSize: 20, marginLeft: 20}}>Description</Text>
+        <TextInput
+          style={styles.textBox}
+          multiline = {true}
+          numberOfLines = {3}
+          onChangeText={descripton => this.setState({ descripton })}
+        />
+        <Button
+          style="buttons"
+          title="Submit"
+          onPress={() => this._showInputFields()}
         />
       </View>
 
+    );
+  }
+  _showInputFields () {
+    Alert.alert(
+      "Address: " + this.state.address +
+      "\nSuburb: " + this.state.suburb +
+      "\nState: " + this.state.selectedState +
+      "\nDescription: " + this.state.descripton +
+      "\nCar: " + this.state.car
     );
   }
 }
@@ -76,102 +147,66 @@ export default class App extends React.Component {
     return <AppContainer />;
   }
 }
+
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff"
-  },
-  developmentModeText: {
-    marginBottom: 20,
-    color: "rgba(0,0,0,0.4)",
-    fontSize: 14,
-    lineHeight: 19,
-    textAlign: "center"
-  },
-  contentContainer: {
-    paddingTop: 30
-  },
-  welcomeContainer: {
-    alignItems: "center",
-    marginTop: 10,
-    marginBottom: 20
-  },
-  welcomeImage: {
-    width: 100,
-    height: 80,
-    resizeMode: "contain",
-    marginTop: 3,
-    marginLeft: -10
-  },
-  getStartedContainer: {
-    alignItems: "center",
-    marginHorizontal: 50
-  },
-  homeScreenFilename: {
-    marginVertical: 7
-  },
-  codeHighlightText: {
-    color: "rgba(96,100,109, 0.8)"
-  },
-  codeHighlightContainer: {
-    backgroundColor: "rgba(0,0,0,0.05)",
-    borderRadius: 3,
-    paddingHorizontal: 4
-  },
-  getStartedText: {
-    fontSize: 17,
-    color: "rgba(96,100,109, 1)",
-    lineHeight: 24,
-    textAlign: "center"
-  },
-  tabBarInfoContainer: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    ...Platform.select({
-      ios: {
-        shadowColor: "black",
-        shadowOffset: { height: -3 },
-        shadowOpacity: 0.1,
-        shadowRadius: 3
-      },
-      android: {
-        elevation: 20
-      }
-    }),
-    alignItems: "center",
-    backgroundColor: "#fbfbfb",
-    paddingVertical: 20
-  },
-  tabBarInfoText: {
-    fontSize: 17,
-    color: "rgba(96,100,109, 1)",
-    textAlign: "center"
-  },
-  navigationFilename: {
-    marginTop: 5
-  },
-  helpContainer: {
-    marginTop: 15,
-    alignItems: "center"
-  },
-  helpLink: {
-    paddingVertical: 15
-  },
-  helpLinkText: {
-    fontSize: 14,
-    color: "#2e78b7"
-  },
   heading: {
-    fontSize: 100,
+    fontSize: 20,
     fontWeight: "bold",
     justifyContent: "center",
-    alignItems: "center"
+    alignSelf: "center"
   },
   background: {
     backgroundColor: "black",
     width: 100,
     height: 100
+  },
+  buttons: {
+    alignSelf: "center",
+    width: "60%"
+  },
+  textBesideInput: {
+    fontSize: 20
+  },
+  textInput: {
+    fontSize: 20,
+    borderWidth: 1,
+    borderRadius: 3,
+    marginLeft: 5,
+    width: "60%",
+    paddingLeft: 5,
+    backgroundColor: "white"
+  },
+  wideButtonContainer: {
+    paddingLeft: 20,
+    paddingRight: 20,
+    paddingTop: 5,
+    paddingBottom: 5
+  },
+  wideButton: {
+    // backgroundColor: Colors.wideButton,
+    borderWidth: 1,
+    borderRadius: 4,
+    padding: 5
+  },
+  centeredRowContainer: {
+    // flex: 1,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 5,
+    marginBottom: 5,
+    marginLeft: 20,
+    marginRight: 20
+  },
+  textBox: {
+    fontSize: 20,
+    borderWidth: 1,
+    borderRadius: 3,
+    marginLeft: 5,
+    width: "90%",
+    paddingLeft: 5,
+    backgroundColor: "white",
+    marginBottom: 5,
+    alignSelf: "center"
   }
 });
