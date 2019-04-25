@@ -3,7 +3,9 @@ import {
   StyleSheet,
   Text,
   View,
+  ScrollView,
   Button,
+  TouchableOpacity,
   TextInput,
   Alert,
   Picker
@@ -12,6 +14,10 @@ import {
 } from "react-native";
 import {createStackNavigator, createAppContainer} from "react-navigation";
 // todo: make buttons work, fix description input (hard to close, making too many lines makes box too big)
+/*
+multiline = {true}
+numberOfLines = {3}
+*/
 class DriverHomeScreen extends React.Component {
   static navigationOptions = {
     header: null
@@ -21,19 +27,18 @@ class DriverHomeScreen extends React.Component {
     return (
       <View>
         <Text style={styles.heading}>Home</Text>
-        <Button
-          title="Request Assistance"
-          onPress={() => this.props.navigation.navigate("Request") }
-        />
+        <View style={styles.buttons}>
+          <Button
+            title="Request Assistance"
+            onPress={() => this.props.navigation.navigate("Request") }
+          />
+        </View>
       </View>
     );
   }
 }
 
 class RequestScreen extends React.Component {
-  static navigationOptions = {
-    header: null
-  };
   state = {
     address: "",
     suburb: "",
@@ -45,6 +50,7 @@ class RequestScreen extends React.Component {
     return (
       <View>
         <Text style={styles.heading}>Roadside Assistance Request</Text>
+        {/* Address text input */}
         <View style={styles.centeredRowContainer}>
           <Text style={styles.textBesideInput}>Address:</Text>
           <TextInput
@@ -53,6 +59,7 @@ class RequestScreen extends React.Component {
             onChangeText={address => this.setState({ address })}
           />
         </View>
+        {/* Suburb text input */}
         <View style={styles.centeredRowContainer}>
           <Text style={styles.textBesideInput}>Suburb:</Text>
           <TextInput
@@ -60,6 +67,7 @@ class RequestScreen extends React.Component {
             onChangeText={suburb => this.setState({ suburb })}
           />
         </View>
+        {/* State dropdown input */}
         <View style={styles.centeredRowContainer}>
           <Text style={styles.textBesideInput}>State:</Text>
           <View style={{borderWidth: 1, borderRadius: 5}}>
@@ -80,15 +88,16 @@ class RequestScreen extends React.Component {
             </Picker>
           </View>
         </View>
-
-        <Button
-          style="buttons"
-          title="Use GPS Location"
-          onPress={() => Alert.alert("not implemented yet")}
-          /* NOTE: for google maps integration */
-          /* can probably remove address, suburb, state if using GPS/google maps instead */
-        />
-        {/* need dropdown for car selection */}
+        {/* GPS button */}
+        <View style={styles.buttons}>
+          <Button
+            title="Use GPS Location"
+            onPress={() => Alert.alert("not implemented yet")}
+            /* NOTE: for google maps integration */
+            /* can probably remove address, suburb, state if using GPS/google maps instead */
+          />
+        </View>
+        {/* car selection dropdown input */}
         <View style={styles.centeredRowContainer}>
           <Text style={styles.textBesideInput}>State:</Text>
           <View style={{borderWidth: 1, borderRadius: 5}}>
@@ -97,26 +106,29 @@ class RequestScreen extends React.Component {
               style={{width: 150}}
               itemStyle={{fontSize: 20}}
               mode="dropdown"
-              onValueChange={car => this.setState({ car })
-              }>
+              onValueChange={car => this.setState({ car })}>
               <Picker.Item label="car 1" value="car 1" />
               <Picker.Item label="car 2" value="car 2" />
               <Picker.Item label="car 3" value="car 3" />
             </Picker>
           </View>
         </View>
-        <Text style={{fontSize: 20, marginLeft: 20}}>Description</Text>
-        <TextInput
-          style={styles.textBox}
-          multiline = {true}
-          numberOfLines = {3}
-          onChangeText={descripton => this.setState({ descripton })}
-        />
-        <Button
-          style="buttons"
-          title="Submit"
-          onPress={() => this._showInputFields()}
-        />
+        {/* Description text input */}
+        <View style={styles.centeredRowContainer}>
+          <Text style={styles.textBesideInput}>Description:</Text>
+          <TextInput
+            style={styles.textInput}
+            onChangeText={descripton => this.setState({ descripton })}
+          />
+        </View>
+        {/* Submit Button */}
+        <View style={styles.buttons}>
+          <Button
+            style="buttons"
+            title="Submit"
+            onPress={() => this._showInputFields()}
+          />
+        </View>
       </View>
 
     );
@@ -129,13 +141,128 @@ class RequestScreen extends React.Component {
       "\nDescription: " + this.state.descripton +
       "\nCar: " + this.state.car
     );
+    this.props.navigation.navigate("OfferList");
+  }
+}
+
+// offers screen
+class OfferList extends React.Component {
+  state = {
+    sorting: "Rating",
+    waitTime: "20min",
+    cost: "$200",
+    mechanic: "Joe White",
+    rating: "4.2"
+  }
+  render () {
+    return (
+      <ScrollView>
+        <Text style={styles.heading}>Offers</Text>
+        <View style={styles.buttons}>
+          <Button
+            title="Cancel Request"
+            onPress={() => this.props.navigation.navigate("Request")}
+          />
+        </View>
+        {/* sort by dropdown */}
+        <View style={styles.centeredRowContainer}>
+          <Text style={styles.textBesideInput}>Sort By:</Text>
+          <View style={{borderWidth: 1, borderRadius: 5}}>
+            <Picker
+              selectedValue={this.state.sorting}
+              style={{width: 150}}
+              itemStyle={{fontSize: 20}}
+              mode="dropdown"
+              onValueChange={sorting => this.setState({ sorting })}>
+              <Picker.Item label="Rating" value="Rating" />
+              <Picker.Item label="Cost" value="Cost" />
+              <Picker.Item label="Time" value="Time" />
+              <Picker.Item label="Name" value="Name" />
+            </Picker>
+          </View>
+        </View>
+        {/* offer display box */}
+        <TouchableOpacity style={styles.buttonBox} onPress={() => this._selectOffer()}>
+          <View style={styles.buttonBoxText}>
+            <Text>Time: {this.state.waitTime}</Text>
+            <Text>Cost: {this.state.cost}</Text>
+            <Text>Mechnanic: {this.state.mechanic}</Text>
+            <Text>Average Rating: {this.state.rating}</Text>
+          </View>
+        </TouchableOpacity>
+      </ScrollView>
+    );
+  }
+  _cancelRequest () {
+    Alert.alert("Request Cancelled");
+  }
+  _selectOffer () {
+    // this doesn't work
+    // OfferView.state.waitTime = this.state.waitTime;
+    // sorting => this.setState({ sorting })
+    /*
+    OfferView.state.waitTime = this.state.waitTime;
+    OfferView.state.cost = this.state.cost;
+    OfferView.state.mechanic = this.state.mechanic;
+    OfferView.state.rating = this.state.rating;
+    */
+    this.props.navigation.navigate("OfferView");
+  }
+}
+
+class OfferView extends React.Component {
+  state = {
+    sorting: "Rating",
+    waitTime: "",
+    cost: "",
+    mechanic: "",
+    rating: ""
+  }
+  render () {
+    return (
+      <View>
+        <Text style={styles.heading}>Offer</Text>
+        <View style={styles.buttonBoxText}>
+          <Text>Time: {this.state.waitTime}</Text>
+          <Text>Cost: {this.state.cost}</Text>
+          <Text>Mechnanic: {this.state.mechanic}</Text>
+          <Text>Average Rating: {this.state.rating}</Text>
+        </View>
+        <View style={styles.buttons}>
+          <Button
+            title="View Mechanic Profile"
+            onPress={() => Alert.alert("go to mechanic profile view")}
+          />
+        </View>
+        <View style={styles.buttons}>
+          <Button
+            title="Accept Request"
+            onPress={() => Alert.alert("request accepted...")}
+          />
+        </View>
+        <View style={styles.buttons}>
+          <Button
+            title="Back"
+            onPress={() => this.props.navigation.navigate("OfferList")}
+          />
+        </View>
+      </View>
+    );
+  }
+  _cancelRequest () {
+    Alert.alert("Request Cancelled");
+  }
+  _selectOffer () {
+    Alert.alert("Request Cancelled");
   }
 }
 
 const MainNavigator = createStackNavigator(
   {
     Home: DriverHomeScreen,
-    Request: RequestScreen
+    Request: RequestScreen,
+    OfferList: OfferList,
+    OfferView: OfferView
   },
   {
     initialRouteName: "Home"
@@ -161,8 +288,10 @@ const styles = StyleSheet.create({
     height: 100
   },
   buttons: {
-    alignSelf: "center",
-    width: "60%"
+    paddingLeft: 50,
+    paddingRight: 50,
+    marginTop: 2,
+    marginBottom: 2
   },
   textBesideInput: {
     fontSize: 20
@@ -208,5 +337,18 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     marginBottom: 5,
     alignSelf: "center"
+  },
+  buttonBox: {
+    alignSelf: "center",
+    backgroundColor: "yellow",
+    borderWidth: 1,
+    borderRadius: 3,
+    marginTop: 2,
+    marginBottom: 2
+  },
+  buttonBoxText: {
+    justifyContent: "center",
+    padding: 10,
+    fontSize: 20
   }
 });
