@@ -136,17 +136,21 @@ export default class SignInCreateAccScreen extends React.Component {
           </View>
 
           <Text style={styles.errorText}>{this.state.signInErrorText}</Text>
+          {__DEV__ &&
+            <View>
+              {this._renderDevQuickSignInButton("driver@test.com", "test123")}
+              {this._renderDevQuickSignInButton("mechanic@test.com", "test123")}
+              {this._renderDevQuickSignInButton("admin@test.com", "test123")}
 
-          {this._renderDevQuickSignInButton("driver@test.com", "test123")}
-          {this._renderDevQuickSignInButton("mechanic@test.com", "test123")}
-          {this._renderDevQuickSignInButton("admin@test.com", "test123")}
+              <Button
+                title="GmapsTest"
+                onPress={async () => {
+                  this.props.navigation.navigate("GMapsTest");
+                }}
+              />
+            </View>
+          }
 
-          <Button
-            title="GmapsTest"
-            onPress={async () => {
-              this.props.navigation.navigate("GMapsTest");
-            }}
-          />
         </KeyboardAvoidingView>
       );
     } else {

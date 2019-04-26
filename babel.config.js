@@ -18,6 +18,21 @@ module.exports = function (api) {
           ],
         ],
       },
+      production: {
+        plugins: [
+          ["module-resolver",
+            {
+              root: ["./src"
+              ],
+              alias: {
+                "@assets": "./assets",
+                "@src": "./src",
+                "@components": "./src/components"
+              },
+            }
+          ],
+        ],
+      },
     },
   };
 };
