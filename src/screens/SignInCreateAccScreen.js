@@ -15,8 +15,9 @@ import WindowBox from "../components/WindowBox";
 import Patterns from "../constants/UserInputRegex";
 import UserDatabaseService from "../services/UserDatabaseService";
 import Colors from "../constants/Colors";
+import {withAuthContext} from "@lib/context/AuthContext";
 
-export default class SignInCreateAccScreen extends React.Component {
+class SignInCreateAccScreen extends React.Component {
   static navigationOptions = {
     header: null
   };
@@ -275,6 +276,7 @@ export default class SignInCreateAccScreen extends React.Component {
   }
 
   async _signInButtonPress () {
+    let auth = this.props.AuthContext;
     // Check for invalid or empty fields:
     if (this.state.signInErrorText || !this.state.signInEmail || !this.state.signInPassword) {
       // Alert.alert("Error, one or more of the fields is empty or invalid.");
@@ -284,6 +286,7 @@ export default class SignInCreateAccScreen extends React.Component {
     const result = await UserDatabaseService.signInUser(this.state.signInEmail, this.state.signInPassword);
     if (!result.pass) this.setState({signInErrorText: result.reason});
     else {
+      auth.loadUser();
       // Change screen to Main:
       this.props.navigation.navigate("Main");
     }
@@ -337,27 +340,30 @@ export default class SignInCreateAccScreen extends React.Component {
   }
 
   _renderDevQuickSignInButton (email, password) {
-    if (__DEV__) {
-      return (
-        <View style={styles.wideButtonContainer}>
-          <Button
-            onPress={async () => {
-              // Attempt to sign the user in:
-              const result = await UserDatabaseService.signInUser(email, password);
-              if (!result.pass) this.setState({ signInErrorText: result.reason });
-              else {
-                // Change screen to Main:
-                this.props.navigation.navigate("Main");
-              }
-            }}
-            title={`DEV_OPTION: Sign in with ${email}`}
-            style={styles.wideButton}
-          />
-        </View>
-      );
-    }
+    let auth = this.props.AuthContext;
+    // if (__DEV__) {
+    return (
+      <View style={styles.wideButtonContainer}>
+        <Button
+          onPress={async () => {
+            // Attempt to sign the user in:
+            const result = await UserDatabaseService.signInUser(email, password);
+            if (!result.pass) this.setState({ signInErrorText: result.reason });
+            else {
+              auth.loadUser();
+              // Change screen to Main:
+              this.props.navigation.navigate("Main");
+            }
+          }}
+          title={`DEV_OPTION: Sign in with ${email}`}
+          style={styles.wideButton}
+        />
+      </View>
+    );
+    // }
   }
 }
+export default withAuthContext(SignInCreateAccScreen);
 
 const styles = StyleSheet.create({
   iconImage: {
