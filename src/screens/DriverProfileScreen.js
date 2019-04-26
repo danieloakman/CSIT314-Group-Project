@@ -13,8 +13,9 @@ import {
 } from "react-native";
 
 import FlexContainer from "@components/FlexContainer";
-import FullWidthButton from "@components/FullWidthButton";
+import FullWidthButton from "@atoms/FullWidthButton";
 import DrawerButton from "@components/DrawerButton";
+import ProfileHeader from "@molecules/ProfileHeader";
 
 export default class DriverProfileScreen extends React.Component {
   static navigationOptions = {
@@ -38,37 +39,7 @@ export default class DriverProfileScreen extends React.Component {
         justifyContent: "space-between",
       }}>
         {/* <FlexContainer size={0.2} /> */}
-        {/* Profile Info */}
-        <FlexContainer size={2} style={{
-          justifyContent: "space-around",
-          flexDirection: "row",
-          // borderBottomColor: "#ddd",
-          // borderBottomWidth: 1,
-          marginBottom: 15,
-        }} >
-          {/* User image and name */}
-          <FlexContainer size={2} style={{ justifyContent: "flex-start" }}>
-            <Image
-              source={require("@assets/images/robot-prod.png")}
-              style={styles.userImage}
-            />
-            <Text style={styles.userName}>User Name</Text>
-          </FlexContainer>
-          {/* User description */}
-          <FlexContainer size={4} style={{ marginTop: 15 }}>
-            <FlexContainer size={3} />
-            <Text style={{ flex: 2 }}>User description goes here</Text>
-            <View style={{ flex: 4 }}>
-              <Text >Member since: joindate</Text>
-              <Text />
-              <Text>subscriberBadge if subscriber</Text>
-            </View>
-
-            <FlexContainer size={2} />
-            {/* Open contact modal */}
-          </FlexContainer>
-          <FlexContainer size={0.5} />
-        </FlexContainer>
+        <ProfileHeader />
 
         {/* Next profile section */}
         <FlexContainer size={1} style={{
@@ -91,22 +62,3 @@ export default class DriverProfileScreen extends React.Component {
     );
   }
 }
-
-const styles = StyleSheet.create({
-  userName: {
-    fontSize: 16,
-    alignSelf: "center",
-    textAlign: "center",
-  },
-  userImage: {
-    borderRadius: 75,
-    borderWidth: 1,
-    borderColor: "black",
-    marginTop: 10,
-    resizeMode: "cover",
-    // flex: 1,
-    maxWidth: 100,
-    maxHeight: 100,
-    alignSelf: "center"
-  },
-});
