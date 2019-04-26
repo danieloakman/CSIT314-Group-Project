@@ -4,6 +4,7 @@ import { AppLoading, Asset, Font, Icon, registerRootComponent } from "expo";
 import AppNavigator from "./navigation/AppNavigator";
 import UserDatabaseService from "./services/UserDatabaseService";
 
+import {ThemeProvider} from "@lib/context/ThemeContext";
 class App extends React.Component {
   state = {
     isLoadingComplete: false
@@ -20,10 +21,12 @@ class App extends React.Component {
       );
     } else {
       return (
+        <ThemeProvider>
         <View style={styles.container}>
           {Platform.OS === "ios" && <StatusBar barStyle="default" />}
           <AppNavigator />
         </View>
+        </ThemeProvider>
       );
     }
   }
