@@ -12,7 +12,13 @@ module.exports = function (api) {
               alias: {
                 "@assets": "./assets",
                 "@src": "./src",
-                "@components": "./src/components"
+                "@components": "./src/components",
+                "@constants": "./src/constants",
+                "@atoms": "./src/components/atoms",
+                "@molecules": "./src/components/molecules",
+                "@templates": "./src/components/templates",
+                "@pages": "./src/screens",
+                "@lib": "./src/lib"
               },
             }
           ],
@@ -27,7 +33,13 @@ module.exports = function (api) {
               alias: {
                 "@assets": "./assets",
                 "@src": "./src",
-                "@components": "./src/components"
+                "@components": "./src/components",
+                "@constants": "./src/constants",
+                "@atoms": "./src/components/atoms",
+                "@molecules": "./src/components/molecules",
+                "@templates": "./src/components/templates",
+                "@pages": "./src/screens",
+                "@lib": "./src/lib"
               },
             }
           ],
