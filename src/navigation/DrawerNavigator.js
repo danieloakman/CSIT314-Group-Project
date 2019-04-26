@@ -27,6 +27,7 @@ import {
 import { createDrawerNavigator, withNavigation } from "react-navigation";
 import WindowBox from "@components/WindowBox";
 import FlexContainer from "@components/FlexContainer";
+import {withAuthContext} from "@lib/context/AuthContext";
 
 import MainTabNavigator from "./MainTabNavigator";
 
@@ -70,7 +71,8 @@ class Drawer extends React.Component {
     </ListItem>
 
   );
-  render (props) {
+  render () {
+    let auth = this.props.AuthContext;
     return (
       <Container>
         <Content>
@@ -78,8 +80,8 @@ class Drawer extends React.Component {
           <FlexContainer columnReverse style={styles.headerBox}>
 
             <View>
-              <Text style={styles.userName}>User Name</Text>
-              <Text style={styles.email}>email@email.com</Text>
+              <Text style={styles.userName}>{auth.user.firstName} {auth.user.lastName}</Text>
+              <Text style={styles.email}>{auth.user.email}</Text>
             </View>
 
             <Thumbnail large
@@ -105,7 +107,7 @@ export default createDrawerNavigator({
 },
 {
   initialRouteName: "Home",
-  contentComponent: withNavigation(Drawer),
+  contentComponent: withNavigation(withAuthContext(Drawer)),
   drawerOpenRoute: "DrawerOpen",
   drawerCloseRoute: "drawerClose",
   drawerToggleRoute: "DrawerToggle",
