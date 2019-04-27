@@ -35,7 +35,7 @@ import MainTabNavigator from "./MainTabNavigator";
 const entries = [
   {
     name: "\"Logout\"",
-    action: UserDB.signOutCurrentUser,
+    action: UserDB.signOutCurrentUser.bind(UserDB),
     route: "SignIn",
     endSection: true,
   },
