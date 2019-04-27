@@ -7,25 +7,17 @@ import {
   View,
   Text,
   StyleSheet,
-  Image,
   StatusBar,
   Platform,
 } from "react-native";
 import {
   Content,
-  // Text,
   List,
   ListItem,
-  Icon,
   Container,
-  Left,
-  Right,
-  Badge,
-  Header,
   Thumbnail
 } from "native-base";
 import { createDrawerNavigator, withNavigation } from "react-navigation";
-import WindowBox from "@components/WindowBox";
 import FlexContainer from "@components/FlexContainer";
 import {withAuthContext} from "@lib/context/AuthContext";
 import UserDB from "@src/services/UserDatabaseService";

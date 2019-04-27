@@ -4,14 +4,10 @@ import {
   View,
   Text,
   Image,
-  ScrollView,
-  Alert
 } from "react-native";
 
 import FlexContainer from "@components/FlexContainer";
-// import FullWidthButton from "@components/FullWidthButton";
-import DrawerButton from "@components/DrawerButton";
-import {AuthContext, withAuthContext} from "@lib/context/AuthContext";
+import {withAuthContext} from "@lib/context/AuthContext";
 
 class ProfileHeader extends React.Component {
   render () {

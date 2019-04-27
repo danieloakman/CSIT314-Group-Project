@@ -4,15 +4,10 @@
 */
 import React from "react";
 import {
-  StyleSheet,
-  View,
   Text,
-  Image,
-  ScrollView,
   Alert
 } from "react-native";
 
-import FlexContainer from "@components/FlexContainer";
 import FullWidthButton from "@atoms/FullWidthButton";
 import DrawerButton from "@components/DrawerButton";
 import ProfileHeader from "@molecules/ProfileHeader";

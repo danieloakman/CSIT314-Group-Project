@@ -11,10 +11,10 @@ import {
   KeyboardAvoidingView,
   TouchableOpacity
 } from "react-native";
-import WindowBox from "../components/WindowBox";
-import Patterns from "../constants/UserInputRegex";
+import WindowBox from "@components/WindowBox";
+import Patterns from "@constants/UserInputRegex";
 import UserDatabaseService from "../services/UserDatabaseService";
-import Colors from "../constants/Colors";
+import Colors from "@constants/Colors";
 import {withAuthContext} from "@lib/context/AuthContext";
 
 class SignInCreateAccScreen extends React.Component {
@@ -276,7 +276,6 @@ class SignInCreateAccScreen extends React.Component {
   }
 
   async _signInButtonPress () {
-    let auth = this.props.AuthContext;
     // Check for invalid or empty fields:
     if (this.state.signInErrorText || !this.state.signInEmail || !this.state.signInPassword) {
       // Alert.alert("Error, one or more of the fields is empty or invalid.");
@@ -286,7 +285,6 @@ class SignInCreateAccScreen extends React.Component {
     const result = await UserDatabaseService.signInUser(this.state.signInEmail, this.state.signInPassword);
     if (!result.pass) this.setState({signInErrorText: result.reason});
     else {
-      // auth.loadUser();
       // Change screen to Main:
       this.props.navigation.navigate("Main");
     }
@@ -340,8 +338,6 @@ class SignInCreateAccScreen extends React.Component {
   }
 
   _renderDevQuickSignInButton (email, password) {
-    let auth = this.props.AuthContext;
-    // if (__DEV__) {
     return (
       <View style={styles.wideButtonContainer}>
         <Button
@@ -350,7 +346,6 @@ class SignInCreateAccScreen extends React.Component {
             const result = await UserDatabaseService.signInUser(email, password);
             if (!result.pass) this.setState({ signInErrorText: result.reason });
             else {
-              // auth.loadUser();
               // Change screen to Main:
               this.props.navigation.navigate("Main");
             }
@@ -360,7 +355,6 @@ class SignInCreateAccScreen extends React.Component {
         />
       </View>
     );
-    // }
   }
 }
 export default withAuthContext(SignInCreateAccScreen);

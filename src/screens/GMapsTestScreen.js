@@ -5,8 +5,8 @@ import {
   Button,
   TextInput,
 } from "react-native";
-import WindowBox from "../components/WindowBox";
-import Colors from "../constants/Colors";
+import WindowBox from "@components/WindowBox";
+import Colors from "@constants/Colors";
 
 import {MapView, Location, Permissions} from "expo";
 
