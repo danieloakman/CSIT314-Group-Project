@@ -28,12 +28,14 @@ import { createDrawerNavigator, withNavigation } from "react-navigation";
 import WindowBox from "@components/WindowBox";
 import FlexContainer from "@components/FlexContainer";
 import {withAuthContext} from "@lib/context/AuthContext";
+import UserDB from "@src/services/UserDatabaseService";
 
 import MainTabNavigator from "./MainTabNavigator";
 
 const entries = [
   {
     name: "\"Logout\"",
+    action: UserDB.signOutCurrentUser,
     route: "Auth",
     endSection: true,
   },
@@ -63,7 +65,14 @@ class Drawer extends React.Component {
     <ListItem
       button
       noBorder={!props.endSection}
-      onPress={() => this.props.navigation.navigate(props.route)}
+      onPress={() => {
+        if (props.action) {
+          props.action();
+        }
+        if (props.route) {
+          this.props.navigation.navigate(props.route);
+        }
+      }}
     >
       <Text>
         {props.name}
