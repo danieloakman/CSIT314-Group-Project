@@ -16,38 +16,52 @@ export const AuthContext = React.createContext();
 
 export class AuthProvider extends React.Component {
   state = {
-    firstName: "alice",
-    lastName: "bob",
-    profilePicture: ""
+    user: {
+      firstName: "alice",
+      lastName: "bob",
+      profilePicture: ""
+    }
+
   }
 
   async loadUser () {
     const record = await UserDB.getSignedInUser();
     if (record !== null) {
-      this.setState({
+      this.setState({user: {
         email: record.email,
         firstName: record.firstName,
         lastName: record.lastName,
         phoneNo: record.phoneNo
-      });
+      }});
     } else {
       // user is not signed in
     }
   }
 
+  handleSignOut () {
+    this.setState({user: {}});
+  }
+
+  handleSignIn () {
+    this.loadUser();
+  }
+
   async componentDidMount () {
-    await this.loadUser();
-  // Register listener for changes to user info
+    // Register listener for changes to user info
+    UserDB.emitter.on("signedIn", this.handleSignIn, this);
+    UserDB.emitter.on("signedOut", this.handleSignOut, this);
   }
 
   componentWillUnmount () {
     // Deregister all listeners
+    UserDB.emitter.on("signedIn", this.handleSignIn, this);
+    UserDB.emitter.off("signedOut", this.handleSignOut, this);
   }
 
   render () {
     return (
       <AuthContext.Provider value={{
-        user: this.state,
+        user: this.state.user,
         loadUser: this.loadUser.bind(this)
       }}>
         {this.props.children}

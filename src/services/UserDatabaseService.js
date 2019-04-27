@@ -1,4 +1,6 @@
 import {AsyncStorage} from "react-native";
+import Emitter from "tiny-emitter";
+
 const UserTypes = {
   Driver: require("@src/components/users/Driver"),
   Mechanic: require("@src/components/users/Mechanic"),
@@ -9,6 +11,8 @@ const UserTypes = {
 const databaseFile = require("@assets/test-files/database");
 
 export default class UserDatabaseService {
+  static emitter = new Emitter();
+
   /**
    * Returns the correct class object for the user with that email.
    * Use this to then edit the user with Driver/Mechanic/Admin functions.
@@ -57,6 +61,7 @@ export default class UserDatabaseService {
     }
     try {
       await AsyncStorage.setItem("signedInUserEmail", email);
+      this.emitter.emit("signedIn");
       return {pass: true};
     } catch (err) {
       // eslint-disable-next-line no-console
@@ -75,6 +80,7 @@ export default class UserDatabaseService {
   static async signOutCurrentUser () {
     try {
       await AsyncStorage.removeItem("signedInUserEmail");
+      this.emitter.emit("signedOut");
       return {pass: true};
     } catch (err) {
       // eslint-disable-next-line no-console
@@ -118,6 +124,7 @@ export default class UserDatabaseService {
       ];
       if (signInAswell) keyValuePair.push(["signedInUserEmail", userRecord.account.email]);
       await AsyncStorage.multiSet(keyValuePair);
+      this.emitter.emit("signedIn");
       return {pass: true};
     } catch (err) {
       // eslint-disable-next-line no-console
@@ -142,6 +149,7 @@ export default class UserDatabaseService {
           account: userClassObject
         })
       );
+      this.emitter.emit("updateUser");
       return true;
     } catch (err) {
       // eslint-disable-next-line no-console
