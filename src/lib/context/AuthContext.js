@@ -1,4 +1,5 @@
 import React from "react";
+import {Image} from "react-native";
 import UserDB from "@src/services/UserDatabaseService";
 /*
   database service is responsible for persisting data to disk, not current state (which needs to be within the react tree)
@@ -16,23 +17,17 @@ export const AuthContext = React.createContext();
 
 export class AuthProvider extends React.Component {
   state = {
-    user: {
-      firstName: "alice",
-      lastName: "bob",
-      profilePicture: ""
-    }
+    user: {}
 
   }
 
   async loadUser () {
     const record = await UserDB.getSignedInUser();
     if (record !== null) {
-      this.setState({user: {
-        email: record.email,
-        firstName: record.firstName,
-        lastName: record.lastName,
-        phoneNo: record.phoneNo
-      }});
+      this.setState({user: record});
+      if (record.pictureURI) {
+        Image.prefetch(record.pictureURI);
+      }
     } else {
       // user is not signed in
     }

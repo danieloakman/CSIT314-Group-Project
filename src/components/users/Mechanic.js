@@ -5,6 +5,7 @@ module.exports = class Mechanic extends User {
     super();
 
     // Attributes:
+    this.type = "mechanic";
     this.verifiedMechanic = false;
     this.jobs = [];
 

@@ -24,7 +24,9 @@ class ProfileHeader extends React.Component {
         {/* User image and name */}
         <FlexContainer size={2} style={{ justifyContent: "flex-start" }}>
           <Image
-            source={require("@assets/images/robot-prod.png")}
+            source={auth.user.pictureURI
+              ? {uri: auth.user.pictureURI}
+              : require("@assets/images/robot-prod.png")}
             style={styles.userImage}
           />
 
@@ -35,9 +37,9 @@ class ProfileHeader extends React.Component {
         {/* User description */}
         <FlexContainer size={4} style={{ marginTop: 15 }}>
           <FlexContainer size={3} />
-          <Text style={{ flex: 2 }}>User description goes here</Text>
+          <Text style={{ flex: 2 }}>{auth.user.description}</Text>
           <View style={{ flex: 4 }}>
-            <Text >Member since: {auth.firstName}</Text>
+            <Text >Member since: {auth.user.registerDate}</Text>
             <Text />
             <Text>subscriberBadge if subscriber</Text>
           </View>

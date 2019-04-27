@@ -137,7 +137,7 @@ export default class UserDatabaseService {
   }
 
   /**
-   * Merges/saves a single userClassObject into AsyncStorage database.
+   * Merges/saves a single userClassObject into AsyncStorage database. User changes should be done through user class methods.
    * @param {*} userClassObject Driver/Mechanic/Admin class object.
    */
   static async saveUserChanges (userClassObject) {
@@ -149,7 +149,7 @@ export default class UserDatabaseService {
           account: userClassObject
         })
       );
-      this.emitter.emit("updateUser");
+      this.emitter.emit("updatedUser");
       return true;
     } catch (err) {
       // eslint-disable-next-line no-console
