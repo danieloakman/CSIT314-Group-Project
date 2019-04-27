@@ -16,6 +16,7 @@ import FlexContainer from "@components/FlexContainer";
 import FullWidthButton from "@atoms/FullWidthButton";
 import DrawerButton from "@components/DrawerButton";
 import ProfileHeader from "@molecules/ProfileHeader";
+import ProfilePage from "@templates/ProfilePage";
 
 export default class DriverProfileScreen extends React.Component {
   static navigationOptions = {
@@ -34,31 +35,19 @@ export default class DriverProfileScreen extends React.Component {
   */
   render () {
     return (
-      <ScrollView contentContainerStyle={{
-        flexGrow: 1,
-        justifyContent: "space-between",
-      }}>
-        {/* <FlexContainer size={0.2} /> */}
-        <ProfileHeader />
+      <ProfilePage header={ProfileHeader}>
+        <FullWidthButton title={"Contact Details"} onPress={() => {
+          Alert.alert("Contact details button pressed!");
+        }} />
+        <FullWidthButton title={"Service Request History"} onPress={() => {
+          Alert.alert("Service request history button pressed!");
+        }} />
+        <FullWidthButton title={"Registered Vehicles"} onPress={() => {
+          Alert.alert("Registered vehicles button pressed!");
+        }} />
 
-        {/* Next profile section */}
-        <FlexContainer size={1} style={{
-          height: 900,
-
-        }}>
-          <FullWidthButton title={"Contact Details"} onPress={() => {
-            Alert.alert("Contact details button pressed!");
-          }} />
-          <FullWidthButton title={"Service Request History"} onPress={() => {
-            Alert.alert("Service request history button pressed!");
-          }} />
-          <FullWidthButton title={"Registered Vehicles"} onPress={() => {
-            Alert.alert("Registered vehicles button pressed!");
-          }} />
-
-          <Text>What else do we need to display here?</Text>
-        </FlexContainer>
-      </ScrollView>
+        <Text>What else do we need to display here?</Text>
+      </ProfilePage>
     );
   }
 }
