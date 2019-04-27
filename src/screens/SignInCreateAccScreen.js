@@ -286,7 +286,7 @@ class SignInCreateAccScreen extends React.Component {
     const result = await UserDatabaseService.signInUser(this.state.signInEmail, this.state.signInPassword);
     if (!result.pass) this.setState({signInErrorText: result.reason});
     else {
-      auth.loadUser();
+      // auth.loadUser();
       // Change screen to Main:
       this.props.navigation.navigate("Main");
     }
@@ -350,7 +350,7 @@ class SignInCreateAccScreen extends React.Component {
             const result = await UserDatabaseService.signInUser(email, password);
             if (!result.pass) this.setState({ signInErrorText: result.reason });
             else {
-              auth.loadUser();
+              // auth.loadUser();
               // Change screen to Main:
               this.props.navigation.navigate("Main");
             }

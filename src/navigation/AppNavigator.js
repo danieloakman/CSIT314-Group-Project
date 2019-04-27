@@ -10,19 +10,20 @@ export default createAppContainer(createSwitchNavigator(
   {
   // You could add another route here for authentication.
   // Read more at https://reactnavigation.org/docs/en/auth-flow.html
-    AuthLoadingScreen: AuthLoadingScreen,
     Auth: createStackNavigator(
       {
+        Loading: AuthLoadingScreen,
         SignIn: SignInCreateAccScreen
       },
       {
-        headerMode: "none"
+        headerMode: "none",
+        initialRouteName: "Loading"
       }
     ),
     Main: DrawerNavigator,
     GMapsTest: createStackNavigator({ GMapsTest: GMapsTestScreen })
   },
   {
-    initialRouteName: "AuthLoadingScreen"
+    initialRouteName: "Auth"
   }
 ));

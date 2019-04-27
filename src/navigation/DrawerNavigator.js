@@ -36,7 +36,7 @@ const entries = [
   {
     name: "\"Logout\"",
     action: UserDB.signOutCurrentUser,
-    route: "Auth",
+    route: "SignIn",
     endSection: true,
   },
   {
