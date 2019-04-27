@@ -26,7 +26,7 @@ class App extends React.Component {
         <ThemeProvider>
           <AuthProvider>
             <View style={styles.container}>
-              {Platform.OS === "ios" && <StatusBar barStyle="default" />}
+              {/* {Platform.OS === "ios" && <StatusBar barStyle="default" />} */}
               <AppNavigator />
             </View>
           </AuthProvider>
