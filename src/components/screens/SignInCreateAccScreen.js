@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import WindowBox from "@components/WindowBox";
 import Patterns from "@constants/UserInputRegex";
-import UserDatabaseService from "../services/UserDatabaseService";
+import UserDatabaseService from "@lib/services/UserDatabaseService";
 import Colors from "@constants/Colors";
 import {withAuthContext} from "@lib/context/AuthContext";
 
@@ -87,7 +87,7 @@ class SignInCreateAccScreen extends React.Component {
           style={{ flex: 1, flexDirection: "column", backgroundColor: Colors.backgroundColor }}
           behavior="position">
           <Image
-            source={require("../../assets/images/icon.png")}
+            source={require("@assets/images/icon.png")}
             style={[styles.iconImage, {height: 150, width: 150}]}
           />
           <Text style={styles.titleText}>Sign In</Text>
@@ -160,7 +160,7 @@ class SignInCreateAccScreen extends React.Component {
           style={{ flex: 1, flexDirection: "column", backgroundColor: Colors.screenBackground }}
           behavior="position">
           <Image
-            source={require("../../assets/images/icon.png")}
+            source={require("@assets/images/icon.png")}
             style={styles.iconImage}
           />
           <Text style={styles.titleText}>Create Account</Text>

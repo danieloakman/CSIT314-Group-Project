@@ -1,5 +1,3 @@
-// These user classes aren't actually components and need to be moved (Components are part of UI)
-
 // Base class User
 module.exports = class User {
   constructor () {

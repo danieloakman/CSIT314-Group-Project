@@ -2,13 +2,13 @@ import {AsyncStorage} from "react-native";
 import Emitter from "tiny-emitter";
 
 const UserTypes = {
-  Driver: require("@src/components/users/Driver"),
-  Mechanic: require("@src/components/users/Mechanic"),
-  Admin: require("@src/components/users/Admin")
+  Driver: require("@lib/services/users/Driver"),
+  Mechanic: require("@lib/services/users/Mechanic"),
+  Admin: require("@lib/services/users/Admin")
 };
 
 // File that can't be changed within the app:
-const databaseFile = require("@assets/test-files/database");
+const databaseFile = require("@assets/data/testData");
 
 export default class UserDatabaseService {
   static emitter = new Emitter();

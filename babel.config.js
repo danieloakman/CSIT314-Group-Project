@@ -17,8 +17,8 @@ module.exports = function (api) {
                 "@atoms": "./src/components/atoms",
                 "@molecules": "./src/components/molecules",
                 "@templates": "./src/components/templates",
-                "@screens": "./src/screens",
-                "@pages": "./src/screens",
+                "@screens": "./src/components/screens",
+                "@pages": "./src/components/screens",
                 "@lib": "./src/lib"
               },
             }
@@ -39,8 +39,8 @@ module.exports = function (api) {
                 "@atoms": "./src/components/atoms",
                 "@molecules": "./src/components/molecules",
                 "@templates": "./src/components/templates",
-                "@screens": "./src/screens",
-                "@pages": "./src/screens",
+                "@screens": "./src/components/screens",
+                "@pages": "./src/components/screens",
                 "@lib": "./src/lib"
               },
             }

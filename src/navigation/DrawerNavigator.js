@@ -20,7 +20,7 @@ import {
 import { createDrawerNavigator, withNavigation } from "react-navigation";
 import FlexContainer from "@components/FlexContainer";
 import {withAuthContext} from "@lib/context/AuthContext";
-import UserDB from "@src/services/UserDatabaseService";
+import UserDB from "@lib/services/UserDatabaseService";
 
 import MainTabNavigator from "./MainTabNavigator";
 

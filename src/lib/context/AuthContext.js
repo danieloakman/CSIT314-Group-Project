@@ -1,6 +1,6 @@
 import React from "react";
 import {Image} from "react-native";
-import UserDB from "@src/services/UserDatabaseService";
+import UserDB from "@lib/services/UserDatabaseService";
 /*
   database service is responsible for persisting data to disk, not current state (which needs to be within the react tree)
   changes to user database are caused by calls to database service, however an event must be emitted in order for the context to update its state
