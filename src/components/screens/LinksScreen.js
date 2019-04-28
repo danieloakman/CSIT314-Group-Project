@@ -2,9 +2,15 @@ import React from "react";
 import { ScrollView, StyleSheet } from "react-native";
 import { ExpoLinksView } from "@expo/samples";
 
+import BackButton from "@atoms/BackButton";
+
 export default class LinksScreen extends React.Component {
   static navigationOptions = {
-    title: "Links"
+    title: "Links",
+    headerLeft: BackButton,
+    headerLeftContainerStyle: {
+      paddingLeft: 15
+    }
   };
 
   render () {

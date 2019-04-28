@@ -1,9 +1,15 @@
 import React from "react";
 import { ExpoConfigView } from "@expo/samples";
 
+import BackButton from "@atoms/BackButton";
+
 export default class SettingsScreen extends React.Component {
   static navigationOptions = {
-    title: "app.json"
+    title: "app.json",
+    headerLeft: BackButton,
+    headerLeftContainerStyle: {
+      paddingLeft: 15
+    }
   };
 
   render () {

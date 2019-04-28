@@ -4,9 +4,6 @@ import { createStackNavigator, createBottomTabNavigator } from "react-navigation
 
 import TabBarIcon from "@components/TabBarIcon";
 
-import HomeScreen from "@screens/HomeScreen";
-import LinksScreen from "@screens/LinksScreen";
-import SettingsScreen from "@screens/SettingsScreen";
 import DriverProfileScreen from "@screens/DriverProfileScreen";
 import DriverHomeScreen from "@screens/DriverHomeScreen";
 
@@ -27,73 +24,26 @@ ProfileStack.navigationOptions = {
     />
   )
 };
-const DHomeStack = createStackNavigator({
-  DHome: {screen: DriverHomeScreen}
+
+const DriverHomeStack = createStackNavigator({
+  DriverHome: {screen: DriverHomeScreen}
 });
-DHomeStack.navigationOptions = {
-  tabBarLabel: "DriverHome",
+
+DriverHomeStack.navigationOptions = {
+  tabBarLabel: "Driver Home",
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
       name={
         Platform.OS === "ios"
-          ? `ios-person${focused ? "" : "-outline"}`
-          : "md-person"
+          ? "ios-home"
+          : "md-home"
       }
-    />
-  )
-};
-
-const HomeStack = createStackNavigator({
-  Home: HomeScreen
-});
-
-HomeStack.navigationOptions = {
-  tabBarLabel: "Home",
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon
-      focused={focused}
-      name={
-        Platform.OS === "ios"
-          ? `ios-information-circle${focused ? "" : "-outline"}`
-          : "md-information-circle"
-      }
-    />
-  )
-};
-
-const LinksStack = createStackNavigator({
-  Links: LinksScreen
-});
-
-LinksStack.navigationOptions = {
-  tabBarLabel: "Links",
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon
-      focused={focused}
-      name={Platform.OS === "ios" ? "ios-link" : "md-link"}
-    />
-  )
-};
-
-const SettingsStack = createStackNavigator({
-  Settings: SettingsScreen
-});
-
-SettingsStack.navigationOptions = {
-  tabBarLabel: "Settings",
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon
-      focused={focused}
-      name={Platform.OS === "ios" ? "ios-options" : "md-options"}
     />
   )
 };
 
 export default createBottomTabNavigator({
   ProfileStack,
-  HomeStack,
-  LinksStack,
-  SettingsStack,
-  DHomeStack
+  DriverHomeStack
 });

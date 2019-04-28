@@ -1,3 +1,7 @@
+/*
+  Screens need to be split into one screen per file. This document has about 4 screens in it (I would fix it, but I don't want to cause a merge conflict if it's being edited by someone else)
+*/
+
 import React from "react";
 import {
   StyleSheet,

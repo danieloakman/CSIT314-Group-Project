@@ -17,16 +17,21 @@ import {
   Container,
   Thumbnail
 } from "native-base";
-import { createDrawerNavigator, withNavigation } from "react-navigation";
+
+import { createDrawerNavigator, withNavigation, createStackNavigator } from "react-navigation";
 import FlexContainer from "@components/FlexContainer";
 import {withAuthContext} from "@lib/context/AuthContext";
 import UserDB from "@lib/services/UserDatabaseService";
 
+import HomeScreen from "@screens/HomeScreen";
+import LinksScreen from "@screens/LinksScreen";
+import SettingsScreen from "@screens/SettingsScreen";
 import MainTabNavigator from "./MainTabNavigator";
 
+// Button definitions to be used to construct the drawer
 const entries = [
   {
-    name: "\"Logout\"",
+    name: "Logout",
     action: UserDB.signOutCurrentUser.bind(UserDB),
     route: "SignIn",
     endSection: true,
@@ -35,18 +40,18 @@ const entries = [
     name: "Profile",
     route: "Profile",
   },
-  {
-    name: "Home",
-    route: "Home",
-  },
-  {
-    name: "Links",
-    route: "Links",
-  },
+  // {
+  //   name: "Home",
+  //   route: "Tabs",
+  // },
   {
     name: "Settings",
     route: "Settings",
     endSection: true,
+  },
+  {
+    name: "Links",
+    route: "Links",
   },
 
 ];
@@ -103,15 +108,32 @@ class Drawer extends React.Component {
   }
 }
 
-export default createDrawerNavigator({
-  Home: MainTabNavigator,
+const SettingsStack = createStackNavigator({
+  Settings: SettingsScreen
 },
 {
-  initialRouteName: "Home",
+  headerMode: "float"
+});
+
+const LinksStack = createStackNavigator({
+  Links: LinksScreen
+},
+{
+  headerMode: "float"
+});
+
+export default createDrawerNavigator({
+  Tabs: MainTabNavigator,
+  Links: LinksStack,
+  Settings: SettingsStack
+},
+{
+  initialRouteName: "Tabs",
   contentComponent: withNavigation(withAuthContext(Drawer)),
   drawerOpenRoute: "DrawerOpen",
   drawerCloseRoute: "drawerClose",
   drawerToggleRoute: "DrawerToggle",
+  edgeWidth: 800
 }
 );
 
