@@ -19,9 +19,6 @@ multiline = {true}
 numberOfLines = {3}
 */
 class DriverHomeScreen extends React.Component {
-  static navigationOptions = {
-    header: null
-  };
   render () {
     /* const {navigate} = this.props.navigation; */
     return (
@@ -129,6 +126,12 @@ class RequestScreen extends React.Component {
             onPress={() => this._showInputFields()}
           />
         </View>
+        <View style={styles.buttons}>
+          <Button
+            title="Back"
+            onPress={() => this.props.navigation.goBack()}
+          />
+        </View>
       </View>
 
     );
@@ -158,12 +161,6 @@ class OfferList extends React.Component {
     return (
       <ScrollView>
         <Text style={styles.heading}>Offers</Text>
-        <View style={styles.buttons}>
-          <Button
-            title="Cancel Request"
-            onPress={() => this.props.navigation.navigate("Request")}
-          />
-        </View>
         {/* sort by dropdown */}
         <View style={styles.centeredRowContainer}>
           <Text style={styles.textBesideInput}>Sort By:</Text>
@@ -181,7 +178,7 @@ class OfferList extends React.Component {
             </Picker>
           </View>
         </View>
-        {/* offer display box */}
+        {/* offer display box, will be a list of these here, should say no offers yet if empty */}
         <TouchableOpacity style={styles.buttonBox} onPress={() => this._selectOffer()}>
           <View style={styles.buttonBoxText}>
             <Text>Time: {this.state.waitTime}</Text>
@@ -190,43 +187,47 @@ class OfferList extends React.Component {
             <Text>Average Rating: {this.state.rating}</Text>
           </View>
         </TouchableOpacity>
+        <View style={styles.buttons}>
+          <Button
+            title="Cancel Request"
+            onPress={() => this.props.navigation.popToTop()}
+          />
+        </View>
+        <View style={styles.buttons}>
+          <Button
+            title="Back"
+            onPress={() => this.props.navigation.goBack()}
+          />
+        </View>
       </ScrollView>
     );
   }
-  _cancelRequest () {
-    Alert.alert("Request Cancelled");
-  }
+  /* Note will need to set states first depending on what was clicked */
   _selectOffer () {
-    // this doesn't work
-    // OfferView.state.waitTime = this.state.waitTime;
-    // sorting => this.setState({ sorting })
-    /*
-    OfferView.state.waitTime = this.state.waitTime;
-    OfferView.state.cost = this.state.cost;
-    OfferView.state.mechanic = this.state.mechanic;
-    OfferView.state.rating = this.state.rating;
-    */
-    this.props.navigation.navigate("OfferView");
+    this.props.navigation.navigate("OfferView", {
+      waitTime: this.state.waitTime,
+      cost: this.state.cost,
+      mechanic: this.state.mechanic,
+      rating: this.state.rating });
   }
 }
 
 class OfferView extends React.Component {
-  state = {
-    sorting: "Rating",
-    waitTime: "",
-    cost: "",
-    mechanic: "",
-    rating: ""
-  }
   render () {
+  /* get parameters from the list item which was clicked */
+    const { navigation } = this.props;
+    const waitTime = navigation.getParam("waitTime", "mechanic ETA");
+    const cost = navigation.getParam("cost", "mechanic service fee");
+    const mechanic = navigation.getParam("mechanic", "mechanics name");
+    const rating = navigation.getParam("rating", "mechnaic average rating");
     return (
       <View>
         <Text style={styles.heading}>Offer</Text>
         <View style={styles.buttonBoxText}>
-          <Text>Time: {this.state.waitTime}</Text>
-          <Text>Cost: {this.state.cost}</Text>
-          <Text>Mechnanic: {this.state.mechanic}</Text>
-          <Text>Average Rating: {this.state.rating}</Text>
+          <Text>Time: {waitTime}</Text>
+          <Text>Cost: {cost}</Text>
+          <Text>Mechnanic: {mechanic}</Text>
+          <Text>Average Rating: {rating}</Text>
         </View>
         <View style={styles.buttons}>
           <Button
@@ -243,17 +244,11 @@ class OfferView extends React.Component {
         <View style={styles.buttons}>
           <Button
             title="Back"
-            onPress={() => this.props.navigation.navigate("OfferList")}
+            onPress={() => this.props.navigation.goBack()}
           />
         </View>
       </View>
     );
-  }
-  _cancelRequest () {
-    Alert.alert("Request Cancelled");
-  }
-  _selectOffer () {
-    Alert.alert("Request Cancelled");
   }
 }
 
@@ -265,7 +260,11 @@ const MainNavigator = createStackNavigator(
     OfferView: OfferView
   },
   {
-    initialRouteName: "Home"
+    initialRouteName: "Home",
+    /* header stuff (used for all these screens) */
+    defaultNavigationOptions: {
+      header: null
+    }
   }
 );
 const AppContainer = createAppContainer(MainNavigator);
