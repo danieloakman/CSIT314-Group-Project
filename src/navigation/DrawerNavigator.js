@@ -26,6 +26,8 @@ import UserDB from "@lib/services/UserDatabaseService";
 import HomeScreen from "@screens/HomeScreen";
 import LinksScreen from "@screens/LinksScreen";
 import SettingsScreen from "@screens/SettingsScreen";
+import ExpoSettingsScreen from "@screens/ExpoSettingsScreen";
+import DeveloperScreen from "@screens/DeveloperScreen";
 import MainTabNavigator from "./MainTabNavigator";
 
 // Button definitions to be used to construct the drawer
@@ -53,12 +55,21 @@ const entries = [
     name: "Links",
     route: "Links",
   },
+  {
+    name: "DEV OPTIONS",
+    route: "Developer",
+    hide: !__DEV__
+  },
+  {
+    name: "Expo Settings",
+    route: "ExpoSettings",
+    hide: !__DEV__
+  },
 
 ];
 
 class Drawer extends React.Component {
-  renderListItem = (props) => (
-
+  renderListItem = (props) => !props.hide ? (
     <ListItem
       button
       noBorder={!props.endSection}
@@ -76,7 +87,7 @@ class Drawer extends React.Component {
       </Text>
     </ListItem>
 
-  );
+  ) : (null);
   render () {
     let auth = this.props.AuthContext;
     return (
@@ -108,6 +119,20 @@ class Drawer extends React.Component {
   }
 }
 
+const DeveloperStack = createStackNavigator({
+  Developer: DeveloperScreen
+},
+{
+  headerMode: "float"
+});
+
+const ExpoSettingsStack = createStackNavigator({
+  ExpoSettings: ExpoSettingsScreen
+},
+{
+  headerMode: "float"
+});
+
 const SettingsStack = createStackNavigator({
   Settings: SettingsScreen
 },
@@ -125,7 +150,9 @@ const LinksStack = createStackNavigator({
 export default createDrawerNavigator({
   Tabs: MainTabNavigator,
   Links: LinksStack,
-  Settings: SettingsStack
+  Settings: SettingsStack,
+  Developer: DeveloperStack,
+  ExpoSettings: ExpoSettingsStack
 },
 {
   initialRouteName: "Tabs",

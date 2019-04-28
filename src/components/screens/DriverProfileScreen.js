@@ -9,7 +9,7 @@ import {
 } from "react-native";
 
 import FullWidthButton from "@atoms/FullWidthButton";
-import DrawerButton from "@components/DrawerButton";
+import DrawerButton from "@atoms/DrawerButton";
 import ProfileHeader from "@molecules/ProfileHeader";
 import ProfilePage from "@templates/ProfilePage";
 

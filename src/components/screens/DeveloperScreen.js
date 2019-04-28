@@ -1,11 +1,12 @@
+// Only available in developer mode
 import React from "react";
 import { ExpoConfigView } from "@expo/samples";
 
 import BackButton from "@atoms/BackButton";
 
-export default class SettingsScreen extends React.Component {
+export default class DeveloperScreen extends React.Component {
   static navigationOptions = {
-    title: "Settings",
+    title: "DEV OPTIONS",
     headerLeft: BackButton,
     headerLeftContainerStyle: {
       paddingLeft: 15
