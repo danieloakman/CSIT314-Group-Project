@@ -5,6 +5,7 @@ module.exports = class Admin extends User {
     super();
 
     // Attributes:
+    this.type = "admin";
     this.jobs = [];
 
     this.restoreAttributesFromUserRecord(userRecord);

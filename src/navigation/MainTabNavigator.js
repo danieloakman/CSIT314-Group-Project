@@ -2,13 +2,13 @@ import React from "react";
 import { Platform } from "react-native";
 import { createStackNavigator, createBottomTabNavigator } from "react-navigation";
 
-import TabBarIcon from "../components/TabBarIcon";
+import TabBarIcon from "@components/TabBarIcon";
 
-import HomeScreen from "../screens/HomeScreen";
-import LinksScreen from "../screens/LinksScreen";
-import SettingsScreen from "../screens/SettingsScreen";
-import DriverProfileScreen from "../screens/DriverProfileScreen";
-import DriverHomeScreen from "../screens/DriverHomeScreen";
+import HomeScreen from "@screens/HomeScreen";
+import LinksScreen from "@screens/LinksScreen";
+import SettingsScreen from "@screens/SettingsScreen";
+import DriverProfileScreen from "@screens/DriverProfileScreen";
+import DriverHomeScreen from "@screens/DriverHomeScreen";
 
 const ProfileStack = createStackNavigator({
   Profile: DriverProfileScreen

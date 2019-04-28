@@ -2,7 +2,10 @@ import React from "react";
 import { Platform, StatusBar, StyleSheet, View } from "react-native";
 import { AppLoading, Asset, Font, Icon, registerRootComponent } from "expo";
 import AppNavigator from "./navigation/AppNavigator";
-import UserDatabaseService from "./services/UserDatabaseService";
+import UserDatabaseService from "@lib/services/UserDatabaseService";
+
+import {ThemeProvider} from "@lib/context/ThemeContext";
+import {AuthProvider} from "@lib/context/AuthContext";
 
 class App extends React.Component {
   state = {
@@ -20,10 +23,14 @@ class App extends React.Component {
       );
     } else {
       return (
-        <View style={styles.container}>
-          {Platform.OS === "ios" && <StatusBar barStyle="default" />}
-          <AppNavigator />
-        </View>
+        <ThemeProvider>
+          <AuthProvider>
+            <View style={styles.container}>
+              {/* {Platform.OS === "ios" && <StatusBar barStyle="default" />} */}
+              <AppNavigator />
+            </View>
+          </AuthProvider>
+        </ThemeProvider>
       );
     }
   }

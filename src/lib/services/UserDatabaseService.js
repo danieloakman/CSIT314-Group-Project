@@ -1,14 +1,18 @@
 import {AsyncStorage} from "react-native";
+import Emitter from "tiny-emitter";
+
 const UserTypes = {
-  Driver: require("@src/components/users/Driver"),
-  Mechanic: require("@src/components/users/Mechanic"),
-  Admin: require("@src/components/users/Admin")
+  Driver: require("@lib/services/users/Driver"),
+  Mechanic: require("@lib/services/users/Mechanic"),
+  Admin: require("@lib/services/users/Admin")
 };
 
 // File that can't be changed within the app:
-const databaseFile = require("@assets/test-files/database");
+const databaseFile = require("@assets/data/testData");
 
 export default class UserDatabaseService {
+  static emitter = new Emitter();
+
   /**
    * Returns the correct class object for the user with that email.
    * Use this to then edit the user with Driver/Mechanic/Admin functions.
@@ -57,6 +61,7 @@ export default class UserDatabaseService {
     }
     try {
       await AsyncStorage.setItem("signedInUserEmail", email);
+      this.emitter.emit("signedIn");
       return {pass: true};
     } catch (err) {
       // eslint-disable-next-line no-console
@@ -75,6 +80,7 @@ export default class UserDatabaseService {
   static async signOutCurrentUser () {
     try {
       await AsyncStorage.removeItem("signedInUserEmail");
+      this.emitter.emit("signedOut");
       return {pass: true};
     } catch (err) {
       // eslint-disable-next-line no-console
@@ -118,6 +124,7 @@ export default class UserDatabaseService {
       ];
       if (signInAswell) keyValuePair.push(["signedInUserEmail", userRecord.account.email]);
       await AsyncStorage.multiSet(keyValuePair);
+      this.emitter.emit("signedIn");
       return {pass: true};
     } catch (err) {
       // eslint-disable-next-line no-console
@@ -130,7 +137,7 @@ export default class UserDatabaseService {
   }
 
   /**
-   * Merges/saves a single userClassObject into AsyncStorage database.
+   * Merges/saves a single userClassObject into AsyncStorage database. User changes should be done through user class methods.
    * @param {*} userClassObject Driver/Mechanic/Admin class object.
    */
   static async saveUserChanges (userClassObject) {
@@ -142,6 +149,7 @@ export default class UserDatabaseService {
           account: userClassObject
         })
       );
+      this.emitter.emit("updatedUser");
       return true;
     } catch (err) {
       // eslint-disable-next-line no-console

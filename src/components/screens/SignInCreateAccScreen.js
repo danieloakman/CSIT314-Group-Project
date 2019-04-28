@@ -11,12 +11,13 @@ import {
   KeyboardAvoidingView,
   TouchableOpacity
 } from "react-native";
-import WindowBox from "../components/WindowBox";
-import Patterns from "../constants/UserInputRegex";
-import UserDatabaseService from "../services/UserDatabaseService";
-import Colors from "../constants/Colors";
+import WindowBox from "@components/WindowBox";
+import Patterns from "@constants/UserInputRegex";
+import UserDatabaseService from "@lib/services/UserDatabaseService";
+import Colors from "@constants/Colors";
+import {withAuthContext} from "@lib/context/AuthContext";
 
-export default class SignInCreateAccScreen extends React.Component {
+class SignInCreateAccScreen extends React.Component {
   static navigationOptions = {
     header: null
   };
@@ -86,7 +87,7 @@ export default class SignInCreateAccScreen extends React.Component {
           style={{ flex: 1, flexDirection: "column", backgroundColor: Colors.backgroundColor }}
           behavior="position">
           <Image
-            source={require("../../assets/images/icon.png")}
+            source={require("@assets/images/icon.png")}
             style={[styles.iconImage, {height: 150, width: 150}]}
           />
           <Text style={styles.titleText}>Sign In</Text>
@@ -136,17 +137,21 @@ export default class SignInCreateAccScreen extends React.Component {
           </View>
 
           <Text style={styles.errorText}>{this.state.signInErrorText}</Text>
+          {__DEV__ &&
+            <View>
+              {this._renderDevQuickSignInButton("driver@test.com", "test123")}
+              {this._renderDevQuickSignInButton("mechanic@test.com", "test123")}
+              {this._renderDevQuickSignInButton("admin@test.com", "test123")}
 
-          {this._renderDevQuickSignInButton("driver@test.com", "test123")}
-          {this._renderDevQuickSignInButton("mechanic@test.com", "test123")}
-          {this._renderDevQuickSignInButton("admin@test.com", "test123")}
+              <Button
+                title="GmapsTest"
+                onPress={async () => {
+                  this.props.navigation.navigate("GMapsTest");
+                }}
+              />
+            </View>
+          }
 
-          <Button
-            title="GmapsTest"
-            onPress={async () => {
-              this.props.navigation.navigate("GMapsTest");
-            }}
-          />
         </KeyboardAvoidingView>
       );
     } else {
@@ -155,7 +160,7 @@ export default class SignInCreateAccScreen extends React.Component {
           style={{ flex: 1, flexDirection: "column", backgroundColor: Colors.screenBackground }}
           behavior="position">
           <Image
-            source={require("../../assets/images/icon.png")}
+            source={require("@assets/images/icon.png")}
             style={styles.iconImage}
           />
           <Text style={styles.titleText}>Create Account</Text>
@@ -333,27 +338,26 @@ export default class SignInCreateAccScreen extends React.Component {
   }
 
   _renderDevQuickSignInButton (email, password) {
-    if (__DEV__) {
-      return (
-        <View style={styles.wideButtonContainer}>
-          <Button
-            onPress={async () => {
-              // Attempt to sign the user in:
-              const result = await UserDatabaseService.signInUser(email, password);
-              if (!result.pass) this.setState({ signInErrorText: result.reason });
-              else {
-                // Change screen to Main:
-                this.props.navigation.navigate("Main");
-              }
-            }}
-            title={`DEV_OPTION: Sign in with ${email}`}
-            style={styles.wideButton}
-          />
-        </View>
-      );
-    }
+    return (
+      <View style={styles.wideButtonContainer}>
+        <Button
+          onPress={async () => {
+            // Attempt to sign the user in:
+            const result = await UserDatabaseService.signInUser(email, password);
+            if (!result.pass) this.setState({ signInErrorText: result.reason });
+            else {
+              // Change screen to Main:
+              this.props.navigation.navigate("Main");
+            }
+          }}
+          title={`DEV_OPTION: Sign in with ${email}`}
+          style={styles.wideButton}
+        />
+      </View>
+    );
   }
 }
+export default withAuthContext(SignInCreateAccScreen);
 
 const styles = StyleSheet.create({
   iconImage: {

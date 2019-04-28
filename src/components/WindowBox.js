@@ -1,3 +1,4 @@
+// Occludes status bar
 import React from "react";
 import {
   StyleSheet,
