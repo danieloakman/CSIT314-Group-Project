@@ -123,7 +123,7 @@ class RequestScreen extends React.Component {
           <Button
             style="buttons"
             title="Submit"
-            onPress={() => this._showInputFields()}
+            onPress={() => this._submitRequest()}
           />
         </View>
         <View style={styles.buttons}>
@@ -136,7 +136,8 @@ class RequestScreen extends React.Component {
 
     );
   }
-  _showInputFields () {
+  _submitRequest () {
+    /*
     Alert.alert(
       "Address: " + this.state.address +
       "\nSuburb: " + this.state.suburb +
@@ -144,6 +145,7 @@ class RequestScreen extends React.Component {
       "\nDescription: " + this.state.descripton +
       "\nCar: " + this.state.car
     );
+    */
     this.props.navigation.navigate("OfferList");
   }
 }
