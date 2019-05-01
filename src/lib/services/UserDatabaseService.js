@@ -137,6 +137,40 @@ export default class UserDatabaseService {
   }
 
   /**
+   * Delete a single user from AsyncStorage database,
+   * if it exists (won't throw an error if it doesn't).
+   * @param {string} email
+   */
+  static async deleteUser (email) {
+    try {
+      await AsyncStorage.removeItem(`user-${email}`);
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error(`UserDatabaseService.deleteUser() error: ${err.stack}`);
+    }
+  }
+
+  /**
+   * Delete multiple users from AsyncStorage database,
+   * if they exist (won't throw an error if they don't).
+   * @param {string[]} emails Array of emails.
+   */
+  static async deleteMultiUsers (emails) {
+    if (!Array.isArray(emails)) {
+      if (emails && typeof emails === "string") emails = [emails];
+      else return;
+    }
+    try {
+      await AsyncStorage.multiRemove(
+        emails.map(email => `user-${email}`)
+      );
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error(`UserDatabaseService.deleteMultiUsers() error: ${err.stack}`);
+    }
+  }
+
+  /**
    * Merges/saves a single userClassObject into AsyncStorage database. User changes should be done through user class methods.
    * @param {*} userClassObject Driver/Mechanic/Admin class object.
    */
