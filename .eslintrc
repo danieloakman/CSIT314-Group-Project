@@ -43,7 +43,7 @@
         "no-return-await": "error",
         "node/no-deprecated-api": "warn",
         "node/no-unpublished-require": "warn",
-        "promise/always-return": "warn",
+        "promise/always-return": "off",
         "promise/catch-or-return": "warn",
         "object-curly-spacing": [
             "off",
