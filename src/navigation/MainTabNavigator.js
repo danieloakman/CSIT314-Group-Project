@@ -7,6 +7,7 @@ import TabBarIcon from "@components/TabBarIcon";
 import DriverProfileScreen from "@screens/DriverProfileScreen";
 import DriverHomeScreen from "@screens/DriverHomeScreen";
 import MechanicHomeScreen from "@screens/MechanicHomeScreen";
+import MechanicProfileScreen from "@screens/MechanicProfileScreen";
 
 const ProfileStack = createStackNavigator({
   Profile: DriverProfileScreen
@@ -62,8 +63,27 @@ MechanicHomeStack.navigationOptions = {
   )
 };
 
+const MechanicProfileStack = createStackNavigator({
+  MechanicProfile: {screen: MechanicProfileScreen}
+});
+
+MechanicProfileStack.navigationOptions = {
+  tabBarLabel: "Mechanic Profile",
+  tabBarIcon: ({ focused }) => (
+    <TabBarIcon
+      focused={focused}
+      name={
+        Platform.OS === "ios"
+          ? `ios-person${focused ? "" : "-outline"}`
+          : "md-person"
+      }
+    />
+  )
+};
+
 export default createBottomTabNavigator({
   ProfileStack,
   DriverHomeStack,
-  MechanicHomeStack
+  MechanicHomeStack,
+  MechanicProfileStack
 });

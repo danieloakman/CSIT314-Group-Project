@@ -9,18 +9,11 @@ import {
   TextInput,
   Alert,
   Picker
-  // TouchableOpacity,
-  // Colors
 } from "react-native";
 import {createStackNavigator, createAppContainer} from "react-navigation";
 // todo:
-/*
-multiline = {true}
-numberOfLines = {3}
-*/
 class MechanicHomeScreen extends React.Component {
   render () {
-    /* const {navigate} = this.props.navigation; */
     return (
       <View>
         <Text style={styles.heading}>Home</Text>
@@ -62,7 +55,7 @@ class RequestList extends React.Component {
             </Picker>
           </View>
         </View>
-        {/* offer display box, will be a list of these here, should say no offers yet if empty */}
+        {/* Request display box, will be a list of these here, should say no nearby requests if empty */}
         <TouchableOpacity style={styles.buttonBox} onPress={() => this._makeOffer()}>
           <View style={styles.buttonBoxText}>
             <Text>Distance: {this.state.distance}</Text>

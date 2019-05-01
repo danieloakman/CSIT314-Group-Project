@@ -13,11 +13,9 @@ import {
   TextInput,
   Alert,
   Picker
-  // TouchableOpacity,
-  // Colors
 } from "react-native";
 import {createStackNavigator, createAppContainer} from "react-navigation";
-// todo: make buttons work, fix description input (hard to close, making too many lines makes box too big)
+// todo: add image placeholder in offerview
 /*
 multiline = {true}
 numberOfLines = {3}
@@ -141,15 +139,6 @@ class RequestScreen extends React.Component {
     );
   }
   _submitRequest () {
-    /*
-    Alert.alert(
-      "Address: " + this.state.address +
-      "\nSuburb: " + this.state.suburb +
-      "\nState: " + this.state.selectedState +
-      "\nDescription: " + this.state.descripton +
-      "\nCar: " + this.state.car
-    );
-    */
     this.props.navigation.navigate("OfferList");
   }
 }
