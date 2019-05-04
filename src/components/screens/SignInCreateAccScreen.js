@@ -142,13 +142,6 @@ class SignInCreateAccScreen extends React.Component {
               {this._renderDevQuickSignInButton("driver@test.com", "test123")}
               {this._renderDevQuickSignInButton("mechanic@test.com", "test123")}
               {this._renderDevQuickSignInButton("admin@test.com", "test123")}
-
-              <Button
-                title="GmapsTest"
-                onPress={async () => {
-                  this.props.navigation.navigate("GMapsTest");
-                }}
-              />
             </View>
           }
 

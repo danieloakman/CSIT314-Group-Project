@@ -3,27 +3,30 @@ import {
   View,
   Text
 } from "react-native";
-import {MapView, Location, Permissions} from "expo";
+import {MapView} from "expo";
+import LocationService from "@lib/services/LocationService";
 
 /**
- * WIP.
  * A map that initially focuses on the client's current location.
+ * Add more markers as children of this with key's that are >= 0.
+ * Can use onPressCurrentLocation prop to access current location marker data.
  */
 export default class GMapView extends React.Component {
   state = {
     isLoading: true,
-    markers: [],
     currentLocation: null // The location of whoever is running this client.
   }
 
   componentDidMount () {
-    getLocationAsync().then(location => {
-      if (location !== "Permission to access location was denied") {
+    LocationService.getClientLocation().then(async location => {
+      if (location) {
+        location.address = await LocationService.getAddress(
+          location.coords.latitude, location.coords.longitude
+        );
         location.title = "Current Location";
         this.setState({
           isLoading: false,
           currentLocation: location,
-          markers: [location]
         });
       } else this.setState({isLoading: false});
     }).catch(err => {
@@ -34,36 +37,31 @@ export default class GMapView extends React.Component {
   render () {
     if (!this.state.isLoading && this.state.currentLocation) {
       return (
-        <View style={{ flex: 1 }}>
+        <View style={{flex: 1}}>
           <MapView
-            style={{
-              flex: 1
-            }}
+            style={{flex: 1}}
             initialRegion={{
               latitude: this.state.currentLocation.coords.latitude,
               longitude: this.state.currentLocation.coords.longitude,
               latitudeDelta: 0.03,
               longitudeDelta: 0.01
             }}
-            region={this.props.region}
-            onPress={async (mapEvent) => {
-              // console.log(`mapEvent: ${mapEvent}`);
-            }}
+            {...this.props}
           >
-            {this.state.markers.map((marker, index) => {
-              return (
-                <MapView.Marker
-                  key={index}
-                  coordinate={{
-                    latitude: marker.coords.latitude,
-                    longitude: marker.coords.longitude,
-                  }}
-                  title={marker.title}
-                  description={`timestamp: ${marker.timestamp}`}
-                  // image={require("@assets/images/current-location-pin.png")}
-                />
-              );
-            })}
+            <MapView.Marker
+              key={-1}
+              coordinate={{
+                latitude: this.state.currentLocation.coords.latitude,
+                longitude: this.state.currentLocation.coords.longitude,
+              }}
+              title="Current Location"
+              description={this.state.currentLocation.address}
+              pinColor="#1256cc"
+              onPress={() => {
+                this.props.onPressCurrentLocation(this.state.currentLocation);
+              }}
+            />
+            {this.props.children}
           </MapView>
         </View>
       );
@@ -72,25 +70,5 @@ export default class GMapView extends React.Component {
     } else {
       return <Text>Loading...</Text>;
     }
-  }
-}
-
-// Will probably move these functions to their own service file:
-
-async function getLocationAsync () {
-  let {status} = await Permissions.askAsync(Permissions.LOCATION); // Should probably ask location permission on loading of app or sign in instead.
-  if (status !== "granted") {
-    return "Permission to access location was denied";
-  } else {
-    return Location.getCurrentPositionAsync({});
-  }
-}
-
-async function getAddress (coords) {
-  let {status} = await Permissions.askAsync(Permissions.LOCATION); // Should probably ask location permission on loading of app or sign in instead.
-  if (status !== "granted") {
-    return "Permission to access location was denied";
-  } else {
-    return Location.reverseGeocodeAsync(coords);
   }
 }
