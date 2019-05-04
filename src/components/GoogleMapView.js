@@ -18,11 +18,11 @@ export default class GMapView extends React.Component {
   }
 
   componentDidMount () {
-    LocationService.getClientLocation().then(async location => {
+    LocationService.getCurrentLocation().then(async location => {
       if (location) {
-        location.address = await LocationService.getAddress(
+        location.address = (await LocationService.getAddress(
           location.coords.latitude, location.coords.longitude
-        );
+        )).addressStr;
         location.title = "Current Location";
         this.setState({
           isLoading: false,

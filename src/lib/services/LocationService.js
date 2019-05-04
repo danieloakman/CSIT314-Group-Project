@@ -7,7 +7,7 @@ export default class LocationService {
   /**
    * Returns the latitiude-longitude location of the device running this client.
    */
-  static async getClientLocation () {
+  static async getCurrentLocation () {
     let {status} = await Permissions.askAsync(Permissions.LOCATION);
     if (status !== "granted") {
       return null;
@@ -17,12 +17,40 @@ export default class LocationService {
   }
 
   /**
-   * Returns the address string of the passed in latitude-longitude location.
+   * Returns the address object of the passed in latitude-longitude location.
    * @param {number} latitude
    * @param {number} longitude
+   * @returns {{addressStr: string, metaData: Object}} Address Object.
    */
   static async getAddress (latitude, longitude) {
-    const address = (await this.reverseGeocode(latitude, longitude))[0];
+    if (!latitude && !longitude) return null;
+    let {status} = await Permissions.askAsync(Permissions.LOCATION);
+    if (status !== "granted") {
+      return null;
+    } else {
+      let location = await Location.reverseGeocodeAsync({latitude, longitude});
+      if (location.length === 0) return null;
+      else if (location.length === 1) {
+        return {
+          addressStr: this.parseAddress(location[0]),
+          metaData: location[0]
+        };
+      } else {
+        return location.map(loc => {
+          return {
+            addressStr: this.parseAddress(loc),
+            metaData: loc
+          };
+        });
+      }
+    }
+  }
+
+  /**
+   * Returns the full address string from an address object.
+   * @param {Object} address
+   */
+  static parseAddress (address) {
     if (!address) return "";
     else {
       let state;
@@ -56,21 +84,6 @@ export default class LocationService {
           break;
       }
       return `${address.name} ${address.street}, ${address.city} ${state} ${address.postalCode}`;
-    }
-  }
-
-  /**
-   * Returns the address object of the passed in latitude-longitude location.
-   * @param {number} latitude
-   * @param {number} longitude
-   */
-  static async reverseGeocode (latitude, longitude) {
-    if (!latitude && !longitude) return null;
-    let {status} = await Permissions.askAsync(Permissions.LOCATION);
-    if (status !== "granted") {
-      return null;
-    } else {
-      return Location.reverseGeocodeAsync({latitude, longitude});
     }
   }
 
