@@ -1,5 +1,6 @@
 import {AsyncStorage} from "react-native";
 import Emitter from "tiny-emitter";
+const uuid = require("uuid/v4"); // random uuid
 
 const UserTypes = {
   Driver: require("@lib/services/users/Driver"),
@@ -10,7 +11,7 @@ const UserTypes = {
 // File that can't be changed within the app:
 const databaseFile = require("@assets/data/testData");
 
-export default class UserDatabaseService {
+export default class DatabaseService {
   static emitter = new Emitter();
 
   /**
@@ -27,7 +28,7 @@ export default class UserDatabaseService {
       return new UserTypes[userRecord.constructor](userRecord.account);
     } catch (err) {
       // eslint-disable-next-line no-console
-      console.error(`UserDatabaseService.getUser() error: ${err.stack}`);
+      console.error(`DatabaseService.getUser() error: ${err.stack}`);
       return null;
     }
   }
@@ -43,7 +44,7 @@ export default class UserDatabaseService {
       else return await this.getUser(signedInUserEmail);
     } catch (err) {
       // eslint-disable-next-line no-console
-      console.error(`UserDatabaseService.getSignedInUser() error: ${err.stack}`);
+      console.error(`DatabaseService.getSignedInUser() error: ${err.stack}`);
       return null;
     }
   }
@@ -65,10 +66,10 @@ export default class UserDatabaseService {
       return {pass: true};
     } catch (err) {
       // eslint-disable-next-line no-console
-      console.error(`UserDatabaseService.signInUser() error: ${err.stack}`);
+      console.error(`DatabaseService.signInUser() error: ${err.stack}`);
       return {
         pass: false,
-        reason: __DEV__ ? err.stack : "Internal app error at UserDatabaseService.signInUser()"
+        reason: __DEV__ ? err.stack : "Internal app error at DatabaseService.signInUser()"
       };
     }
   }
@@ -84,10 +85,10 @@ export default class UserDatabaseService {
       return {pass: true};
     } catch (err) {
       // eslint-disable-next-line no-console
-      console.error(`UserDatabaseService.signOutCurrentUser() error: ${err.stack}`);
+      console.error(`DatabaseService.signOutCurrentUser() error: ${err.stack}`);
       return {
         pass: false,
-        reason: __DEV__ ? err.stack : "Internal app error at UserDatabaseService.signOutCurrentUser()"
+        reason: __DEV__ ? err.stack : "Internal app error at DatabaseService.signOutCurrentUser()"
       };
     }
   }
@@ -128,10 +129,10 @@ export default class UserDatabaseService {
       return {pass: true};
     } catch (err) {
       // eslint-disable-next-line no-console
-      console.error(`UserDatabaseService.createUser() error: ${err.stack}`);
+      console.error(`DatabaseService.createUser() error: ${err.stack}`);
       return {
         pass: false,
-        reason: __DEV__ ? err.stack : "Internal app error at UserDatabaseService.createUser()"
+        reason: __DEV__ ? err.stack : "Internal app error at DatabaseService.createUser()"
       };
     }
   }
@@ -146,7 +147,7 @@ export default class UserDatabaseService {
       await AsyncStorage.removeItem(`user-${email}`);
     } catch (err) {
       // eslint-disable-next-line no-console
-      console.error(`UserDatabaseService.deleteUser() error: ${err.stack}`);
+      console.error(`DatabaseService.deleteUser() error: ${err.stack}`);
     }
   }
 
@@ -166,7 +167,7 @@ export default class UserDatabaseService {
       );
     } catch (err) {
       // eslint-disable-next-line no-console
-      console.error(`UserDatabaseService.deleteMultiUsers() error: ${err.stack}`);
+      console.error(`DatabaseService.deleteMultiUsers() error: ${err.stack}`);
     }
   }
 
@@ -187,33 +188,34 @@ export default class UserDatabaseService {
       return true;
     } catch (err) {
       // eslint-disable-next-line no-console
-      console.error(`UserDatabaseService.saveUserChanges() error: ${err.message}`);
+      console.error(`DatabaseService.saveUserChanges() error: ${err.message}`);
       return false;
     }
   }
 
   /**
-   * Returns database object containing all users that are in AsyncStorage.
+   * Returns database object containing all keys that match a RegExp that are in AsyncStorage.
+   * @param {RegExp} regex Can use: /sr-/, /user-/, /vehicle-/
    */
-  static async getUserDatabase () {
+  static async getDatabase (regex) {
     try {
       let allUserKeys = await AsyncStorage.getAllKeys();
       if (allUserKeys.length < 1) return null;
 
-      allUserKeys = allUserKeys.filter(key => key.match(/user-/));
+      allUserKeys = allUserKeys.filter(key => key.match(regex));
       if (allUserKeys.length < 1) return null;
 
-      let userDatabaseArr = await AsyncStorage.multiGet(allUserKeys);
-      if (userDatabaseArr.length < 1) return null;
+      let DatabaseArr = await AsyncStorage.multiGet(allUserKeys);
+      if (DatabaseArr.length < 1) return null;
 
-      let userDatabase = {};
-      userDatabaseArr.forEach(keyValuePair => {
-        userDatabase[keyValuePair[0]] = JSON.parse(keyValuePair[1]);
+      let Database = {};
+      DatabaseArr.forEach(keyValuePair => {
+        Database[keyValuePair[0]] = JSON.parse(keyValuePair[1]);
       });
-      return userDatabase;
+      return Database;
     } catch (err) {
       // eslint-disable-next-line no-console
-      console.error(`UserDatabaseService.getUserDatabase() error: ${err.stack}`);
+      console.error(`DatabaseService.getDatabase() error: ${err.stack}`);
     }
   }
 
@@ -233,7 +235,7 @@ export default class UserDatabaseService {
         let keys = await AsyncStorage.getAllKeys();
         if (keys.length > 0) AsyncStorage.multiRemove(keys);
       }
-      let database = await this.getUserDatabase();
+      let database = await this.getDatabase(/user-/);
       if (!database) {
         // Initialise AsyncStorage database with the database.json file:
         database = [];
@@ -242,13 +244,18 @@ export default class UserDatabaseService {
             [`user-${key}`, JSON.stringify(databaseFile.users[key])]
           );
         }
+        for (let key of Object.keys(databaseFile.vehicles)) {
+          database.push(
+            [`vehicle-${key}`, JSON.stringify(databaseFile.vehicles[key])]
+          );
+        }
         await AsyncStorage.multiSet(database);
       } else if (database && options.mergeDatabaseFile) {
         await this.mergeDatabaseFileIntoAsyncStorage();
       }
     } catch (err) {
       // eslint-disable-next-line no-console
-      console.error(`UserDatabaseService.initialiseDatabase() error: ${err.stack}`);
+      console.error(`DatabaseService.initialiseDatabase() error: ${err.stack}`);
     }
   }
 
@@ -260,15 +267,20 @@ export default class UserDatabaseService {
   static async mergeDatabaseFileIntoAsyncStorage () {
     try {
       let mergeKeyValuePairArr = [];
-      for (let key of Object.keys(databaseFile.users)) { // just does "users" key ATM
+      for (let key of Object.keys(databaseFile.users)) {
         mergeKeyValuePairArr.push(
           [`user-${key}`, JSON.stringify(databaseFile.users[key])]
+        );
+      }
+      for (let key of Object.keys(databaseFile.vehicles)) {
+        mergeKeyValuePairArr.push(
+          [`vehicle-${key}`, JSON.stringify(databaseFile.vehicles[key])]
         );
       }
       await AsyncStorage.multiMerge(mergeKeyValuePairArr);
     } catch (err) {
       // eslint-disable-next-line no-console
-      console.error(`UserDatabaseService.mergeDatabaseFileIntoAsyncStorage() error: ${err.stack}`);
+      console.error(`DatabaseService.mergeDatabaseFileIntoAsyncStorage() error: ${err.stack}`);
     }
   }
 
@@ -290,5 +302,110 @@ export default class UserDatabaseService {
     });
     await Promise.all(promises);
     /* eslint-enable no-console */
+  }
+
+  static async createVehicle (driver, make, model, year, plate, vin) {
+    try {
+      let vehicleId = `vehicle-${uuid()}`;
+      await AsyncStorage.setItem(
+        vehicleId,
+        JSON.stringify({
+          owners: [driver.email],
+          make,
+          model,
+          year,
+          plate,
+          vin
+        })
+      );
+      return {pass: true, vehicleId};
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error(`DatabaseService.createVehicle() error: ${err.stack}`);
+      return {
+        pass: false,
+        reason: __DEV__ ? err.stack : "Internal app error at DatabaseService.createVehicle()"
+      };
+    }
+  }
+
+  static async getVehicle (vehicleId) {
+    try {
+      let vehicle = await AsyncStorage.getItem(`vehicle-${vehicleId}`);
+      return vehicle ? JSON.parse(vehicle) : null;
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error(`DatabaseService.getVehicle() error: ${err.stack}`);
+      return null;
+    }
+  }
+
+  static async saveVehicleChanges (vehicleObject) {
+    try {
+      await AsyncStorage.mergeItem(
+        `user-${vehicleObject.email}`,
+        JSON.stringify({
+          constructor: vehicleObject.constructor,
+          account: vehicleObject
+        })
+      );
+      return true;
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error(`DatabaseService.saveVehicleChanges() error: ${err.message}`);
+      return false;
+    }
+  }
+
+  /**
+   * Creates a service request.
+   * The checks to see if the driver and vehicle don't
+   * already have an srId should be done before calling this function.
+   * @param {Location Object} location
+   * @param {string} driverEmail
+   * @param {string} vehicleId
+   */
+  static async createServiceRequest (location, driverEmail, vehicleId, description) {
+    try {
+      let srId = uuid();
+      await AsyncStorage.setItem(`sr-${srId}`, JSON.stringify({
+        id: srId,
+        location,
+        driverEmail,
+        vehicleId,
+        description,
+        assignedMechanicEmail: null,
+        offers: [],
+        status: "Awaiting offer acceptance",
+        creationDate: new Date(),
+        completionDate: null
+      }));
+      return {srId: srId, pass: true};
+    } catch (err) {
+      return {pass: false, reason: err.stack};
+    }
+  }
+
+  static async getServiceRequest (srId) {
+    try {
+      let SR = await AsyncStorage.getItem(`sr-${srId}`);
+      return !SR ? null : JSON.parse(SR);
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error(`ServiceRequestUtil.getSRById() error: ${err.stack}`);
+      return null;
+    }
+  }
+
+  static async getAllSRsNearMe (kmRadius) {
+    //
+  }
+
+  static async sendOfferToServiceRequest (srId, mechanicEmail, offerAmount) {
+    try {
+      //
+    } catch (err) {
+      console.error(`DatabaseService.sendOfferToServiceRequest() error: ${err.stack}`);
+    }
   }
 }

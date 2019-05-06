@@ -7,18 +7,12 @@ module.exports = class Driver extends User {
     // Attributes:
     this.type = "driver";
     this.description = "";
-    this.vehicles = [];
+    this.vehicleIds = [];
+    this.srId = null; // Service request ID currently assigned
+    this.membership = null;
+    this.balance = 0;
+    this.serviceRequestHistory = [];
 
     this.restoreAttributesFromUserRecord(userRecord);
-  }
-
-  // TODO: Vehicles need to be stored separately in database, as they may be shared between multiple users
-  addVehicle (regoPlate, make, model, insurer) {
-    this.vehicles.push({ // maybe create a vehicle class.
-      regoPlate: regoPlate,
-      make: make,
-      model: model,
-      insurer: insurer
-    });
   }
 };

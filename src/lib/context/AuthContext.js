@@ -1,6 +1,6 @@
 import React from "react";
 import {Image} from "react-native";
-import UserDB from "@lib/services/UserDatabaseService";
+import DB from "@lib/services/DatabaseService";
 /*
   database service is responsible for persisting data to disk, not current state (which needs to be within the react tree)
   changes to user database are caused by calls to database service, however an event must be emitted in order for the context to update its state
@@ -22,7 +22,7 @@ export class AuthProvider extends React.Component {
   }
 
   async loadUser () {
-    const record = await UserDB.getSignedInUser();
+    const record = await DB.getSignedInUser();
     if (record !== null) {
       this.setState({user: record});
       if (record.pictureURI) {
@@ -43,14 +43,14 @@ export class AuthProvider extends React.Component {
 
   async componentDidMount () {
     // Register listener for changes to user info
-    UserDB.emitter.on("signedIn", this.handleSignIn, this);
-    UserDB.emitter.on("signedOut", this.handleSignOut, this);
+    DB.emitter.on("signedIn", this.handleSignIn, this);
+    DB.emitter.on("signedOut", this.handleSignOut, this);
   }
 
   componentWillUnmount () {
     // Deregister all listeners
-    UserDB.emitter.on("signedIn", this.handleSignIn, this);
-    UserDB.emitter.off("signedOut", this.handleSignOut, this);
+    DB.emitter.on("signedIn", this.handleSignIn, this);
+    DB.emitter.off("signedOut", this.handleSignOut, this);
   }
 
   render () {

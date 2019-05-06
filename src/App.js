@@ -2,7 +2,7 @@ import React from "react";
 import { Platform, StatusBar, StyleSheet, View } from "react-native";
 import { AppLoading, Asset, Font, Icon, registerRootComponent } from "expo";
 import AppNavigator from "./navigation/AppNavigator";
-import UserDatabaseService from "@lib/services/UserDatabaseService";
+import DatabaseService from "@lib/services/DatabaseService";
 
 import {ThemeProvider} from "@lib/context/ThemeContext";
 import {AuthProvider} from "@lib/context/AuthContext";
@@ -50,9 +50,9 @@ class App extends React.Component {
         // This is the font that we are using for our tab bar
         ...Icon.Ionicons.font,
       }),
-      UserDatabaseService.initialiseDatabase({
+      DatabaseService.initialiseDatabase({
         forceWipe: false, mergeDatabaseFile: false
-      })
+      }),
     ]);
   };
 

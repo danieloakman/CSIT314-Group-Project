@@ -1,3 +1,4 @@
+import {Alert} from "react-native";
 import {
   Location,
   Permissions
@@ -98,6 +99,20 @@ export default class LocationService {
       return null;
     } else {
       return Location.geocodeAsync(address);
+    }
+  }
+
+  /**
+   * Remind user to turn on location services on device if they're disabled.
+   * Ask for location permissions <- todo
+   */
+  static async initialiseLocationServices () {
+    let {status} = await Permissions.askAsync(Permissions.LOCATION);
+    if (status !== "granted") {
+      throw new Error("Please enable permisions.");
+    }
+    if (!await Location.hasServicesEnabledAsync()) {
+      Alert.alert("Please turn on location services on your device.");
     }
   }
 }

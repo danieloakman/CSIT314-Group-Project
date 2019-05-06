@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import WindowBox from "@components/WindowBox";
 import Patterns from "@constants/UserInputRegex";
-import UserDatabaseService from "@lib/services/UserDatabaseService";
+import DatabaseService from "@lib/services/DatabaseService";
 import Colors from "@constants/Colors";
 import {withAuthContext} from "@lib/context/AuthContext";
 
@@ -275,7 +275,7 @@ class SignInCreateAccScreen extends React.Component {
       return;
     }
     // Attempt to sign the user in:
-    const result = await UserDatabaseService.signInUser(this.state.signInEmail, this.state.signInPassword);
+    const result = await DatabaseService.signInUser(this.state.signInEmail, this.state.signInPassword);
     if (!result.pass) this.setState({signInErrorText: result.reason});
     else {
       // Change screen to Main:
@@ -293,7 +293,7 @@ class SignInCreateAccScreen extends React.Component {
       return;
     }
     // Attempt to create the user:
-    const result = await UserDatabaseService.createUser(
+    const result = await DatabaseService.createUser(
       this.state.crAccType, this.state.crAccFirstName,
       this.state.crAccLastName, this.state.crAccEmail,
       this.state.crAccPassword, this.state.crAccPhoneNo,
@@ -336,7 +336,7 @@ class SignInCreateAccScreen extends React.Component {
         <Button
           onPress={async () => {
             // Attempt to sign the user in:
-            const result = await UserDatabaseService.signInUser(email, password);
+            const result = await DatabaseService.signInUser(email, password);
             if (!result.pass) this.setState({ signInErrorText: result.reason });
             else {
               // Change screen to Main:

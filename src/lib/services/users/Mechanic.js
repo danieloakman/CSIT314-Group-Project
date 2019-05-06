@@ -8,6 +8,8 @@ module.exports = class Mechanic extends User {
     this.type = "mechanic";
     this.verifiedMechanic = false;
     this.jobs = [];
+    this.rating = 5.0;
+    this.srId = null; // Service request ID currently assigned
 
     this.restoreAttributesFromUserRecord(userRecord);
   }

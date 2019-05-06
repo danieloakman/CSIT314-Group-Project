@@ -21,7 +21,7 @@ import {
 import { createDrawerNavigator, withNavigation, createStackNavigator } from "react-navigation";
 import FlexContainer from "@components/FlexContainer";
 import {withAuthContext} from "@lib/context/AuthContext";
-import UserDB from "@lib/services/UserDatabaseService";
+import DB from "@lib/services/DatabaseService";
 
 import HomeScreen from "@screens/HomeScreen";
 import LinksScreen from "@screens/LinksScreen";
@@ -34,7 +34,7 @@ import MainTabNavigator from "./MainTabNavigator";
 const entries = [
   {
     name: "Logout",
-    action: UserDB.signOutCurrentUser.bind(UserDB),
+    action: DB.signOutCurrentUser.bind(DB),
     route: "SignIn",
     endSection: true,
   },
