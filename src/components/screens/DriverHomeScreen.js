@@ -15,6 +15,9 @@ import {
   Picker
 } from "react-native";
 import {createStackNavigator, createAppContainer} from "react-navigation";
+import DatabaseService from "@lib/services/DatabaseService";
+import LocationService from "@lib/services/LocationService";
+
 // todo: add image placeholder in offerview
 /*
 multiline = {true}
@@ -39,79 +42,68 @@ class DriverHomeScreen extends React.Component {
 
 class RequestScreen extends React.Component {
   state = {
-    address: "",
-    suburb: "",
     descripton: "",
-    selectedState: "NSW",
-    car: "car 1"
+    vehicles: null,
+    selectedVehicle: null,
+    location: null, // latitude-longitude coordinates
+    user: null
   }
+
+  componentDidMount () {
+    DatabaseService.getSignedInUser()
+      .then(async user => {
+        let location = await LocationService.getCurrentLocation();
+        if (!location) Alert.alert("Cannot continue unless location permission is enabled.");
+        let vehicles = [];
+        for (let id of user.vehicleIds) {
+          vehicles.push(await DatabaseService.getVehicle(id));
+        }
+        this.setState({
+          user,
+          vehicles: vehicles.length > 0 ? vehicles : null,
+          location,
+          selectedVehicle: vehicles.length > 0 ? vehicles[0] : null
+        });
+      })
+      .catch(err => {
+        throw err;
+      });
+  }
+
   render () {
     return (
       <View>
         <Text style={styles.heading}>Roadside Assistance Request</Text>
-        {/* Address text input */}
-        <View style={styles.centeredRowContainer}>
-          <Text style={styles.textBesideInput}>Address:</Text>
-          <TextInput
-            style={styles.textInput}
-            placeholder="123 street name"
-            onChangeText={address => this.setState({ address })}
-          />
-        </View>
-        {/* Suburb text input */}
-        <View style={styles.centeredRowContainer}>
-          <Text style={styles.textBesideInput}>Suburb:</Text>
-          <TextInput
-            style={styles.textInput}
-            onChangeText={suburb => this.setState({ suburb })}
-          />
-        </View>
-        {/* State dropdown input */}
-        <View style={styles.centeredRowContainer}>
-          <Text style={styles.textBesideInput}>State:</Text>
-          <View style={{borderWidth: 1, borderRadius: 5}}>
-            <Picker
-              selectedValue={this.state.selectedState}
-              style={{width: 150}}
-              itemStyle={{fontSize: 20}}
-              mode="dropdown"
-              onValueChange={selectedState => this.setState({ selectedState })}
-            >
-              <Picker.Item label="NSW" value="NSW" />
-              <Picker.Item label="VIC" value="VIC" />
-              <Picker.Item label="QLD" value="QLD" />
-              <Picker.Item label="WA" value="WA" />
-              <Picker.Item label="SA" value="SA" />
-              <Picker.Item label="NT" value="NT" />
-              <Picker.Item label="ACT" value="ACT" />
-            </Picker>
-          </View>
-        </View>
-        {/* GPS button */}
-        <View style={styles.buttons}>
-          <Button
-            title="Use GPS Location"
-            onPress={() => Alert.alert("not implemented yet")}
-            /* NOTE: for google maps integration */
-            /* can probably remove address, suburb, state if using GPS/google maps instead */
-          />
-        </View>
         {/* car selection dropdown input */}
-        <View style={styles.centeredRowContainer}>
-          <Text style={styles.textBesideInput}>State:</Text>
-          <View style={{borderWidth: 1, borderRadius: 5}}>
-            <Picker
-              selectedValue={this.state.car}
-              style={{width: 150}}
-              itemStyle={{fontSize: 20}}
-              mode="dropdown"
-              onValueChange={car => this.setState({ car })}>
-              <Picker.Item label="car 1" value="car 1" />
-              <Picker.Item label="car 2" value="car 2" />
-              <Picker.Item label="car 3" value="car 3" />
-            </Picker>
+        {!this.state.location ? null
+          : <View style={styles.centeredRowContainer}>
+            <Text>Your location has been automatically retrieved.</Text>
           </View>
-        </View>
+        }
+        {!this.state.vehicles
+          ? <View style={styles.centeredRowContainer}>
+            <Text>We found no cars tied to your account. Please go back and add one to continue.</Text>
+          </View>
+          : <View style={styles.centeredRowContainer}>
+            <Text style={styles.textBesideInput}>Car:</Text>
+            <View style={{borderWidth: 1, borderRadius: 5}}>
+              <Picker
+                selectedValue={this.state.selectedVehicleId}
+                style={{width: 150}}
+                itemStyle={{fontSize: 20}}
+                mode="dropdown"
+                onValueChange={vehicle => this.setState({selectedVehicleId: vehicle})}>
+                {this.state.vehicles.map((vehicle, index) => {
+                  return <Picker.Item
+                    key={index}
+                    label={`${vehicle.year} ${vehicle.make}`}
+                    value={vehicle}
+                  />;
+                })}
+              </Picker>
+            </View>
+          </View>
+        }
         {/* Description text input */}
         <View style={styles.centeredRowContainer}>
           <Text style={styles.textBesideInput}>Description:</Text>
@@ -125,7 +117,7 @@ class RequestScreen extends React.Component {
           <Button
             style="buttons"
             title="Submit"
-            onPress={() => this._submitRequest()}
+            onPress={async () => { await this._submitRequest(); }}
           />
         </View>
         <View style={styles.buttons}>
@@ -138,7 +130,26 @@ class RequestScreen extends React.Component {
 
     );
   }
-  _submitRequest () {
+  async _submitRequest () {
+    if (!this.state.descripton || !this.state.selectedVehicle) {
+      Alert.alert("Please fill in description and select a vehicle.");
+      return;
+    }
+    let result = await DatabaseService.createServiceRequest(
+      this.state.location, this.state.user.email, this.state.selectedVehicle.id, this.state.descripton
+    );
+    if (!result.pass && !result.srId) {
+      Alert.alert(result.reason);
+      return;
+    }
+    // Save user and vehicle changes:
+    let user = this.state.user;
+    let vehicle = this.state.selectedVehicle;
+    user.srId = vehicle.srId = result.srId;
+    await Promise.all([
+      DatabaseService.saveUserChanges(user),
+      DatabaseService.saveVehicleChanges(vehicle)
+    ]);
     this.props.navigation.navigate("OfferList");
   }
 }
