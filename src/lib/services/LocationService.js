@@ -27,8 +27,6 @@ export default class LocationService {
             // So for now, when the timeout is reached return a randomLocation
             // within 50km around the uni.
             // Maybe should change this to only happen on __DEV__ eventually.
-            // eslint-disable-next-line no-console
-            console.log("Timeout reached for LocationService.getCurrentLocation()");
             resolve(
               this.getRandomLocation({
                 latitude: -34.406419,

@@ -12,7 +12,6 @@ import {
 } from "react-native";
 import {createStackNavigator, createAppContainer} from "react-navigation";
 import DatabaseService from "@lib/services/DatabaseService";
-import LocationService from "@lib/services/LocationService";
 import GMapView from "@components/GoogleMapView";
 import {MapView} from "expo";
 
@@ -115,7 +114,8 @@ class RequestList extends React.Component {
   _makeOffer () {
     this.props.navigation.navigate("RequestView", {
       selectedSR: this.state.selectedSR,
-      user: this.state.user
+      user: this.state.user,
+      location: this.state.location
     });
   }
 }
@@ -124,14 +124,16 @@ class RequestView extends React.Component {
   state = {
     offerAmount: null,
     selectedSR: null,
-    user: null
+    user: null,
+    location: null
   }
   componentWillMount () {
     /* get parameters from the list item which was clicked */
     const { navigation } = this.props;
     this.setState({
       selectedSR: navigation.getParam("selectedSR", "The selected service request"),
-      user: navigation.getParam("user", "Currently signed in mechanic")
+      user: navigation.getParam("user", "Currently signed in mechanic"),
+      location: navigation.getParam("location", "Current location")
     });
   }
   render () {
@@ -190,7 +192,8 @@ class RequestView extends React.Component {
           creationDate: new Date(),
           mechanicEmail: this.state.user.email,
           mechanicRating: this.state.user.rating,
-          offerAmount: this.state.offerAmount
+          offerAmount: this.state.offerAmount,
+          location: this.state.location
         });
         await DatabaseService.saveServiceRequestChanges(sr);
         resolve(true);
