@@ -16,10 +16,11 @@ class ProfileHeader extends React.Component {
 
       <FlexContainer size={2} style={{
         justifyContent: "space-around",
-        flexDirection: "row",
+        flexDirection: "column",
         // borderBottomColor: "#ddd",
         // borderBottomWidth: 1,
-        marginBottom: 15,
+        // marginBottom: 15,
+        backgroundColor: "#efefef",
       }} >
         {/* User image and name */}
         <FlexContainer size={2} style={{ justifyContent: "flex-start" }}>
@@ -37,17 +38,17 @@ class ProfileHeader extends React.Component {
         {/* User description */}
         <FlexContainer size={4} style={{ marginTop: 15 }}>
           <FlexContainer size={3} />
-          <Text style={{ flex: 2 }}>{auth.user.description}</Text>
+          <Text style={[{ flex: 2 }, styles.centerText]}>{auth.user.description}</Text>
           <View style={{ flex: 4 }}>
-            <Text >Member since: {auth.user.registerDate}</Text>
-            <Text />
-            <Text>subscriberBadge if subscriber</Text>
+            <Text style={styles.centerText}>Member since: {auth.user.registerDate}</Text>
+            <Text style={styles.centerText}/>
+            <Text style={styles.centerText}>subscriberBadge if subscriber</Text>
           </View>
 
           <FlexContainer size={2} />
           {/* Open contact modal */}
         </FlexContainer>
-        <FlexContainer size={0.5} />
+        {/* <FlexContainer size={0.5} /> */}
       </FlexContainer>
 
     );
@@ -56,8 +57,12 @@ class ProfileHeader extends React.Component {
 export default withAuthContext(ProfileHeader);
 
 const styles = StyleSheet.create({
+  centerText: {
+    alignSelf: "center",
+    textAlign: "center",
+  },
   userName: {
-    fontSize: 16,
+    fontSize: 24,
     alignSelf: "center",
     textAlign: "center",
   },
@@ -68,8 +73,8 @@ const styles = StyleSheet.create({
     marginTop: 10,
     resizeMode: "cover",
     // flex: 1,
-    maxWidth: 100,
-    maxHeight: 100,
+    maxWidth: 75,
+    maxHeight: 75,
     alignSelf: "center"
   },
 });
