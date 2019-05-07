@@ -6,6 +6,7 @@ import {
 
 const toRadians = (degrees) => { return degrees * (Math.PI / 180); };
 const toDegrees = (radians) => { return radians / (Math.PI / 180); };
+
 export default class LocationService {
   /**
    * Returns the latitiude-longitude location of the device running this client.
@@ -15,7 +16,28 @@ export default class LocationService {
     if (status !== "granted") {
       return null;
     } else {
-      return Location.getCurrentPositionAsync({});
+      return Promise.race([
+        new Promise(async resolve => {
+          resolve(await Location.getCurrentPositionAsync());
+        }),
+        new Promise(resolve => {
+          let wait = setTimeout(() => {
+            clearTimeout(wait);
+            // Sometimes Location.getCurrentPositionAsync() hangs indefintely.
+            // So for now, when the timeout is reached return a randomLocation
+            // within 50km around the uni.
+            // Maybe should change this to only happen on __DEV__ eventually.
+            // eslint-disable-next-line no-console
+            console.log("Timeout reached for LocationService.getCurrentLocation()");
+            resolve(
+              this.getRandomLocation({
+                latitude: -34.406419,
+                longitude: 150.882327
+              }, 50)
+            );
+          }, 3000); // Timeout of 3 seconds.
+        })
+      ]);
     }
   }
 
@@ -163,8 +185,16 @@ export default class LocationService {
         toDegrees(Math.cos(location.latitude))
     };
     return {
-      latitude: Math.random() * (max.latitude - min.latitude) + min.latitude,
-      longitude: Math.random() * (max.longitude - min.longitude) + min.longitude
+      timestamp: Math.floor(Date.now() / 1000),
+      mocked: false,
+      coords: {
+        latitude: Math.random() * (max.latitude - min.latitude) + min.latitude,
+        longitude: Math.random() * (max.longitude - min.longitude) + min.longitude,
+        heading: 0,
+        speed: 0,
+        altitude: 37.599998474121094,
+        accuracy: 16.340999603271484
+      }
     };
   }
 }
