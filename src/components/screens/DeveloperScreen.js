@@ -104,6 +104,14 @@ export default class DeveloperScreen extends React.Component {
             }
           }}
         />
+        <Button
+          title="Console log all SRs near me"
+          onPress={async () => {
+            let location = await LocationService.getCurrentLocation();
+            let srArr = await DatabaseService.getAllSRsNearLocation(50, location);
+            console.log("srArr: " + JSON.stringify(srArr, null, 2));
+          }}
+        />
       </ScrollView>
     );
   }

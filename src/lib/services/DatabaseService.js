@@ -250,6 +250,11 @@ export default class DatabaseService {
             [`vehicle-${key}`, JSON.stringify(databaseFile.vehicles[key])]
           );
         }
+        for (let key of Object.keys(databaseFile.serviceRequests)) {
+          database.push(
+            [`sr-${key}`, JSON.stringify(databaseFile.serviceRequests[key])]
+          );
+        }
         await AsyncStorage.multiSet(database);
       } else if (database && options.mergeDatabaseFile) {
         await this.mergeDatabaseFileIntoAsyncStorage();
@@ -276,6 +281,11 @@ export default class DatabaseService {
       for (let key of Object.keys(databaseFile.vehicles)) {
         mergeKeyValuePairArr.push(
           [`vehicle-${key}`, JSON.stringify(databaseFile.vehicles[key])]
+        );
+      }
+      for (let key of Object.keys(databaseFile.serviceRequests)) {
+        mergeKeyValuePairArr.push(
+          [`sr-${key}`, JSON.stringify(databaseFile.serviceRequests[key])]
         );
       }
       await AsyncStorage.multiMerge(mergeKeyValuePairArr);
@@ -364,9 +374,10 @@ export default class DatabaseService {
    * Creates a service request.
    * The checks to see if the driver and vehicle don't
    * already have an srId should be done before calling this function.
-   * @param {Location Object} location
+   * @param {Object} location
    * @param {string} driverEmail
    * @param {string} vehicleId
+   * @param {string} description
    */
   static async createServiceRequest (location, driverEmail, vehicleId, description) {
     try {
@@ -418,14 +429,14 @@ export default class DatabaseService {
    * Returns a sorted array of service requests (distance in ascending order)
    * that are within kmRadius distance from location.coords.
    * @param {number} kmRadius
-   * @param {{coords: {latitude, longitude}}} location
+   * @param {locationObject} location
    */
-  static async getAllSRsNearMe (kmRadius, location) {
+  static async getAllSRsNearLocation (kmRadius, location) {
     let allSRs = await this.getDatabase(/sr-/);
     if (!allSRs) return [];
     return Object.keys(allSRs)
       .map(id => {
-        allSRs.distance = LocationService.getDistanceBetween(location.coords, allSRs[id].coords);
+        allSRs[id].distance = LocationService.getDistanceBetween(location.coords, allSRs[id].location.coords);
         return allSRs[id];
       })
       .filter(sr => {
