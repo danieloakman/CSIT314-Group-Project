@@ -1,5 +1,6 @@
 import {AsyncStorage} from "react-native";
 import Emitter from "tiny-emitter";
+import LocationService from "@lib/services/LocationService";
 const uuid = require("uuid/v4"); // random uuid
 
 const UserTypes = {
@@ -304,13 +305,18 @@ export default class DatabaseService {
     /* eslint-enable no-console */
   }
 
-  static async createVehicle (driver, make, model, year, plate, vin) {
+  /**
+   * The linking of the user to this vehicle should be done
+   * after calling this function with saveUserChanges().
+   */
+  static async createVehicle (driverEmail, make, model, year, plate, vin) {
     try {
-      let vehicleId = `vehicle-${uuid()}`;
+      let vehicleId = uuid();
       await AsyncStorage.setItem(
-        vehicleId,
+        `vehicle-${vehicleId}`,
         JSON.stringify({
-          owners: [driver.email],
+          id: vehicleId,
+          owners: [driverEmail],
           make,
           model,
           year,
@@ -343,11 +349,8 @@ export default class DatabaseService {
   static async saveVehicleChanges (vehicleObject) {
     try {
       await AsyncStorage.mergeItem(
-        `user-${vehicleObject.email}`,
-        JSON.stringify({
-          constructor: vehicleObject.constructor,
-          account: vehicleObject
-        })
+        `vehicle-${vehicleObject.id}`,
+        JSON.stringify(vehicleObject)
       );
       return true;
     } catch (err) {
@@ -380,7 +383,7 @@ export default class DatabaseService {
         creationDate: new Date(),
         completionDate: null
       }));
-      return {srId: srId, pass: true};
+      return {srId, pass: true};
     } catch (err) {
       return {pass: false, reason: err.stack};
     }
@@ -388,8 +391,8 @@ export default class DatabaseService {
 
   static async getServiceRequest (srId) {
     try {
-      let SR = await AsyncStorage.getItem(`sr-${srId}`);
-      return !SR ? null : JSON.parse(SR);
+      let sr = await AsyncStorage.getItem(`sr-${srId}`);
+      return !sr ? null : JSON.parse(sr);
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error(`ServiceRequestUtil.getSRById() error: ${err.stack}`);
@@ -397,15 +400,37 @@ export default class DatabaseService {
     }
   }
 
-  static async getAllSRsNearMe (kmRadius) {
-    //
+  static async saveServiceRequestChanges (srObject) {
+    try {
+      await AsyncStorage.mergeItem(
+        `sr-${srObject.id}`,
+        JSON.stringify(srObject)
+      );
+      return true;
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error(`DatabaseService.saveServiceRequestChanges() error: ${err.message}`);
+      return false;
+    }
   }
 
-  static async sendOfferToServiceRequest (srId, mechanicEmail, offerAmount) {
-    try {
-      //
-    } catch (err) {
-      console.error(`DatabaseService.sendOfferToServiceRequest() error: ${err.stack}`);
-    }
+  /**
+   * Returns a sorted array of service requests (distance in ascending order)
+   * that are within kmRadius distance from location.coords.
+   * @param {number} kmRadius
+   * @param {{coords: {latitude, longitude}}} location
+   */
+  static async getAllSRsNearMe (kmRadius, location) {
+    let allSRs = await this.getDatabase(/sr-/);
+    if (!allSRs) return [];
+    return Object.keys(allSRs)
+      .map(id => {
+        allSRs.distance = LocationService.getDistanceBetween(location.coords, allSRs[id].coords);
+        return allSRs[id];
+      })
+      .filter(sr => {
+        return sr.distance < kmRadius;
+      })
+      .sort((a, b) => a.distance - b.distance);
   }
 }
