@@ -4,10 +4,12 @@ import React from "react";
 
 import BackButton from "@atoms/BackButton";
 import {
-  View,
+  ScrollView,
   Button
 } from "react-native";
 import DatabaseService from "@lib/services/DatabaseService";
+import LocationService from "@lib/services/LocationService";
+const cars = require("../../../dataGenerator/datasets/cars");
 
 export default class DeveloperScreen extends React.Component {
   static navigationOptions = {
@@ -20,9 +22,8 @@ export default class DeveloperScreen extends React.Component {
 
   render () {
     return (
-      <View style={{flex: 1}}>
+      <ScrollView style={{flex: 1}}>
         <Button
-          style={{margin: 5}}
           title="Google maps test screen"
           onPress={async () => {
             this.props.navigation.navigate("GMapsTest");
@@ -35,35 +36,75 @@ export default class DeveloperScreen extends React.Component {
           }}
         />
         <Button
-          title="Get vehicle"
-          onPress={async () => {
-            let user = await DatabaseService.getSignedInUser();
-            let id = user.vehicleIds[0];
-            console.log(
-              `vehicle-${id}: ` +
-              JSON.stringify(await DatabaseService.getVehicle(id))
-            );
-          }}
-        />
-        <Button
           title="Wipe and re-initialise database"
           onPress={async () => {
-            await DatabaseService.initialiseDatabase(
-              {forceWipe: true, mergeDatabaseFile: false}
-            );
-            console.log("Done wipe database.");
+            await DatabaseService.initialiseDatabase({forceWipe: true});
+            console.log("Done wipe database. Should restart app now.");
           }}
         />
         <Button
           title="Merge testData.json into database"
           onPress={async () => {
-            await DatabaseService.initialiseDatabase(
-              {forceWipe: false, mergeDatabaseFile: true}
-            );
-            console.log("Done merge database.");
+            await DatabaseService.initialiseDatabase({forceWipe: false});
+            console.log("Done merge database. Should restart the app now.");
           }}
         />
-      </View>
+        <Button
+          title="Console log all signed in user's vehicles"
+          onPress={async () => {
+            let user = await DatabaseService.getSignedInUser();
+            await Promise.all(user.vehicleIds.map(id => {
+              return new Promise(async resolve => {
+                console.log(
+                  ` * vehicle-${id}: ` +
+                  JSON.stringify(await DatabaseService.getVehicle(id))
+                );
+                resolve(true);
+              });
+            }));
+          }}
+        />
+        <Button
+          title="Add random vehicle to signed in user"
+          onPress={async () => {
+            let vehicle = cars[Math.floor((Math.random() * cars.length - 1) + 1)];
+            let user = await DatabaseService.getSignedInUser();
+            let result = await DatabaseService.createVehicle(
+              user.email, vehicle.make, vehicle.model,
+              vehicle.year, vehicle.plate, vehicle.vin
+            );
+            if (!result.pass && !result.vehicleId) {
+              console.log("Failed createVehicle()");
+              return;
+            }
+            user.vehicleIds.push(result.vehicleId);
+            await DatabaseService.saveUserChanges(user);
+            console.log("Done adding random vehicle.");
+          }}
+        />
+        <Button
+          title="Console log distance between two points"
+          onPress={async () => {
+            console.log(LocationService.getDistanceBetween(
+              (await LocationService.getCurrentLocation()).coords,
+              {latitude: -34.402001, longitude: 150.897785}
+            ) + "km");
+          }}
+        />
+        <Button
+          title="Console log random location(s) around me"
+          onPress={async () => {
+            let location = await LocationService.getCurrentLocation();
+            const numberOfLocations = 3;
+            for (let i = 0; i < numberOfLocations; i++) {
+              console.log(
+                `${i}: ` +
+                JSON.stringify(LocationService.getRandomLocation(location.coords, 50), null, 2)
+              );
+            }
+          }}
+        />
+      </ScrollView>
     );
   }
 }
