@@ -4,13 +4,16 @@ import { createStackNavigator, createBottomTabNavigator } from "react-navigation
 
 import TabBarIcon from "@components/TabBarIcon";
 
-import DriverProfileScreen from "@screens/DriverProfileScreen";
+import ProfileScreen from "@screens/ProfileScreen";
 import DriverHomeScreen from "@screens/DriverHomeScreen";
 import MechanicHomeScreen from "@screens/MechanicHomeScreen";
 
 const ProfileStack = createStackNavigator({
-  Profile: DriverProfileScreen
-});
+  Profile: ProfileScreen
+}, {
+  defaultNavigationOptions: {
+    header: null
+  }});
 
 ProfileStack.navigationOptions = {
   tabBarLabel: "Profile",
