@@ -112,6 +112,13 @@ export default class DeveloperScreen extends React.Component {
             console.log("srArr: " + JSON.stringify(srArr, null, 2));
           }}
         />
+        <Button
+          title="Console log current location"
+          onPress={async () => {
+            console.log("Retrieving current location...");
+            console.log("Current location: " + JSON.stringify(await LocationService.getCurrentLocation(), null, 2));
+          }}
+        />
       </ScrollView>
     );
   }

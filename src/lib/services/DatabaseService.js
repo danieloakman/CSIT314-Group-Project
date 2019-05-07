@@ -413,6 +413,9 @@ export default class DatabaseService {
 
   static async saveServiceRequestChanges (srObject) {
     try {
+      // Delete unwanted keys:
+      delete srObject.distance;
+
       await AsyncStorage.mergeItem(
         `sr-${srObject.id}`,
         JSON.stringify(srObject)

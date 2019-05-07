@@ -32,7 +32,9 @@
         "email": "mechanic@test.com",
         "password": "test123",
         "verifiedMechanic": false,
-        "jobs": []
+        "rating": 5,
+        "srId": null,
+        "offersSent": []
       }
     },
     "admin@test.com": {

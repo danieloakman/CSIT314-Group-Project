@@ -7,9 +7,9 @@ module.exports = class Mechanic extends User {
     // Attributes:
     this.type = "mechanic";
     this.verifiedMechanic = false;
-    this.jobs = [];
     this.rating = 5.0;
     this.srId = null; // Service request ID currently assigned
+    this.offersSent = []; // List of service request IDs where this mechanic sent an offer
 
     this.restoreAttributesFromUserRecord(userRecord);
   }

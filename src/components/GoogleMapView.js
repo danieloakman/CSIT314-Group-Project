@@ -10,6 +10,8 @@ import LocationService from "@lib/services/LocationService";
  * A map that initially focuses on the client's current location.
  * Add more markers as children of this with key's that are >= 0.
  * Can use onPressCurrentLocation prop to access current location marker data.
+ * Can use onLocationRetrieved to get current location after this component
+ * has loaded it's map.
  */
 export default class GMapView extends React.Component {
   state = {
@@ -46,6 +48,11 @@ export default class GMapView extends React.Component {
               latitudeDelta: 0.03,
               longitudeDelta: 0.01
             }}
+            onMapReady={() => {
+              if (this.props.onLocationRetrieved !== undefined) {
+                this.props.onLocationRetrieved(this.state.currentLocation);
+              }
+            }}
             {...this.props}
           >
             <MapView.Marker
@@ -58,7 +65,9 @@ export default class GMapView extends React.Component {
               description={this.state.currentLocation.address}
               pinColor="#1256cc"
               onPress={() => {
-                this.props.onPressCurrentLocation(this.state.currentLocation);
+                if (this.props.onPressCurrentLocation !== undefined) {
+                  this.props.onPressCurrentLocation(this.state.currentLocation);
+                }
               }}
             />
             {this.props.children}
