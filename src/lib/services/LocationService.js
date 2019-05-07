@@ -103,8 +103,12 @@ export default class LocationService {
   }
 
   /**
-   * Remind user to turn on location services on device if they're disabled.
-   * Ask for location permissions <- todo
+   * WIP, may not bother with this.
+   * Remind user to turn on location services on device if they're disabled and ask to
+   * enable location permission if they're not already.
+   * Intended to be run at app startup and stop the user from using the app
+   * if they don't enable location permissions, since a lot of the app won't be able
+   * to function without it.
    */
   static async initialiseLocationServices () {
     let {status} = await Permissions.askAsync(Permissions.LOCATION);
@@ -114,5 +118,26 @@ export default class LocationService {
     if (!await Location.hasServicesEnabledAsync()) {
       Alert.alert("Please turn on location services on your device.");
     }
+  }
+
+  /**
+   * Using the Haversine formula, returns the distance between coordsA and coordsB in kilometres or miles.
+   * At distances greater than 1km and less than 100km, tested to be accurate within 0.5%.
+   * @param {{latitude, longitude}} coordsA Latitude-longitude location coordinates of the first position.
+   * @param {{latitude, longitutde}} coordsB Latitude-longitude location coordinates of the first position.
+   * @param {Boolean} useMilesInstead Optionally get miles instead of the default kilometres returned value.
+   */
+  static getDistanceBetween (coordsA, coordsB, useMilesInstead = false) {
+    const toRadians = (degrees) => { return degrees * (Math.PI / 180); };
+    const dLat = toRadians(coordsB.latitude - coordsA.latitude);
+    const dLon = toRadians(coordsB.longitude - coordsA.longitude);
+    const radianDistance = 2 * Math.asin(Math.sqrt(
+      Math.pow(Math.sin(dLat / 2), 2) +
+      Math.cos(toRadians(coordsA.latitude)) * Math.cos(toRadians(coordsB.latitude)) *
+      Math.pow(Math.sin(dLon / 2), 2)
+    ));
+    return useMilesInstead
+      ? 3958.8 * radianDistance // return in miles
+      : 6371 * radianDistance; // return in kilometres
   }
 }
