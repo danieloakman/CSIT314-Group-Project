@@ -4,6 +4,8 @@ import {
   Permissions
 } from "expo";
 
+const toRadians = (degrees) => { return degrees * (Math.PI / 180); };
+const toDegrees = (radians) => { return radians / (Math.PI / 180); };
 export default class LocationService {
   /**
    * Returns the latitiude-longitude location of the device running this client.
@@ -128,7 +130,6 @@ export default class LocationService {
    * @param {Boolean} useMilesInstead Optionally get miles instead of the default kilometres returned value.
    */
   static getDistanceBetween (coordsA, coordsB, useMilesInstead = false) {
-    const toRadians = (degrees) => { return degrees * (Math.PI / 180); };
     const dLat = toRadians(coordsB.latitude - coordsA.latitude);
     const dLon = toRadians(coordsB.longitude - coordsA.longitude);
     const radianDistance = 2 * Math.asin(Math.sqrt(
@@ -139,5 +140,31 @@ export default class LocationService {
     return useMilesInstead
       ? 3958.8 * radianDistance // return in miles
       : 6371 * radianDistance; // return in kilometres
+  }
+
+  /**
+   * Returns some random latitude-longitude location within a radius
+   * around the passed in location.
+   * @param {{latitude, longitude}} location latitude-longitude location coordinates
+   * @param {number} radius Use kilometres if useMilesInstead is left undefined in parameter,
+   * or use miles if useMilesInstead is set to true.
+   * @param {Boolean} useMilesInstead Optionally use and get miles instead of the default: kilometres.
+   */
+  static getRandomLocation (location, radius, useMilesInstead = false) {
+    const earthRadius = useMilesInstead ? 3958.8 : 6371;
+    const max = {
+      latitude: location.latitude + toDegrees(radius / earthRadius),
+      longitude: location.longitude + toDegrees(Math.asin(radius / earthRadius)) /
+        toDegrees(Math.cos(location.latitude))
+    };
+    const min = {
+      latitude: location.latitude - toDegrees(radius / earthRadius),
+      longitude: location.longitude - toDegrees(Math.asin(radius / earthRadius)) /
+        toDegrees(Math.cos(location.latitude))
+    };
+    return {
+      latitude: Math.random() * (max.latitude - min.latitude) + min.latitude,
+      longitude: Math.random() * (max.longitude - min.longitude) + min.longitude
+    };
   }
 }
