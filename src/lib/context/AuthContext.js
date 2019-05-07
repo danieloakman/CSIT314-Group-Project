@@ -24,7 +24,11 @@ export class AuthProvider extends React.Component {
   async loadUser () {
     const record = await UserDB.getSignedInUser();
     if (record !== null) {
-      this.setState({user: record});
+      const p = new Promise((resolve) => {
+        this.setState({user: record}, resolve);
+      });
+      await p;
+      console.log(this.state.user);
       if (record.pictureURI) {
         Image.prefetch(record.pictureURI);
       }
@@ -49,7 +53,7 @@ export class AuthProvider extends React.Component {
 
   componentWillUnmount () {
     // Deregister all listeners
-    UserDB.emitter.on("signedIn", this.handleSignIn, this);
+    UserDB.emitter.off("signedIn", this.handleSignIn, this);
     UserDB.emitter.off("signedOut", this.handleSignOut, this);
   }
 
