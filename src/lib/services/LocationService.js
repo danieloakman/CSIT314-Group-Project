@@ -10,15 +10,18 @@ const toDegrees = (radians) => { return radians / (Math.PI / 180); };
 export default class LocationService {
   /**
    * Returns the latitiude-longitude location of the device running this client.
+   * @param {number} maximumAge Optional: return a previously cached location
+   * that is at most this old in milliseconds. Defaults to 120000ms or 2 mins
+   * if not specified.
    */
-  static async getCurrentLocation () {
+  static async getCurrentLocation (maximumAge = 120000) {
     let {status} = await Permissions.askAsync(Permissions.LOCATION);
     if (status !== "granted") {
       return null;
     } else {
       return Promise.race([
         new Promise(async resolve => {
-          resolve(await Location.getCurrentPositionAsync());
+          resolve(await Location.getCurrentPositionAsync({maximumAge}));
         }),
         new Promise(resolve => {
           let wait = setTimeout(() => {
@@ -53,18 +56,11 @@ export default class LocationService {
     } else {
       let location = await Location.reverseGeocodeAsync({latitude, longitude});
       if (location.length === 0) return null;
-      else if (location.length === 1) {
+      else {
         return {
           addressStr: this.parseAddress(location[0]),
           metaData: location[0]
         };
-      } else {
-        return location.map(loc => {
-          return {
-            addressStr: this.parseAddress(loc),
-            metaData: loc
-          };
-        });
       }
     }
   }
@@ -74,39 +70,45 @@ export default class LocationService {
    * @param {Object} address
    */
   static parseAddress (address) {
-    if (!address) return "";
-    else {
-      let state;
-      switch (address.region.toLowerCase()) {
-        case "new south wales":
-          state = "NSW";
-          break;
-        case "western australia":
-          state = "WA";
-          break;
-        case "south australia":
-          state = "SA";
-          break;
-        case "queensland":
-          state = "QLD";
-          break;
-        case "victoria":
-          state = "VIC";
-          break;
-        case "tasmania":
-          state = "TAS";
-          break;
-        case "australian capital territory":
-          state = "ACT";
-          break;
-        case "northern territory":
-          state = "NT";
-          break;
-        default:
-          state = address.region;
-          break;
+    try {
+      if (!address) return "";
+      else {
+        let state;
+        switch (address.region.toLowerCase()) {
+          case "new south wales":
+            state = "NSW";
+            break;
+          case "western australia":
+            state = "WA";
+            break;
+          case "south australia":
+            state = "SA";
+            break;
+          case "queensland":
+            state = "QLD";
+            break;
+          case "victoria":
+            state = "VIC";
+            break;
+          case "tasmania":
+            state = "TAS";
+            break;
+          case "australian capital territory":
+            state = "ACT";
+            break;
+          case "northern territory":
+            state = "NT";
+            break;
+          default:
+            state = address.region;
+            break;
+        }
+        return `${address.name} ${address.street}, ${address.city} ${state} ${address.postalCode}`;
       }
-      return `${address.name} ${address.street}, ${address.city} ${state} ${address.postalCode}`;
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.log(`LocationService.parseAddress() error: ${err.stack}`);
+      return "Address un-available";
     }
   }
 

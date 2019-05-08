@@ -29,8 +29,9 @@ numberOfLines = {3}
 class DriverHomeScreen extends React.Component {
   state = {
     user: null,
-    userHasAnSR: false,
-    anOfferIsAccepted: false
+    enableRequestAssistance: false,
+    enableViewCurrentOffers: false,
+    enableViewActiveRequest: false,
   }
 
   componentDidMount () {
@@ -41,8 +42,9 @@ class DriverHomeScreen extends React.Component {
           let sr = await DatabaseService.getServiceRequest(user.srId);
           this.setState({
             user,
-            userHasAnSR: user.srId !== null,
-            anOfferIsAccepted: sr ? sr.status === "Offer accepted" : false
+            enableRequestAssistance: !user.srId,
+            enableViewCurrentOffers: user.srId && sr ? sr.status === "Awaiting offer acceptance" : false,
+            enableViewActiveRequest: user.srId && sr ? sr.status === "Offer accepted" : false
           });
           // console.log(this.state.userHasAnSR, this.state.anOfferIsAccepted);
         })
@@ -59,7 +61,7 @@ class DriverHomeScreen extends React.Component {
             : <Button
               title="Request Assistance"
               onPress={() => this.props.navigation.navigate("Request", {user: this.state.user})}
-              disabled={this.state.userHasAnSR}
+              disabled={!this.state.enableRequestAssistance}
             />
           }
         </View>
@@ -68,7 +70,7 @@ class DriverHomeScreen extends React.Component {
             : <Button
               title="View Current Offers"
               onPress={() => this.props.navigation.navigate("OfferList", {user: this.state.user})}
-              disabled={!this.state.userHasAnSR && this.state.anOfferIsAccepted} // todo: fix this boolean value to correctly disable this button
+              disabled={!this.state.enableViewCurrentOffers}
             />
           }
         </View>
@@ -77,7 +79,7 @@ class DriverHomeScreen extends React.Component {
             : <Button
               title="View Active Assistance Request"
               onPress={() => this.props.navigation.navigate("ActiveServiceRequest", {user: this.state.user})}
-              disabled={!this.state.anOfferIsAccepted}
+              disabled={!this.state.enableViewActiveRequest}
             />
           }
         </View>

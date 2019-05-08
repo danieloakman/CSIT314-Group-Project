@@ -39,14 +39,14 @@ export default class DeveloperScreen extends React.Component {
           title="Wipe and re-initialise database"
           onPress={async () => {
             await DatabaseService.initialiseDatabase({forceWipe: true});
-            console.log("Done wipe database. Should restart app now.");
+            console.log("Done wipe database. Should sign out now.");
           }}
         />
         <Button
           title="Merge testData.json into database"
           onPress={async () => {
             await DatabaseService.initialiseDatabase({forceWipe: false});
-            console.log("Done merge database. Should restart the app now.");
+            console.log("Done merge database. Should sign out now.");
           }}
         />
         <Button
