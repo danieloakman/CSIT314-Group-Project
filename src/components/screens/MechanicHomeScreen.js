@@ -27,6 +27,18 @@ class MechanicHomeScreen extends React.Component {
             onPress={() => this.props.navigation.navigate("RequestList") }
           />
         </View>
+        <View style={styles.buttons}>
+          <Button
+            title="View Pending Offer"
+            onPress={() => this.props.navigation.navigate("RequestView") }
+          />
+        </View>
+        <View style={styles.buttons}>
+          <Button
+            title="View Active Assistance Request"
+            onPress={() => this.props.navigation.navigate("RequestView") }
+          />
+        </View>
       </View>
     );
   }
@@ -167,6 +179,14 @@ class RequestView extends React.Component {
             onPress={async () => {
               await this._submitOfferToServiceRequest();
             }}
+          />
+        </View>
+        {/* for cancelling requests (not implemented yet) */}
+        <Text>Offered Amount: $</Text>
+        <View style={styles.buttons}>
+          <Button
+            title="Cancel Offer"
+            onPress={() => Alert.alert("cancel request")}
           />
         </View>
         <View style={styles.buttons}>

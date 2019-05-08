@@ -24,10 +24,8 @@ class MechanicProfileScreen extends React.Component {
             style={[styles.iconImage, {height: 150, width: 150}]}
           />
           <View>
-            <Text>Account Type: Mechanic</Text>
-            <Text>Average Rating: N/A</Text>
-            <Text>Balance: $200</Text>
-            <Text>Name: Joe Black</Text>
+            <Text>Account Type: Admin</Text>
+            <Text>Name: Homer Simpson</Text>
           </View>
         </View>
         <View style={styles.buttons}>
@@ -38,20 +36,20 @@ class MechanicProfileScreen extends React.Component {
         </View>
         <View style={styles.buttons}>
           <Button
-            title="History"
+            title="Verification History"
             onPress={() => this.props.navigation.navigate("HistoryList") }
           />
         </View>
         <View style={styles.buttons}>
           <Button
-            title="Balance"
-            onPress={() => this.props.navigation.navigate("Balance") }
+            title="View Verification Requests"
+            onPress={() => this.props.navigation.navigate("VerificationList") }
           />
         </View>
         <View style={styles.buttons}>
           <Button
-            title="Verify Account"
-            onPress={() => this.props.navigation.navigate("Verification") }
+            title="Search User"
+            onPress={() => this.props.navigation.navigate("SearchUser") }
           />
         </View>
       </View>
@@ -108,12 +106,6 @@ class EditProfile extends React.Component {
         </View>
         <View style={styles.buttons}>
           <Button
-            title="Edit Payment Details"
-            onPress={() => this.props.navigation.navigate("PaymentDetails")}
-          />
-        </View>
-        <View style={styles.buttons}>
-          <Button
             title="Back"
             onPress={() => this.props.navigation.goBack()}
           />
@@ -127,11 +119,12 @@ class HistoryList extends React.Component {
   render () {
     return (
       <ScrollView>
-        <Text style={styles.heading}>History</Text>
+        <Text style={styles.heading}>Verification History</Text>
         <TouchableOpacity style={styles.buttonBox} onPress={() => this._viewHistoryItem()}>
           <View style={styles.buttonBoxText}>
             <Text>Date: </Text>
             <Text>Time: </Text>
+            <Text>ID: </Text>
           </View>
         </TouchableOpacity>
         <View style={styles.buttons}>
@@ -153,20 +146,12 @@ class HistoryItem extends React.Component {
   render () {
     return (
       <View>
-        <Text style={styles.heading}>History</Text>
+        <Text style={styles.heading}>Verification History</Text>
         <Text>Date: </Text>
         <Text>Time: </Text>
-        <Text>ID: </Text>
-        <Text>Driver: </Text>
         <Text>Mechanic: </Text>
-        <Text>Description: </Text>
-        <Text>Cost: </Text>
-        <Text>Rating: </Text>
-        <Text>Comments: </Text>
-        <Text>Car Details</Text>
-        <Text>Make: </Text>
-        <Text>Model: </Text>
-        <Text>Plates: </Text>
+        <Text>Approval: </Text>
+        <Text>ID: </Text>
         <View style={styles.buttons}>
           <Button
             title="Back"
@@ -178,107 +163,51 @@ class HistoryItem extends React.Component {
   }
 }
 
-class PaymentDetails extends React.Component {
-  state = {
-    accountNumber: "",
-    bsb: ""
-  }
+class VerificationList extends React.Component {
   render () {
     return (
-      <View>
-        <Text style={styles.heading}>Payment Details</Text>
-        {/* need payment details here */}
-        <View style={styles.centeredRowContainer}>
-          <Text style={styles.textBesideInput}>Account Number:</Text>
-          <TextInput
-            style={styles.textInput}
-            onChangeText={accountNumber => this.setState({ accountNumber })}
-          />
-        </View>
-        <View style={styles.centeredRowContainer}>
-          <Text style={styles.textBesideInput}>BSB:</Text>
-          <TextInput
-            style={styles.textInput}
-            onChangeText={bsb => this.setState({ bsb })}
-          />
-        </View>
-        <View style={styles.buttons}>
-          <Button
-            title="Save"
-            onPress={() => this._saveDetails()}
-          />
-        </View>
+      <ScrollView>
+        <Text style={styles.heading}>Verification Requests</Text>
+        <TouchableOpacity style={styles.buttonBox} onPress={() => this._viewVerificationItem()}>
+          <View style={styles.buttonBoxText}>
+            <Text>Date: </Text>
+            <Text>Time: </Text>
+            <Text>ID: </Text>
+          </View>
+        </TouchableOpacity>
         <View style={styles.buttons}>
           <Button
             title="Back"
             onPress={() => this.props.navigation.goBack()}
           />
         </View>
-      </View>
+      </ScrollView>
     );
   }
-  _saveDetails () {
-    Alert.alert("you saved your details");
+  _viewVerificationItem () {
+    // need to get item information and give it to the verification item screen
+    this.props.navigation.navigate("VerificationItem");
   }
 }
-
-class Balance extends React.Component {
-  state = {
-    amount: ""
-  }
-  render () {
-    return (
-      <View>
-        <Text style={styles.heading}>Balance</Text>
-        <Text>Balance: </Text>
-        { /* NOTE: should be disabled if no bank account selected */}
-        <Text>Withdraw Funds</Text>
-        <View style={styles.centeredRowContainer}>
-          <Text style={styles.textBesideInput}>Amount: $</Text>
-          <TextInput
-            style={styles.textInput}
-            // also need to change new balance on entering amount
-            onChangeText={amount => this.setState({ amount })}
-          />
-        </View>
-        <Text>New Balance: </Text>
-        <View style={styles.buttons}>
-          <Button
-            title="Withdraw"
-            onPress={() => this._withdrawFunds()}
-          />
-        </View>
-        <View style={styles.buttons}>
-          <Button
-            title="Back"
-            onPress={() => this.props.navigation.goBack()}
-          />
-        </View>
-      </View>
-    );
-  }
-  _withdrawFunds () {
-    Alert.alert("withdrew " + this.state.amount + " dollars");
-  }
-}
-
-class Verification extends React.Component {
+/* Verification Request Approval Screen */
+class VerificationItem extends React.Component {
   state = {
     selectedDoc: "doc1"
   }
   render () {
     return (
       <View>
-        <Text style={styles.heading}>Verification</Text>
-        <Text>Account Status: Not Verified</Text>
+        <Text style={styles.heading}>Verification Request Approval</Text>
+        <Text>Date: </Text>
+        <Text>Time: </Text>
+        <Text>Mechanic: </Text>
+        <Text>ID: </Text>
         <View style={styles.buttons}>
           <Button
-            title="View Verification Requirements"
-            onPress={() => this.props.navigation.navigate("Requirements")}
+            title="View Mechanic Profile"
+            onPress={() => Alert.alert("view profile...")}
           />
         </View>
-        <Text>Verification Documents</Text>
-        {/* will need to be filled with list of documents that have been uploaded */}
         <View style={styles.centeredRowContainer}>
           <Text style={styles.textBesideInput}>Verification Documents:</Text>
           <View style={{borderWidth: 1, borderRadius: 5}}>
@@ -294,20 +223,20 @@ class Verification extends React.Component {
         </View>
         <View style={styles.buttons}>
           <Button
-            title="Upload Document"
-            onPress={() => Alert.alert("choose document to upload")}
+            title="View Document"
+            onPress={() => this._viewDocument()}
           />
         </View>
         <View style={styles.buttons}>
           <Button
-            title="Remove Document"
-            onPress={() => Alert.alert("Sure you want to remove selected document?")}
+            title="Approve"
+            onPress={() => this._approve()}
           />
         </View>
         <View style={styles.buttons}>
           <Button
-            title="Send Verification Request"
-            onPress={() => Alert.alert("Verification request sent")}
+            title="Deny"
+            onPress={() => this._deny()}
           />
         </View>
         <View style={styles.buttons}>
@@ -319,17 +248,72 @@ class Verification extends React.Component {
       </View>
     );
   }
+  _approve () {
+    // add to list as approved item
+    this.props.navigation.navigate("VerificationList");
+  }
+  _deny () {
+    // add to list as denied item
+    this.props.navigation.navigate("VerificationList");
+  }
+  _viewDocument () {
+    Alert.alert("viewing doc: " + this.state.selectedDoc);
+  }
 }
 
-class Requirements extends React.Component {
+class SearchUser extends React.Component {
+  state = {
+    selectedType: "Any",
+    firstName: "",
+    lastName: "",
+    email: ""
+  }
   render () {
     return (
       <View>
-        <Text style={styles.heading}>Requirements</Text>
-        <Text>Drivers Licence</Text>
-        <Text>Mechanic Certificate</Text>
-        <Text>Payment Details</Text>
-        <Text>References</Text>
+        <Text style={styles.heading}>Search User</Text>
+        <View style={styles.centeredRowContainer}>
+          <Text style={styles.textBesideInput}>Type:</Text>
+          <View style={{borderWidth: 1, borderRadius: 5}}>
+            <Picker
+              selectedValue={this.state.selectedType}
+              style={{width: 150}}
+              itemStyle={{fontSize: 20}}
+              mode="dropdown"
+              onValueChange={selectedType => this.setState({ selectedType })}>
+              <Picker.Item label="Any" value="Any" />
+              <Picker.Item label="Mechanic" value="Mechanic" />
+              <Picker.Item label="Driver" value="Driver" />
+            </Picker>
+          </View>
+        </View>
+        <View style={styles.centeredRowContainer}>
+          <Text style={styles.textBesideInput}>First Name:</Text>
+          <TextInput
+            style={styles.textInput}
+            onChangeText={firstName => this.setState({ firstName })}
+          />
+        </View>
+        <View style={styles.centeredRowContainer}>
+          <Text style={styles.textBesideInput}>Last Name:</Text>
+          <TextInput
+            style={styles.textInput}
+            onChangeText={lastName => this.setState({ lastName })}
+          />
+        </View>
+        <View style={styles.centeredRowContainer}>
+          <Text style={styles.textBesideInput}>E-mail:</Text>
+          <TextInput
+            style={styles.textInput}
+            onChangeText={email => this.setState({ email })}
+          />
+        </View>
+        <View style={styles.buttons}>
+          <Button
+            title="Search"
+            onPress={() => this._search()}
+          />
+        </View>
         <View style={styles.buttons}>
           <Button
             title="Back"
@@ -338,6 +322,37 @@ class Requirements extends React.Component {
         </View>
       </View>
     );
+  }
+  _search () {
+    this.props.navigation.navigate("SearchResults");
+  }
+}
+
+class SearchResults extends React.Component {
+  render () {
+    return (
+      <View>
+        <ScrollView>
+          <Text style={styles.heading}>Verification Requests</Text>
+          <TouchableOpacity style={styles.buttonBox} onPress={() => this._viewProfile()}>
+            <View style={styles.buttonBoxText}>
+              <Text>Name: </Text>
+              <Text>E-mail: </Text>
+              <Text>Type: </Text>
+            </View>
+          </TouchableOpacity>
+          <View style={styles.buttons}>
+            <Button
+              title="Back"
+              onPress={() => this.props.navigation.goBack()}
+            />
+          </View>
+        </ScrollView>
+      </View>
+    );
+  }
+  _viewProfile () {
+    Alert.alert("view profile... again");
   }
 }
 
@@ -345,12 +360,12 @@ const MainNavigator = createStackNavigator(
   {
     Home: MechanicProfileScreen,
     EditProfile: EditProfile,
-    PaymentDetails: PaymentDetails,
     HistoryList: HistoryList,
     HistoryItem: HistoryItem,
-    Balance: Balance,
-    Verification: Verification,
-    Requirements: Requirements
+    VerificationList: VerificationList,
+    VerificationItem: VerificationItem,
+    SearchUser: SearchUser,
+    SearchResults: SearchResults
   },
   {
     initialRouteName: "Home",
