@@ -33,7 +33,7 @@
         "email": "mechanic@test.com",
         "password": "test123",
         "verifiedMechanic": false,
-        "rating": 5,
+        "rating": "Un-rated",
         "srId": null,
         "offersSent": []
       }

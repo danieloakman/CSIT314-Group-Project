@@ -304,9 +304,10 @@ export default class DatabaseService {
     allKeys.forEach(key => {
       promises.push(
         new Promise(async resolve => {
-          let value = prettify
-            ? JSON.stringify(JSON.parse(await AsyncStorage.getItem(key)), null, 2)
-            : await AsyncStorage.getItem(key);
+          let value = await AsyncStorage.getItem(key);
+          value = prettify && value.match(/\{.+\}/i)
+            ? JSON.stringify(JSON.parse(value), null, 2)
+            : value;
           console.log(
             `${prettify ? "" : "\t* "}"${key}": ${value}`
           );
