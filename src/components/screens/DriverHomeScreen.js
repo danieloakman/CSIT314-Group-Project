@@ -394,12 +394,43 @@ class ActiveServiceRequest extends React.Component {
     });
   }
 
+  async _completeServiceRequest () {
+    //
+  }
+
   render () {
-    return (
+    return ( // todo: fill out this screen.
       <WindowBox>
         <Text style={styles.heading}>Active Request</Text>
         <View style={styles.centeredRowContainer}>
-          {/* todo */}
+          <Text style={styles.textBesideInput}>Rating:</Text>
+          <View style={{borderWidth: 1, borderRadius: 5}}>
+            <Picker
+              selectedValue={this.state.rating}
+              style={{ width: 150 }}
+              itemStyle={{ fontSize: 20 }}
+              mode="dropdown"
+              onValueChange={rating => this.setState({ rating })}>
+              {[1, 2, 3, 4, 5].map((ratingValue, index) => {
+                return <Picker.Item key={index} label={ratingValue.toString()} value={ratingValue}/>;
+              })}
+            </Picker>
+          </View>
+        </View>
+        <View style={styles.buttons}>
+          <Button
+            title="Complete Assisstance Request"
+            onPress={async () => {
+              // await this._completeServiceRequest();
+              Alert.alert("Completed Assistance Request!");
+            }}
+          />
+        </View>
+        <View style={styles.buttons}>
+          <Button
+            title="Back"
+            onPress={() => this.props.navigation.goBack()}
+          />
         </View>
       </WindowBox>
     );

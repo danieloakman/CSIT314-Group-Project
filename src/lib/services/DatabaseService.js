@@ -345,6 +345,8 @@ export default class DatabaseService {
     }
   }
 
+  // todo: either update this or create another function to get a vehicle by it's plate and/or vin.
+  // Probably need some permission from all current owners of the vehicle.
   static async getVehicle (vehicleId) {
     try {
       let vehicle = await AsyncStorage.getItem(`vehicle-${vehicleId}`);
@@ -368,6 +370,10 @@ export default class DatabaseService {
       console.error(`DatabaseService.saveVehicleChanges() error: ${err.message}`);
       return false;
     }
+  }
+
+  static async deleteVehicle (vehicleId) {
+    // todo
   }
 
   /**
