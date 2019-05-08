@@ -295,7 +295,7 @@ export default class DatabaseService {
     }
   }
 
-  static async printAllKeysInDatabase () {
+  static async printAllKeysInDatabase (prettify = true) {
     /* eslint-disable no-console */
     let allKeys = await AsyncStorage.getAllKeys();
     if (allKeys.length > 0) console.log("\tAll key-value pairs:");
@@ -304,8 +304,11 @@ export default class DatabaseService {
     allKeys.forEach(key => {
       promises.push(
         new Promise(async resolve => {
+          let value = prettify
+            ? JSON.stringify(JSON.parse(await AsyncStorage.getItem(key)), null, 2)
+            : await AsyncStorage.getItem(key);
           console.log(
-            ` * "${key}": ${JSON.stringify(await AsyncStorage.getItem(key), null, 2)}`
+            `${prettify ? "" : "\t* "}"${key}": ${value}`
           );
           resolve(true);
         })
@@ -432,6 +435,10 @@ export default class DatabaseService {
       console.error(`DatabaseService.saveServiceRequestChanges() error: ${err.message}`);
       return false;
     }
+  }
+
+  static async deleteServiceRequest () {
+    // todo
   }
 
   /**
