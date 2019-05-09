@@ -126,10 +126,10 @@ export default class DeveloperScreen extends React.Component {
           title="Simulate a bunch of async actions"
           onPress={async () => {
             let startTime = new Date();
-            let currentLocation = await LocationService.getCurrentLocation();
-            const totalDatabaseActions = 1000;
-            const noOfAsyncActions = 20;
-            for (let i = 0; i < totalDatabaseActions; i += noOfAsyncActions) {
+            // let currentLocation = await LocationService.getCurrentLocation();
+            const totalActions = 1000;
+            const noOfAsyncActions = 50;
+            for (let i = 0; i < totalActions; i += noOfAsyncActions) {
               let promises = [];
               for (let j = 0; j < noOfAsyncActions; j++) {
                 promises.push(new Promise(async resolve => {
@@ -159,7 +159,8 @@ export default class DeveloperScreen extends React.Component {
 
                     // Driver creates service request:
                     result = await DatabaseService.createServiceRequest(
-                      LocationService.getRandomLocation(currentLocation.coords, 50),
+                      LocationService.getRandomLocation(
+                        {latitude: -34.406419, longitude: 150.882327}, 5),
                       user.email, vehicle.id, `Random description-${uuid()}`
                     );
 
@@ -179,7 +180,11 @@ export default class DeveloperScreen extends React.Component {
               await Promise.all(promises);
               console.log(`Completed actions ${i} to ${i + noOfAsyncActions}`);
             }
-            console.log("Completed in: " + (new Date() - startTime) + "ms");
+            let runTime = new Date() - startTime;
+            console.log(
+              `Completed in: ${runTime}ms\n` +
+              `Mean run time: ${runTime / totalActions}ms`
+            );
           }}
         />
       </ScrollView>
