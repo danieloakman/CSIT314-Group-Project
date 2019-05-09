@@ -22,9 +22,11 @@ export default class GMapView extends React.Component {
   componentDidMount () {
     LocationService.getCurrentLocation().then(async location => {
       if (location) {
-        location.address = (await LocationService.getAddress(
+        let address = await LocationService.getAddress(
           location.coords.latitude, location.coords.longitude
-        )).addressStr;
+        );
+        // if (address.)
+        location.address = address.addressStr;
         location.title = "Current Location";
         this.setState({
           isLoading: false,

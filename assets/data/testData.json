@@ -19,6 +19,7 @@
         "lastName": "Mccartney",
         "email": "driver2@test.com",
         "password": "test123",
+        "srId": "d0155f80-47b7-434e-ba0d-980cee2da5aa",
         "vehicleIds": [
           "0e3ad9ab-d62f-4a90-b2d4-219227a90de6"
         ]
@@ -32,7 +33,7 @@
         "email": "mechanic@test.com",
         "password": "test123",
         "verifiedMechanic": false,
-        "rating": 5,
+        "rating": "Un-rated",
         "srId": null,
         "offersSent": []
       }
@@ -73,29 +74,6 @@
     }
   },
   "serviceRequests": {
-    "1e7a3fde-5b69-43c1-8531-94ef45c69f7f": {
-      "id": "1e7a3fde-5b69-43c1-8531-94ef45c69f7f",
-      "location": {
-        "timestamp": 1557223185014,
-        "mocked": false,
-        "coords": {
-          "heading": 0,
-          "longitude": 150.887503,
-          "speed": 0,
-          "altitude": 37.599998474121094,
-          "latitude": -34.395093,
-          "accuracy": 16.340999603271484
-        }
-      },
-      "driverEmail": "driver@test.com",
-      "vehicleId": "9fe70aad-8568-4568-92b7-f96276fdcea6",
-      "description": "Flat tire",
-      "assignedMechanicEmail": null,
-      "offers": [],
-      "status": "Awaiting offer acceptance",
-      "creationDate": "2019-05-07T09:59:54.604Z",
-      "completionDate": null
-    },
     "d0155f80-47b7-434e-ba0d-980cee2da5aa": {
       "id": "d0155f80-47b7-434e-ba0d-980cee2da5aa",
       "location": {
