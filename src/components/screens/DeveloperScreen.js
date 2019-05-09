@@ -9,7 +9,10 @@ import {
 } from "react-native";
 import DatabaseService from "@lib/services/DatabaseService";
 import LocationService from "@lib/services/LocationService";
+import {FileSystem} from "expo";
 const cars = require("../../../dataGenerator/datasets/cars");
+const names = require("../../../dataGenerator/datasets/names");
+const uuid = require("uuid/v4");
 
 export default class DeveloperScreen extends React.Component {
   static navigationOptions = {
@@ -117,6 +120,66 @@ export default class DeveloperScreen extends React.Component {
           onPress={async () => {
             console.log("Retrieving current location...");
             console.log("Current location: " + JSON.stringify(await LocationService.getCurrentLocation(), null, 2));
+          }}
+        />
+        <Button
+          title="Simulate a bunch of async actions"
+          onPress={async () => {
+            let startTime = new Date();
+            let currentLocation = await LocationService.getCurrentLocation();
+            const totalDatabaseActions = 1000;
+            const noOfAsyncActions = 20;
+            for (let i = 0; i < totalDatabaseActions; i += noOfAsyncActions) {
+              let promises = [];
+              for (let j = 0; j < noOfAsyncActions; j++) {
+                promises.push(new Promise(async resolve => {
+                  try {
+                    // Create driver:
+                    let firstName = names.firstNames[Math.floor((Math.random() * names.firstNames.length - 1) + 1)];
+                    let lastName = names.lastNames[Math.floor((Math.random() * names.lastNames.length - 1) + 1)];
+                    let email = `${uuid()}email@test.com`;
+                    await DatabaseService.createUser(
+                      "Driver", firstName, lastName, email, "test123", "04123456718"
+                    );
+                    let user = await DatabaseService.getUser(email);
+
+                    // Driver adds a car:
+                    let vehicle = cars[Math.floor((Math.random() * cars.length - 1) + 1)];
+                    let result = await DatabaseService.createVehicle(
+                      user.email, vehicle.make, vehicle.model,
+                      vehicle.year, vehicle.plate, vehicle.vin
+                    );
+
+                    // Update driver with car id:
+                    user.vehicleIds.push(result.vehicleId);
+                    await DatabaseService.saveUserChanges(user);
+
+                    // Get vehicle from DB after it's been created:
+                    vehicle = await DatabaseService.getVehicle(user.vehicleIds[0]);
+
+                    // Driver creates service request:
+                    result = await DatabaseService.createServiceRequest(
+                      LocationService.getRandomLocation(currentLocation.coords, 50),
+                      user.email, vehicle.id, `Random description-${uuid()}`
+                    );
+
+                    // Save Driver and service request changes:
+                    user.srId = vehicle.srId = result.srId;
+                    await Promise.all([
+                      DatabaseService.saveUserChanges(user),
+                      DatabaseService.saveVehicleChanges(vehicle)
+                    ]);
+                  } catch (err) {
+                    console.log(`error: ${err.message}`);
+                  }
+                  resolve(true);
+                }));
+              }
+              console.log(`Started actions ${i} to ${i + noOfAsyncActions}`);
+              await Promise.all(promises);
+              console.log(`Completed actions ${i} to ${i + noOfAsyncActions}`);
+            }
+            console.log("Completed in: " + (new Date() - startTime) + "ms");
           }}
         />
       </ScrollView>

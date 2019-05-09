@@ -124,9 +124,11 @@ export default class DatabaseService {
       let keyValuePair = [
         [`user-${userRecord.account.email}`, JSON.stringify(userRecord)]
       ];
-      if (signInAswell) keyValuePair.push(["signedInUserEmail", userRecord.account.email]);
+      if (signInAswell) {
+        keyValuePair.push(["signedInUserEmail", userRecord.account.email]);
+        this.emitter.emit("signedIn");
+      }
       await AsyncStorage.multiSet(keyValuePair);
-      this.emitter.emit("signedIn");
       return {pass: true};
     } catch (err) {
       // eslint-disable-next-line no-console
@@ -316,6 +318,7 @@ export default class DatabaseService {
       );
     });
     await Promise.all(promises);
+    console.log(`No of keys in database: ${allKeys.length}`);
     /* eslint-enable no-console */
   }
 
