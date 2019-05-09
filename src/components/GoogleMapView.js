@@ -25,8 +25,7 @@ export default class GMapView extends React.Component {
         let address = await LocationService.getAddress(
           location.coords.latitude, location.coords.longitude
         );
-        // if (address.)
-        location.address = address.addressStr;
+        location.address = address ? address.addressStr : "Address unavailable";
         location.title = "Current Location";
         this.setState({
           isLoading: false,

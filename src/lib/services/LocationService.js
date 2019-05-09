@@ -108,7 +108,7 @@ export default class LocationService {
     } catch (err) {
       // eslint-disable-next-line no-console
       console.log(`LocationService.parseAddress() error: ${err.stack}`);
-      return "Address un-available";
+      return "Address unavailable";
     }
   }
 
