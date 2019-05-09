@@ -34,7 +34,7 @@ export default class LocationService {
               this.getRandomLocation({
                 latitude: -34.406419,
                 longitude: 150.882327
-              }, 50)
+              }, 5)
             );
           }, 3000); // Timeout of 3 seconds.
         })
@@ -173,27 +173,25 @@ export default class LocationService {
    * @param {Boolean} useMilesInstead Optionally use and get miles instead of the default: kilometres.
    */
   static getRandomLocation (location, radius, useMilesInstead = false) {
-    const earthRadius = useMilesInstead ? 3958.8 : 6371;
-    const max = {
-      latitude: location.latitude + toDegrees(radius / earthRadius),
-      longitude: location.longitude + toDegrees(Math.asin(radius / earthRadius)) /
-        toDegrees(Math.cos(location.latitude))
-    };
-    const min = {
-      latitude: location.latitude - toDegrees(radius / earthRadius),
-      longitude: location.longitude - toDegrees(Math.asin(radius / earthRadius)) /
-        toDegrees(Math.cos(location.latitude))
-    };
+    // 69 and 111 is the amount of miles and kilometres in 1 degree of latitude.
+    const radiusInDegrees = useMilesInstead ? radius / 69 : radius / 111;
+    let u = Math.random();
+    let v = Math.random();
+    let w = radiusInDegrees * Math.sqrt(u);
+    let t = 2 * Math.PI * v;
+    // Note: the constant 0.7 is to adjust distibution to be more circular for our specific latitude in NSW.
+    let randLatitude = (w * Math.cos(t)) / (Math.cos(location.longitude) / 0.7) + location.latitude;
+    let randLongitude = (w * Math.sin(t)) + location.longitude;
     return {
       timestamp: Math.floor(Date.now() / 1000),
       mocked: false,
       coords: {
-        latitude: Math.random() * (max.latitude - min.latitude) + min.latitude,
-        longitude: Math.random() * (max.longitude - min.longitude) + min.longitude,
+        latitude: randLatitude,
+        longitude: randLongitude,
         heading: 0,
         speed: 0,
-        altitude: 37.599998474121094,
-        accuracy: 16.340999603271484
+        altitude: 37.5,
+        accuracy: 16.34
       }
     };
   }
