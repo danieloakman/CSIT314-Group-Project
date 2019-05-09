@@ -41,7 +41,6 @@ class MechanicHomeScreen extends React.Component {
   }
 }
 
-// request list
 class RequestList extends React.Component {
   state = {
     user: null,
@@ -55,7 +54,6 @@ class RequestList extends React.Component {
   render () {
     return (
       <View style={{flex: 1}}>
-        <Text style={styles.heading}>Nearby Requests</Text>
         <View style={{flex: 1}}>
           <GMapView
             onLocationRetrieved={async currentLocation => {
@@ -84,8 +82,6 @@ class RequestList extends React.Component {
                 />;
               })}
           </GMapView>
-        </View>
-        <View style={{flex: 1}}>
           <Text style={styles.heading}>Nearby Requests</Text>
           {!this.state.selectedSR ? null
             : <View>
