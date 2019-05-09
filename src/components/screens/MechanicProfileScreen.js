@@ -156,6 +156,7 @@ class HistoryItem extends React.Component {
         <Text style={styles.heading}>History</Text>
         <Text>Date: </Text>
         <Text>Time: </Text>
+        <Text>Location: </Text>
         <Text>ID: </Text>
         <Text>Driver: </Text>
         <Text>Mechanic: </Text>

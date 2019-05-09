@@ -21,11 +21,8 @@ import GMapView from "@components/GoogleMapView";
 import {MapView} from "expo";
 import WindowBox from "@components/WindowBox";
 
-// todo: add image placeholder in offerview
-/*
-multiline = {true}
-numberOfLines = {3}
-*/
+import MechanicProfileViewScreen from "@screens/MechanicProfileViewScreen";
+// todo:
 class DriverHomeScreen extends React.Component {
   state = {
     user: null,
@@ -253,7 +250,7 @@ class OfferList extends React.Component {
         </View>
         <View style={{flex: 1}}>
           <Text style={styles.heading}>Offers</Text>
-          {/* sort by dropdown */}
+          {/* sort by dropdown
           <View style={styles.centeredRowContainer}>
             <Text style={styles.textBesideInput}>Sort By:</Text>
             <View style={{borderWidth: 1, borderRadius: 5}}>
@@ -270,6 +267,7 @@ class OfferList extends React.Component {
               </Picker>
             </View>
           </View>
+          */}
           {!this.state.selectedOffer ? null
             : <TouchableOpacity style={styles.buttonBox} onPress={() => this._selectOffer()}>
               <View style={styles.buttonBoxText}>
@@ -337,7 +335,7 @@ class OfferView extends React.Component {
         <View style={styles.buttons}>
           <Button
             title="View Mechanic Profile"
-            onPress={() => Alert.alert("go to mechanic profile view")}
+            onPress={() => this.navigation.navigate("MechanicProfileView")}
           />
         </View>
         <View style={styles.buttons}>
@@ -443,7 +441,8 @@ const MainNavigator = createStackNavigator(
     Request: RequestScreen,
     OfferList: OfferList,
     OfferView: OfferView,
-    ActiveServiceRequest
+    ActiveServiceRequest,
+    MechanicProfileView: MechanicProfileViewScreen
   },
   {
     initialRouteName: "Home",
