@@ -286,7 +286,7 @@ class SignInCreateAccScreen extends React.Component {
     if (!result.pass) this.setState({signInErrorText: result.reason});
     else {
       // Change screen to Main:
-      this.props.navigation.navigate("Main");
+      // this.props.navigation.navigate("Main");
     }
   }
 
@@ -309,7 +309,7 @@ class SignInCreateAccScreen extends React.Component {
     if (!result.pass) this.setState({crAccErrorText: result.reason});
     else {
       // Change to main screen:
-      this.props.navigation.navigate("Main");
+      // this.props.navigation.navigate("Main");
     }
   }
 
@@ -347,7 +347,7 @@ class SignInCreateAccScreen extends React.Component {
             if (!result.pass) this.setState({ signInErrorText: result.reason });
             else {
               // Change screen to Main:
-              this.props.navigation.navigate("Main");
+              // this.props.navigation.navigate("Main");
             }
           }}
           title={`DEV_OPTION: Sign in with ${email}`}

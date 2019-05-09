@@ -10,12 +10,12 @@ class AuthLoadingScreen extends React.Component {
   async _loadSession () {
     let auth = this.props.AuthContext;
     await auth.loadUser();
-    console.log("authorized");
-    this.props.navigation.navigate(auth.user.email ? "Main" : "SignIn");
+    // console.log("authorized");
+    // this.props.navigation.navigate(auth.user.email ? "Main" : "SignIn");
   }
 
-  componentDidMount () {
-    this._loadSession();
+  async componentDidMount () {
+    await this._loadSession();
   }
 
   render () {
