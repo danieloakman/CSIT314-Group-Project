@@ -7,7 +7,6 @@ import {
   StyleSheet,
   Text,
   View,
-  ScrollView,
   Button,
   TouchableOpacity,
   TextInput,

@@ -10,10 +10,9 @@ import {
 } from "react-native";
 import {createStackNavigator, createAppContainer} from "react-navigation";
 // todo:
-class MechanicProfileScreen extends React.Component {
+class DriverProfileScreen extends React.Component {
   state = {
-    type: "",
-    rating: "",
+    type: "Driver",
     name: "",
     phone: "",
     email: ""
@@ -29,7 +28,6 @@ class MechanicProfileScreen extends React.Component {
           />
           <View>
             <Text>Account Type: {this.state.type}</Text>
-            <Text>Average Rating: {this.state.rating}</Text>
             <Text>Name: {this.state.name}</Text>
             <Text>Phone: {this.state.phone}</Text>
             <Text>E-mail: {this.state.email}</Text>
@@ -110,7 +108,7 @@ class HistoryItem extends React.Component {
 
 const MainNavigator = createStackNavigator(
   {
-    Home: MechanicProfileScreen,
+    Home: DriverProfileScreen,
     HistoryList: HistoryList,
     HistoryItem: HistoryItem,
   },
