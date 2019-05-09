@@ -5,6 +5,7 @@ import {
 } from "react-native";
 import {MapView} from "expo";
 import LocationService from "@lib/services/LocationService";
+import LoadingGif from "@components/atoms/LoadingGif";
 
 /**
  * A map that initially focuses on the client's current location.
@@ -78,7 +79,7 @@ export default class GMapView extends React.Component {
     } else if (!this.state.isLoading && !this.state.currentLocation) {
       return <Text>Cannot display map because permission to access location was denied.</Text>;
     } else {
-      return <Text>Loading...</Text>;
+      return <LoadingGif/>;
     }
   }
 }
