@@ -20,7 +20,7 @@ import HeaderBar from "@molecules/HeaderBar";
 
 import {withAuthContext} from "@lib/context/AuthContext";
 
-import UserDB from "@lib/services/UserDatabaseService";
+import DB from "@lib/services/DatabaseService";
 import StickyTabTemplate from "@templates/StickyTabTemplate";
 
 /**
@@ -49,12 +49,12 @@ class ProfileScreen extends React.Component {
   }
 
   async componentDidMount () {
-    UserDB.emitter.on("updateUser", this.handleDataChange, this);
+    DB.emitter.on("updateUser", this.handleDataChange, this);
     // setTimeout(() => { this.setState({test: 300}); }, 5000);
   }
 
   async componentWillUnmount () {
-    UserDB.emitter.off("updateUser", this.handleDataChange, this);
+    DB.emitter.off("updateUser", this.handleDataChange, this);
   }
 
   // static getDerivedStateFromProps (props, state) {
@@ -65,7 +65,7 @@ class ProfileScreen extends React.Component {
    * Retrieves a user's data from storage and applies it to tab data
    */
   async loadUser () {
-    const record = await UserDB.getUser(this.state.activeUser);
+    const record = await DB.getUser(this.state.activeUser);
     // console.log(record);
     this.setState({userRecord: record});
     if (record.type === "driver") {
