@@ -66,6 +66,7 @@ class ProfileScreen extends React.Component {
 
   async componentDidMount () {
     UserDB.emitter.on("updateUser", this.handleDataChange, this);
+    // setTimeout(() => { this.setState({test: 300}); }, 5000);
   }
 
   async componentWillUnmount () {
