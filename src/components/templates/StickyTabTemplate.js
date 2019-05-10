@@ -196,6 +196,7 @@ class StickyTabTemplate extends React.Component {
                 translateY: this.state.headerOffsetY,
               },
             ],
+            backgroundColor: "#efefef"
           }}
         >
           {this.props.headerComponent ? <this.props.headerComponent /> : null}

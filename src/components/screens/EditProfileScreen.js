@@ -4,22 +4,13 @@ import {
   View,
   KeyboardAvoidingView,
   ScrollView,
-  TextInput,
-  Keyboard
 } from "react-native";
 
 import {
-  Card,
-  CardItem,
   Button,
-  Container,
-  Header,
-  Content,
-  Form,
   Item,
   Input,
   Label,
-  Textarea
 } from "native-base";
 
 import HeaderBar from "@molecules/HeaderBar";

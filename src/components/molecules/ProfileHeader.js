@@ -18,6 +18,7 @@ class ProfileHeader extends React.Component {
         justifyContent: "space-around",
         flexDirection: "column",
         backgroundColor: "#efefef",
+        paddingBottom: 2
       }} >
         {/* User image and name */}
         <FlexContainer size={1} style={{ justifyContent: "flex-start" }}>
@@ -44,7 +45,7 @@ class ProfileHeader extends React.Component {
         <FlexContainer size={4} style={{ marginTop: 15 }}>
           <View style={{flex: 1, alignSelf: "center", alignItems: "flex-start", minWidth: 150}}>
             <Text style={[{ flex: 2 }, styles.centerText]}>{record.description}</Text>
-            <Text >Joined {record.registerDate}</Text>
+            <Text >Joined date {record.registerDate}</Text>
             {record.type === "driver"
               ? <Text>Subscriber Badge</Text>
               : null
