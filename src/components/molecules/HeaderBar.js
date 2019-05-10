@@ -32,7 +32,7 @@ export default class NavHeader extends React.Component {
   }
 
   componentDidUpdate () {
-    LayoutAnimation.linear();
+    // LayoutAnimation.linear();
     // this.setState({title: this.props.title ? this.props.title : " "});
   }
 
