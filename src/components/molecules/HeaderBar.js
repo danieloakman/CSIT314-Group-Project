@@ -28,7 +28,6 @@ class NavHeader extends React.Component {
 
   _renderDrawerButton () {
     const index = this.props.navigation.dangerouslyGetParent().state.index;
-    console.log(index);
     return (
       index <= 0
         ? <DrawerButton />

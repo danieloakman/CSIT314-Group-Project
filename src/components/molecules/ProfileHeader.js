@@ -14,36 +14,46 @@ class ProfileHeader extends React.Component {
     let {record} = this.props;
     return (
 
-      <FlexContainer size={2} style={{
+      <FlexContainer size={1} style={{
         justifyContent: "space-around",
         flexDirection: "column",
         backgroundColor: "#efefef",
       }} >
         {/* User image and name */}
-        <FlexContainer size={2} style={{ justifyContent: "flex-start" }}>
+        <FlexContainer size={1} style={{ justifyContent: "flex-start" }}>
           <Image
             source={record.pictureURI
               ? {uri: record.pictureURI}
               : require("@assets/images/robot-prod.png")}
             style={styles.userImage}
           />
+          <View style={{flex: 1, alignSelf: "center", alignItems: "center"}}>
+            <View>
+              <Text style={styles.userName}>
+                {record.firstName} {record.lastName}
+              </Text>
+              <Text style={styles.userEmail}>
+                {record.email}
+              </Text>
+            </View>
 
-          <Text style={styles.userName}>
-            {record.firstName} {record.lastName}
-          </Text>
+          </View>
+
         </FlexContainer>
         {/* User description */}
         <FlexContainer size={4} style={{ marginTop: 15 }}>
-          <FlexContainer size={3} />
-          <Text style={[{ flex: 2 }, styles.centerText]}>{record.description}</Text>
-          <View style={{ flex: 4 }}>
-            <Text style={styles.centerText}>Member since: {record.registerDate}</Text>
-            <Text style={styles.centerText}/>
-            <Text style={styles.centerText}>subscriberBadge if subscriber</Text>
+          <View style={{flex: 1, alignSelf: "center", alignItems: "flex-start", minWidth: 150}}>
+            <Text style={[{ flex: 2 }, styles.centerText]}>{record.description}</Text>
+            <Text >Joined {record.registerDate}</Text>
+            {record.type === "driver"
+              ? <Text>Subscriber Badge</Text>
+              : null
+            }
+            {record.type === "mechanic"
+              ? <Text>Rating goes here</Text>
+              : null
+            }
           </View>
-
-          <FlexContainer size={2} />
-          {/* Open contact modal */}
         </FlexContainer>
       </FlexContainer>
 
@@ -62,14 +72,20 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     textAlign: "center",
   },
+  userEmail: {
+    fontSize: 12,
+    color: "grey"
+  },
   userImage: {
     borderRadius: 75,
     borderWidth: 1,
     borderColor: "black",
-    marginTop: 10,
+    // marginTop: 10,
     resizeMode: "cover",
-    maxWidth: 75,
-    maxHeight: 75,
+    // maxWidth: 75,
+    // maxHeight: 75,
+    width: 75,
+    height: 75,
     alignSelf: "center"
   },
 });
