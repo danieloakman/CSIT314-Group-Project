@@ -160,7 +160,7 @@ export default createDrawerNavigator({
   drawerOpenRoute: "DrawerOpen",
   drawerCloseRoute: "drawerClose",
   drawerToggleRoute: "DrawerToggle",
-  edgeWidth: 800
+  edgeWidth: 0
 }
 );
 
