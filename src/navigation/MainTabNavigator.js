@@ -103,10 +103,22 @@ AdminStack.navigationOptions = {
   )
 };
 
-export default createBottomTabNavigator({
+const TabStack = createBottomTabNavigator({
   ProfileStack,
   DriverHomeStack,
   MechanicHomeStack,
   MechanicProfileStack,
   AdminStack
 });
+
+const ModalStack = createStackNavigator({
+  TabStack,
+  ProfileModal: ProfileScreen
+},
+{
+  mode: "modal",
+  headerMode: "none"
+}
+);
+
+export default ModalStack;
