@@ -7,32 +7,77 @@ import {
   StyleSheet,
   Text,
   View,
-  ScrollView,
   Button,
   TouchableOpacity,
   TextInput,
   Alert,
   Picker
-  // TouchableOpacity,
-  // Colors
 } from "react-native";
 import {createStackNavigator, createAppContainer} from "react-navigation";
-// todo: make buttons work, fix description input (hard to close, making too many lines makes box too big)
-/*
-multiline = {true}
-numberOfLines = {3}
-*/
+import DatabaseService from "@lib/services/DatabaseService";
+import LocationService from "@lib/services/LocationService";
+import GMapView from "@components/GoogleMapView";
+import {MapView} from "expo";
+import WindowBox from "@components/WindowBox";
+
+import MechanicProfileViewScreen from "@screens/MechanicProfileViewScreen";
+// todo:
 class DriverHomeScreen extends React.Component {
+  state = {
+    user: null,
+    enableRequestAssistance: false,
+    enableViewCurrentOffers: false,
+    enableViewActiveRequest: false,
+  }
+
+  componentDidMount () {
+    const {navigation} = this.props;
+    navigation.addListener("willFocus", () => { // todo: maybe make a better refresh screen method
+      DatabaseService.getSignedInUser()
+        .then(async user => {
+          let sr = await DatabaseService.getServiceRequest(user.srId);
+          this.setState({
+            user,
+            enableRequestAssistance: !user.srId,
+            enableViewCurrentOffers: user.srId && sr ? sr.status === "Awaiting offer acceptance" : false,
+            enableViewActiveRequest: user.srId && sr ? sr.status === "Offer accepted" : false
+          });
+          // console.log(this.state.userHasAnSR, this.state.anOfferIsAccepted);
+        })
+        .catch(err => { throw err; });
+    });
+  }
+
   render () {
-    /* const {navigate} = this.props.navigation; */
     return (
       <View>
         <Text style={styles.heading}>Home</Text>
         <View style={styles.buttons}>
-          <Button
-            title="Request Assistance"
-            onPress={() => this.props.navigation.navigate("Request") }
-          />
+          {!this.state.user ? null
+            : <Button
+              title="Request Assistance"
+              onPress={() => this.props.navigation.navigate("Request", {user: this.state.user})}
+              disabled={!this.state.enableRequestAssistance}
+            />
+          }
+        </View>
+        <View style={styles.buttons}>
+          {!this.state.user ? null
+            : <Button
+              title="View Current Offers"
+              onPress={() => this.props.navigation.navigate("OfferList", {user: this.state.user})}
+              disabled={!this.state.enableViewCurrentOffers}
+            />
+          }
+        </View>
+        <View style={styles.buttons}>
+          {!this.state.user ? null
+            : <Button
+              title="View Active Assistance Request"
+              onPress={() => this.props.navigation.navigate("ActiveServiceRequest", {user: this.state.user})}
+              disabled={!this.state.enableViewActiveRequest}
+            />
+          }
         </View>
       </View>
     );
@@ -41,79 +86,68 @@ class DriverHomeScreen extends React.Component {
 
 class RequestScreen extends React.Component {
   state = {
-    address: "",
-    suburb: "",
     descripton: "",
-    selectedState: "NSW",
-    car: "car 1"
+    vehicles: null,
+    selectedVehicle: null,
+    location: null, // latitude-longitude coordinates
+    user: null
   }
+
+  componentDidMount () {
+    LocationService.getCurrentLocation()
+      .then(async location => {
+        let user = this.props.navigation.getParam("user", "The current user");
+        if (!location) Alert.alert("Cannot continue unless location permission is enabled.");
+        let vehicles = [];
+        for (let id of user.vehicleIds) {
+          vehicles.push(await DatabaseService.getVehicle(id));
+        }
+        this.setState({
+          user,
+          vehicles: vehicles.length > 0 ? vehicles : null,
+          location,
+          selectedVehicle: vehicles.length > 0 ? vehicles[0] : null
+        });
+      })
+      .catch(err => {
+        throw err;
+      });
+  }
+
   render () {
     return (
       <View>
         <Text style={styles.heading}>Roadside Assistance Request</Text>
-        {/* Address text input */}
-        <View style={styles.centeredRowContainer}>
-          <Text style={styles.textBesideInput}>Address:</Text>
-          <TextInput
-            style={styles.textInput}
-            placeholder="123 street name"
-            onChangeText={address => this.setState({ address })}
-          />
-        </View>
-        {/* Suburb text input */}
-        <View style={styles.centeredRowContainer}>
-          <Text style={styles.textBesideInput}>Suburb:</Text>
-          <TextInput
-            style={styles.textInput}
-            onChangeText={suburb => this.setState({ suburb })}
-          />
-        </View>
-        {/* State dropdown input */}
-        <View style={styles.centeredRowContainer}>
-          <Text style={styles.textBesideInput}>State:</Text>
-          <View style={{borderWidth: 1, borderRadius: 5}}>
-            <Picker
-              selectedValue={this.state.selectedState}
-              style={{width: 150}}
-              itemStyle={{fontSize: 20}}
-              mode="dropdown"
-              onValueChange={selectedState => this.setState({ selectedState })}
-            >
-              <Picker.Item label="NSW" value="NSW" />
-              <Picker.Item label="VIC" value="VIC" />
-              <Picker.Item label="QLD" value="QLD" />
-              <Picker.Item label="WA" value="WA" />
-              <Picker.Item label="SA" value="SA" />
-              <Picker.Item label="NT" value="NT" />
-              <Picker.Item label="ACT" value="ACT" />
-            </Picker>
-          </View>
-        </View>
-        {/* GPS button */}
-        <View style={styles.buttons}>
-          <Button
-            title="Use GPS Location"
-            onPress={() => Alert.alert("not implemented yet")}
-            /* NOTE: for google maps integration */
-            /* can probably remove address, suburb, state if using GPS/google maps instead */
-          />
-        </View>
         {/* car selection dropdown input */}
-        <View style={styles.centeredRowContainer}>
-          <Text style={styles.textBesideInput}>State:</Text>
-          <View style={{borderWidth: 1, borderRadius: 5}}>
-            <Picker
-              selectedValue={this.state.car}
-              style={{width: 150}}
-              itemStyle={{fontSize: 20}}
-              mode="dropdown"
-              onValueChange={car => this.setState({ car })}>
-              <Picker.Item label="car 1" value="car 1" />
-              <Picker.Item label="car 2" value="car 2" />
-              <Picker.Item label="car 3" value="car 3" />
-            </Picker>
+        {!this.state.location ? null
+          : <View style={styles.centeredRowContainer}>
+            <Text>Your location has been automatically retrieved.</Text>
           </View>
-        </View>
+        }
+        {!this.state.vehicles
+          ? <View style={styles.centeredRowContainer}>
+            <Text>We found no cars tied to your account. Please go back and add one to continue.</Text>
+          </View>
+          : <View style={styles.centeredRowContainer}>
+            <Text style={styles.textBesideInput}>Car:</Text>
+            <View style={{borderWidth: 1, borderRadius: 5}}>
+              <Picker
+                selectedValue={this.state.selectedVehicleId}
+                style={{width: 150}}
+                itemStyle={{fontSize: 20}}
+                mode="dropdown"
+                onValueChange={vehicle => this.setState({selectedVehicleId: vehicle})}>
+                {this.state.vehicles.map((vehicle, index) => {
+                  return <Picker.Item
+                    key={index}
+                    label={`${vehicle.year} ${vehicle.make}`}
+                    value={vehicle}
+                  />;
+                })}
+              </Picker>
+            </View>
+          </View>
+        }
         {/* Description text input */}
         <View style={styles.centeredRowContainer}>
           <Text style={styles.textBesideInput}>Description:</Text>
@@ -127,7 +161,7 @@ class RequestScreen extends React.Component {
           <Button
             style="buttons"
             title="Submit"
-            onPress={() => this._submitRequest()}
+            onPress={async () => { await this._submitRequest(); }}
           />
         </View>
         <View style={styles.buttons}>
@@ -140,111 +174,177 @@ class RequestScreen extends React.Component {
 
     );
   }
-  _submitRequest () {
-    /*
-    Alert.alert(
-      "Address: " + this.state.address +
-      "\nSuburb: " + this.state.suburb +
-      "\nState: " + this.state.selectedState +
-      "\nDescription: " + this.state.descripton +
-      "\nCar: " + this.state.car
+  async _submitRequest () {
+    if (!this.state.descripton || !this.state.selectedVehicle) {
+      Alert.alert("Please fill in description and select a vehicle.");
+      return;
+    }
+    let result = await DatabaseService.createServiceRequest(
+      this.state.location, this.state.user.email, this.state.selectedVehicle.id, this.state.descripton
     );
-    */
-    this.props.navigation.navigate("OfferList");
+    if (!result.pass && !result.srId) {
+      Alert.alert(result.reason);
+      return;
+    }
+    // Save user and vehicle changes:
+    let user = this.state.user;
+    let vehicle = this.state.selectedVehicle;
+    user.srId = vehicle.srId = result.srId;
+    await Promise.all([
+      DatabaseService.saveUserChanges(user),
+      DatabaseService.saveVehicleChanges(vehicle)
+    ]);
+    this.props.navigation.goBack();
   }
 }
 
 // offers screen
 class OfferList extends React.Component {
   state = {
+    user: null,
+    serviceRequest: null,
+    location: null,
+    isLoadingMap: true,
+    selectedOffer: null,
     sorting: "Rating",
     waitTime: "20min",
     cost: "$200",
     mechanic: "Joe White",
     rating: "4.2"
   }
+
+  componentDidMount () {
+    let user = this.props.navigation.getParam("user", "The current user");
+    this.setState({user});
+  }
+
   render () {
     return (
-      <ScrollView>
-        <Text style={styles.heading}>Offers</Text>
-        {/* sort by dropdown */}
-        <View style={styles.centeredRowContainer}>
-          <Text style={styles.textBesideInput}>Sort By:</Text>
-          <View style={{borderWidth: 1, borderRadius: 5}}>
-            <Picker
-              selectedValue={this.state.sorting}
-              style={{width: 150}}
-              itemStyle={{fontSize: 20}}
-              mode="dropdown"
-              onValueChange={sorting => this.setState({ sorting })}>
-              <Picker.Item label="Rating" value="Rating" />
-              <Picker.Item label="Cost" value="Cost" />
-              <Picker.Item label="Time" value="Time" />
-              <Picker.Item label="Name" value="Name" />
-            </Picker>
+      <View style={{flex: 1}}>
+        <View style={{flex: 1}}>
+          <GMapView
+            onLocationRetrieved={async currentLocation => {
+              this.setState({
+                serviceRequest: await DatabaseService.getServiceRequest(this.state.user.srId),
+                isLoadingMap: false,
+                location: currentLocation
+              });
+            }}
+          >
+            {this.state.isLoadingMap ? null
+              : this.state.serviceRequest.offers.map((offer, index) => {
+                const distance = LocationService.getDistanceBetween(offer.location.coords, this.state.location.coords);
+                return <MapView.Marker
+                  key={index}
+                  coordinate={{
+                    latitude: offer.location.coords.latitude,
+                    longitude: offer.location.coords.longitude
+                  }}
+                  title={`$${offer.offerAmount}, Rating: ${offer.mechanicRating}/5`}
+                  description={`Distance: ${Math.floor(distance * 100) / 100}km`}
+                  onPress={() => {
+                    this.setState({selectedOffer: offer});
+                  }}
+                />;
+              })}
+          </GMapView>
+        </View>
+        <View style={{flex: 1}}>
+          <Text style={styles.heading}>Offers</Text>
+          {/* sort by dropdown
+          <View style={styles.centeredRowContainer}>
+            <Text style={styles.textBesideInput}>Sort By:</Text>
+            <View style={{borderWidth: 1, borderRadius: 5}}>
+              <Picker
+                selectedValue={this.state.sorting}
+                style={{width: 150}}
+                itemStyle={{fontSize: 20}}
+                mode="dropdown"
+                onValueChange={sorting => this.setState({ sorting })}>
+                <Picker.Item label="Rating" value="Rating" />
+                <Picker.Item label="Cost" value="Cost" />
+                <Picker.Item label="Time" value="Time" />
+                <Picker.Item label="Name" value="Name" />
+              </Picker>
+            </View>
+          </View>
+          */}
+          {!this.state.selectedOffer ? null
+            : <TouchableOpacity style={styles.buttonBox} onPress={() => this._selectOffer()}>
+              <View style={styles.buttonBoxText}>
+                {/* <Text>Time: {this.state.waitTime}</Text> // todo calculate waitTime */}
+                <Text>Cost: {this.state.selectedOffer.offerAmount}</Text>
+                <Text>Mechnanic: {this.state.selectedOffer.mechanicEmail}</Text>
+                <Text>Average Rating: {this.state.selectedOffer.mechanicRating}</Text>
+                <Text>Time when offered: {this.state.selectedOffer.creationDate}</Text>
+              </View>
+            </TouchableOpacity>
+          }
+          <View style={styles.buttons}>
+            <Button
+              title="Cancel Request"
+              onPress={() => this.props.navigation.popToTop()}
+            />
+          </View>
+          <View style={styles.buttons}>
+            <Button
+              title="Back"
+              onPress={() => this.props.navigation.goBack()}
+            />
           </View>
         </View>
-        {/* offer display box, will be a list of these here, should say no offers yet if empty */}
-        <TouchableOpacity style={styles.buttonBox} onPress={() => this._selectOffer()}>
-          <View style={styles.buttonBoxText}>
-            <Text>Time: {this.state.waitTime}</Text>
-            <Text>Cost: {this.state.cost}</Text>
-            <Text>Mechnanic: {this.state.mechanic}</Text>
-            <Text>Average Rating: {this.state.rating}</Text>
-          </View>
-        </TouchableOpacity>
-        <View style={styles.buttons}>
-          <Button
-            title="Cancel Request"
-            onPress={() => this.props.navigation.popToTop()}
-          />
-        </View>
-        <View style={styles.buttons}>
-          <Button
-            title="Back"
-            onPress={() => this.props.navigation.goBack()}
-          />
-        </View>
-      </ScrollView>
+      </View>
     );
   }
   /* Note will need to set states first depending on what was clicked */
   _selectOffer () {
     this.props.navigation.navigate("OfferView", {
-      waitTime: this.state.waitTime,
-      cost: this.state.cost,
-      mechanic: this.state.mechanic,
-      rating: this.state.rating });
+      offer: this.state.selectedOffer,
+      user: this.state.user,
+      serviceRequest: this.state.serviceRequest
+    });
   }
 }
 
 class OfferView extends React.Component {
+  state = {
+    user: null,
+    offer: null,
+    serviceRequest: null
+  }
+
+  componentWillMount () {
+    /* get parameters from the list item which was clicked */
+    this.setState({
+      offer: this.props.navigation.getParam("offer", "The selected offer"),
+      user: this.props.navigation.getParam("user", "Currently signed in driver"),
+      serviceRequest: this.props.navigation.getParam("serviceRequest", "The driver's service request"),
+    });
+  }
+
   render () {
-  /* get parameters from the list item which was clicked */
-    const { navigation } = this.props;
-    const waitTime = navigation.getParam("waitTime", "mechanic ETA");
-    const cost = navigation.getParam("cost", "mechanic service fee");
-    const mechanic = navigation.getParam("mechanic", "mechanics name");
-    const rating = navigation.getParam("rating", "mechnaic average rating");
     return (
       <View>
         <Text style={styles.heading}>Offer</Text>
         <View style={styles.buttonBoxText}>
-          <Text>Time: {waitTime}</Text>
-          <Text>Cost: {cost}</Text>
-          <Text>Mechnanic: {mechanic}</Text>
-          <Text>Average Rating: {rating}</Text>
+          {/* <Text>Time: {waitTime}</Text> */}
+          <Text>Cost: {this.state.offer.offerAmount}</Text>
+          <Text>Mechnanic: {this.state.offer.mechanicEmail}</Text>
+          <Text>Average Rating: {this.state.offer.mechanicRating}</Text>
+          <Text>Time when offered: {this.state.offer.creationDate}</Text>
         </View>
         <View style={styles.buttons}>
           <Button
             title="View Mechanic Profile"
-            onPress={() => Alert.alert("go to mechanic profile view")}
+            onPress={() => this.navigation.navigate("MechanicProfileView")}
           />
         </View>
         <View style={styles.buttons}>
           <Button
             title="Accept Request"
-            onPress={() => Alert.alert("request accepted...")}
+            onPress={async () => {
+              await this._acceptRequest();
+            }}
           />
         </View>
         <View style={styles.buttons}>
@@ -254,6 +354,84 @@ class OfferView extends React.Component {
           />
         </View>
       </View>
+    );
+  }
+  async _acceptRequest () {
+    await Promise.all([
+      new Promise(async resolve => {
+        // Update the service request:
+        let sr = this.state.serviceRequest;
+        sr.assignedMechanicEmail = this.state.offer.mechanicEmail;
+        sr.status = "Offer accepted";
+        await DatabaseService.saveServiceRequestChanges(sr);
+        resolve(true);
+      }),
+      new Promise(async resolve => {
+        // Update the mechanic:
+        let mechanic = await DatabaseService.getUser(this.state.offer.mechanicEmail);
+        mechanic.srId = this.state.serviceRequest.id;
+        mechanic.offersSent = mechanic.offersSent
+          .filter(srId => srId !== this.state.serviceRequest.id);
+        await DatabaseService.saveUserChanges(mechanic);
+        resolve(true);
+      })
+    ]);
+    Alert.alert("Offer accepted!");
+    this.props.navigation.navigate("Home");
+  }
+}
+
+class ActiveServiceRequest extends React.Component {
+  state = {
+    user: null,
+    rating: 5
+  }
+
+  componentDidMount () {
+    this.setState({
+      user: this.props.navigation.getParam("user", "Currently signed in driver"),
+    });
+  }
+
+  async _completeServiceRequest () {
+    //
+  }
+
+  render () {
+    return ( // todo: fill out this screen.
+      <WindowBox>
+        <Text style={styles.heading}>Active Request</Text>
+        <View style={styles.centeredRowContainer}>
+          <Text style={styles.textBesideInput}>Rating:</Text>
+          <View style={{borderWidth: 1, borderRadius: 5}}>
+            <Picker
+              selectedValue={this.state.rating}
+              style={{ width: 150 }}
+              itemStyle={{ fontSize: 20 }}
+              mode="dropdown"
+              onValueChange={rating => this.setState({ rating })}>
+              {[1, 2, 3, 4, 5].map((ratingValue, index) => {
+                return <Picker.Item key={index} label={ratingValue.toString()} value={ratingValue}/>;
+              })}
+            </Picker>
+          </View>
+        </View>
+        <View style={styles.buttons}>
+          <Button
+            title="Complete Assisstance Request"
+            onPress={async () => {
+              // await this._completeServiceRequest();
+              Alert.alert("Completed Assistance Request!");
+            }}
+          />
+        </View>
+        <View style={styles.buttons}>
+          <Button
+            title="Back"
+            onPress={() => this.props.navigation.goBack()}
+          />
+        </View>
+      </WindowBox>
     );
   }
 }
@@ -263,7 +441,9 @@ const MainNavigator = createStackNavigator(
     Home: DriverHomeScreen,
     Request: RequestScreen,
     OfferList: OfferList,
-    OfferView: OfferView
+    OfferView: OfferView,
+    ActiveServiceRequest,
+    MechanicProfileView: MechanicProfileViewScreen
   },
   {
     initialRouteName: "Home",

@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import WindowBox from "@components/WindowBox";
 import Patterns from "@constants/UserInputRegex";
-import UserDatabaseService from "@lib/services/UserDatabaseService";
+import DatabaseService from "@lib/services/DatabaseService";
 import Colors from "@constants/Colors";
 import {withAuthContext} from "@lib/context/AuthContext";
 
@@ -87,7 +87,7 @@ class SignInCreateAccScreen extends React.Component {
           style={{ flex: 1, flexDirection: "column", backgroundColor: Colors.backgroundColor }}
           behavior="position">
           <Image
-            source={require("@assets/images/icon.png")}
+            source={require("@assets/images/car-broken-down.png")}
             style={[styles.iconImage, {height: 150, width: 150}]}
           />
           <Text style={styles.titleText}>Sign In</Text>
@@ -142,13 +142,6 @@ class SignInCreateAccScreen extends React.Component {
               {this._renderDevQuickSignInButton("driver@test.com", "test123")}
               {this._renderDevQuickSignInButton("mechanic@test.com", "test123")}
               {this._renderDevQuickSignInButton("admin@test.com", "test123")}
-
-              <Button
-                title="GmapsTest"
-                onPress={async () => {
-                  this.props.navigation.navigate("GMapsTest");
-                }}
-              />
             </View>
           }
 
@@ -160,7 +153,7 @@ class SignInCreateAccScreen extends React.Component {
           style={{ flex: 1, flexDirection: "column", backgroundColor: Colors.screenBackground }}
           behavior="position">
           <Image
-            source={require("@assets/images/icon.png")}
+            source={require("@assets/images/car-broken-down.png")}
             style={styles.iconImage}
           />
           <Text style={styles.titleText}>Create Account</Text>
@@ -282,7 +275,7 @@ class SignInCreateAccScreen extends React.Component {
       return;
     }
     // Attempt to sign the user in:
-    const result = await UserDatabaseService.signInUser(this.state.signInEmail, this.state.signInPassword);
+    const result = await DatabaseService.signInUser(this.state.signInEmail, this.state.signInPassword);
     if (!result.pass) this.setState({signInErrorText: result.reason});
     else {
       // Change screen to Main:
@@ -300,7 +293,7 @@ class SignInCreateAccScreen extends React.Component {
       return;
     }
     // Attempt to create the user:
-    const result = await UserDatabaseService.createUser(
+    const result = await DatabaseService.createUser(
       this.state.crAccType, this.state.crAccFirstName,
       this.state.crAccLastName, this.state.crAccEmail,
       this.state.crAccPassword, this.state.crAccPhoneNo,
@@ -343,7 +336,7 @@ class SignInCreateAccScreen extends React.Component {
         <Button
           onPress={async () => {
             // Attempt to sign the user in:
-            const result = await UserDatabaseService.signInUser(email, password);
+            const result = await DatabaseService.signInUser(email, password);
             if (!result.pass) this.setState({ signInErrorText: result.reason });
             else {
               // Change screen to Main:

@@ -23,7 +23,8 @@
     "react-native-maps": "^0.24.2",
     "react-native-screens": "^1.0.0-alpha.22",
     "react-navigation": "^3.0.9",
-    "tiny-emitter": "^2.1.0"
+    "tiny-emitter": "^2.1.0",
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
     "babel-eslint": "^10.0.1",
