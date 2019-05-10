@@ -5,6 +5,7 @@ import { createStackNavigator, createBottomTabNavigator } from "react-navigation
 import TabBarIcon from "@components/TabBarIcon";
 
 import ProfileScreen from "@screens/ProfileScreen";
+import EditProfileScreen from "@screens/EditProfileScreen";
 import DriverHomeScreen from "@screens/DriverHomeScreen";
 import MechanicHomeScreen from "@screens/MechanicHomeScreen";
 import MechanicProfileScreen from "@screens/MechanicProfileScreen";
@@ -109,13 +110,19 @@ const TabStack = createBottomTabNavigator({
   MechanicHomeStack,
   MechanicProfileStack,
   AdminStack
+},
+{
+  initialRouteName: "ProfileStack"
 });
 
 const ModalStack = createStackNavigator({
   TabStack,
-  ProfileModal: ProfileScreen
+  EditProfileModal: EditProfileScreen,
+  ProfileModal: ProfileScreen,
+
 },
 {
+  initialRouteName: "TabStack",
   mode: "modal",
   headerMode: "none"
 }

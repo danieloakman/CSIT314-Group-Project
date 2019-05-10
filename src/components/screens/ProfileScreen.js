@@ -127,7 +127,9 @@ class ProfileScreen extends React.Component {
     return (
       <View style={{flex: 1}}>
         <HeaderBar withSection
-          navRight={this.state.authUser ? <Button rounded small light><Text style={{paddingHorizontal: 10}}>Edit Profile</Text></Button> : null}
+          navRight={this.state.authUser
+            ? <Button rounded small light onPress={() => this.props.navigation.navigate("EditProfileModal")}><Text style={{paddingHorizontal: 10}}>Edit Profile</Text></Button>
+            : null}
           title={this.state.altHeader ? `${this.state.userRecord.firstName} ${this.state.userRecord.lastName}` : null}
         />
         <StickyTabTemplate
