@@ -1,11 +1,15 @@
 import React from "react";
 import { Platform, StatusBar, StyleSheet, View } from "react-native";
 import { AppLoading, Asset, Font, Icon, registerRootComponent } from "expo";
+import { useScreens } from "react-native-screens";
 import AppNavigator from "./navigation/AppNavigator";
+import NavigationService from "@lib/services/NavigationService";
 import DatabaseService from "@lib/services/DatabaseService";
 
 import {ThemeProvider} from "@lib/context/ThemeContext";
 import {AuthProvider} from "@lib/context/AuthContext";
+
+useScreens();
 
 class App extends React.Component {
   state = {
@@ -27,7 +31,9 @@ class App extends React.Component {
           <AuthProvider>
             <View style={styles.container}>
               {/* {Platform.OS === "ios" && <StatusBar barStyle="default" />} */}
-              <AppNavigator />
+              <AppNavigator
+                ref={navRef => { NavigationService.setTopLevelNavigator(navRef); }}
+              />
             </View>
           </AuthProvider>
         </ThemeProvider>

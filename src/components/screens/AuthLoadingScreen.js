@@ -10,14 +10,19 @@ class AuthLoadingScreen extends React.Component {
   async _loadSession () {
     let auth = this.props.AuthContext;
     await auth.loadUser();
-    this.props.navigation.navigate(auth.user.email ? "Main" : "SignIn");
+    // console.log("authorized");
+    // this.props.navigation.navigate(auth.user.email ? "Main" : "SignIn");
+  }
+
+  async componentDidMount () {
+    await this._loadSession();
   }
 
   render () {
-    this._loadSession(); // Aparrently this won't work in constructor because props aren't defined yet
+    // this._loadSession(); // Aparrently this won't work in constructor because props aren't defined yet
     return (
-      <View>
-        <ActivityIndicator />
+      <View style={{justifyContent: "center", flex: 1}}>
+        <ActivityIndicator size="large" />
         <StatusBar barStyle="default" />
       </View>
     );

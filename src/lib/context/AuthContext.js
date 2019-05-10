@@ -1,6 +1,7 @@
 import React from "react";
 import {Image} from "react-native";
 import DB from "@lib/services/DatabaseService";
+import NavSrvc from "@lib/services/NavigationService";
 /*
   database service is responsible for persisting data to disk, not current state (which needs to be within the react tree)
   changes to user database are caused by calls to database service, however an event must be emitted in order for the context to update its state
@@ -17,34 +18,51 @@ export const AuthContext = React.createContext();
 
 export class AuthProvider extends React.Component {
   state = {
-    user: {}
+    user: {},
+    signedIn: false
 
   }
 
   async loadUser () {
     const record = await DB.getSignedInUser();
     if (record !== null) {
-      this.setState({user: record});
+      // user is signed in
+      const p = new Promise((resolve) => {
+        this.setState({user: record, signedIn: false}, resolve);
+      });
+      await p;
+      // console.log(this.state.user);
       if (record.pictureURI) {
         Image.prefetch(record.pictureURI);
       }
+      NavSrvc.navigate(this.state.user.email ? "Main" : "SignIn");
     } else {
       // user is not signed in
+      NavSrvc.navigate(this.state.user.email ? "Main" : "SignIn");
     }
   }
 
-  handleSignOut () {
-    this.setState({user: {}});
+  async unloadUser () {
+    const p = new Promise((resolve) => {
+      this.setState({user: {}, signedIn: true}, resolve);
+    });
+    await p;
+    NavSrvc.navigate(this.state.user.email ? "Main" : "SignIn");
   }
 
-  handleSignIn () {
-    this.loadUser();
+  async handleSignOut () {
+    await this.unloadUser();
+  }
+
+  async handleSignIn () {
+    await this.loadUser();
   }
 
   async componentDidMount () {
     // Register listener for changes to user info
     DB.emitter.on("signedIn", this.handleSignIn, this);
     DB.emitter.on("signedOut", this.handleSignOut, this);
+    await this.loadUser();
   }
 
   componentWillUnmount () {
