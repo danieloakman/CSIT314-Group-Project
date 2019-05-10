@@ -48,12 +48,15 @@ class ProfileScreen extends React.Component {
     super(props);
     this.state = {
       authUser: false,
-      activeUser: this.props.navigation.getParam("email", null)
+      activeUser: this.props.navigation.getParam("email", null),
+      test: 150,
+      isLoading: true,
     };
     if (this.state.activeUser === null && this.props.AuthContext.user.email) {
       this.state = {
+        ...this.state,
         authUser: true,
-        activeUser: this.props.AuthContext.user.email
+        activeUser: this.props.AuthContext.user.email,
       };
     }
     this.state.tabData = [];
@@ -82,23 +85,34 @@ class ProfileScreen extends React.Component {
     this.setState({userRecord: record});
     if (record.type === "driver") {
       this.setState({tabData: [
-        {header: "Registered Vehicles",
+        {header: "Vehicles",
           data: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
           renderItem: ({item, index}) => <Card><CardItem><Text>Car card #{index} will go here</Text></CardItem></Card>
         },
-        {header: "Service Request History",
+        {header: "Reviews",
+          data: [1, 2, 3, 4, 5, 6, 7, 8],
+          renderItem: ({item, index}) => <Card><CardItem><Text>Mechanic Review #{index}</Text></CardItem></Card>
+        },
+        {header: "Request History",
           data: [1, 2, 3],
           renderItem: ({item, index}) => <Card><CardItem><Text>Request history #{index}</Text></CardItem></Card>
         },
+
       ]
       });
     } else if (record.type === "mechanic") {
       this.setState({tabData: [
-        {header: "Something", data: []},
-        {header: "Service Request History", data: []},
+        {header: "Reviews", data: []},
+        {header: "Request History", data: []},
+      ]
+      });
+    } else if (record.type === "Admin") {
+      this.setState({tabData: [
+        {header: "Approvals", data: []},
       ]
       });
     }
+    this.setState({isLoading: false});
   }
 
   handleDataChange () {
@@ -114,6 +128,16 @@ class ProfileScreen extends React.Component {
     }
   }
 
+  _renderProfileHeader (props) {
+    // if (this.state.userRecord) {
+    return (
+      <ProfileHeader height={this.state.test} {...props} record={this.state.userRecord}/>
+    );
+    // } else {
+    //   return (<View style={{height: 2}}></View>);
+    // }
+  }
+
   /*
     TODO:
     implement actual user profile
@@ -123,38 +147,24 @@ class ProfileScreen extends React.Component {
   */
   render () {
     // console.log(this.props);
+    if (this.state.isLoading) {
+      return (<View><Text>Loading</Text></View>);
+    }
     return (
-      // <WindowBox>
       <View style={{flex: 1}}>
         <HeaderBar withSection
           navRight={this.state.authUser ? <Button rounded small light><Text style={{paddingHorizontal: 10}}>Edit Profile</Text></Button> : null}
           title={this.state.altHeader ? `${this.state.userRecord.firstName} ${this.state.userRecord.lastName}` : null}
         />
         <StickyTabTemplate
-          headerHeight={150}
-          headerComponent={ProfileHeader}
+          // headerHeight={this.state.test}
+          headerComponent={this._renderProfileHeader.bind(this)}
           tabData={this.state.tabData}
           renderItem={({item, index}) => <Card><CardItem><Text>Default render method user for item #{index}</Text></CardItem></Card>}
           onHeaderOffset={this._onHeaderScroll.bind(this)}
         />
-        {/* <ProfilePage
-          pageHeader={HeaderBar}
-          listHeader={ProfileHeader}>
-          <FullWidthButton title={"Contact Details"} onPress={() => {
-            Alert.alert("Contact details button pressed!");
-          }} />
-          <FullWidthButton title={"Service Request History"} onPress={() => {
-            Alert.alert("Service request history button pressed!");
-          }} />
-          <FullWidthButton title={"Registered Vehicles"} onPress={() => {
-            Alert.alert("Registered vehicles button pressed!");
-          }} />
-
-          <Text>What else do we need to display here?</Text>
-        </ProfilePage> */}
 
       </View>
-      // </WindowBox>
     );
   }
   _render () {
