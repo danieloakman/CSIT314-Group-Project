@@ -17,11 +17,7 @@ class ProfileHeader extends React.Component {
       <FlexContainer size={2} style={{
         justifyContent: "space-around",
         flexDirection: "column",
-        // borderBottomColor: "#ddd",
-        // borderBottomWidth: 1,
-        // marginBottom: 15,
         backgroundColor: "#efefef",
-        // height: this.props.height
       }} >
         {/* User image and name */}
         <FlexContainer size={2} style={{ justifyContent: "flex-start" }}>
@@ -49,7 +45,6 @@ class ProfileHeader extends React.Component {
           <FlexContainer size={2} />
           {/* Open contact modal */}
         </FlexContainer>
-        {/* <FlexContainer size={0.5} /> */}
       </FlexContainer>
 
     );
@@ -73,7 +68,6 @@ const styles = StyleSheet.create({
     borderColor: "black",
     marginTop: 10,
     resizeMode: "cover",
-    // flex: 1,
     maxWidth: 75,
     maxHeight: 75,
     alignSelf: "center"

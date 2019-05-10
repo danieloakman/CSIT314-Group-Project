@@ -5,22 +5,21 @@
 import React from "react";
 import {
   Text,
-  Alert,
   View
 } from "react-native";
 
 import {
-  Body, List, ListItem as Item, ScrollableTab, Tab, Tabs, Title, Card, CardItem, Button
+  Card,
+  CardItem,
+  Button
 } from "native-base";
 
-import FullWidthButton from "@atoms/FullWidthButton";
-import DrawerButton from "@atoms/DrawerButton";
 import ProfileHeader from "@molecules/ProfileHeader";
-// import ProfilePage from "@templates/ProfileTemplate";
+
 import HeaderBar from "@molecules/HeaderBar";
-import WindowBox from "@components/WindowBox";
+
 import {withAuthContext} from "@lib/context/AuthContext";
-import { NavigationActions, withNavigation, Header } from "react-navigation";
+
 import UserDB from "@lib/services/UserDatabaseService";
 import StickyTabTemplate from "@templates/StickyTabTemplate";
 
@@ -29,21 +28,6 @@ import StickyTabTemplate from "@templates/StickyTabTemplate";
  * If it's the active user, extra options are given
  */
 class ProfileScreen extends React.Component {
-  // static navigationOptions = {
-  // // static navigationOptions = ({navigation}) => {
-  //   // return {
-  //   title: "User Profile",
-  //   headerTitle: "User Profile",
-  //   headerLeft: DrawerButton,
-  //   headerLeftContainerStyle: {
-  //     paddingLeft: 15
-  //   },
-  //   // headerRight: this.props.email === this.props.AuthContext.user.email
-  //   //   ? DrawerButton
-  //   //   : DrawerButton
-  //   // };
-  // };
-
   constructor (props) {
     super(props);
     this.state = {
@@ -60,7 +44,7 @@ class ProfileScreen extends React.Component {
       };
     }
     this.state.tabData = [];
-    console.log(this.state);
+    // console.log(this.state);
     this.loadUser();
   }
 
@@ -130,22 +114,11 @@ class ProfileScreen extends React.Component {
   }
 
   _renderProfileHeader (props) {
-    // if (this.state.userRecord) {
     return (
       <ProfileHeader height={this.state.test} {...props} record={this.state.userRecord}/>
     );
-    // } else {
-    //   return (<View style={{height: 2}}></View>);
-    // }
   }
 
-  /*
-    TODO:
-    implement actual user profile
-    replace user image and name with actual values at runtime
-    Decompose into multiple components in order to include in mechanic profile as well
-
-  */
   render () {
     // console.log(this.props);
     if (this.state.isLoading) {
@@ -158,18 +131,15 @@ class ProfileScreen extends React.Component {
           title={this.state.altHeader ? `${this.state.userRecord.firstName} ${this.state.userRecord.lastName}` : null}
         />
         <StickyTabTemplate
-          // headerHeight={this.state.test}
           headerComponent={this._renderProfileHeader.bind(this)}
           tabData={this.state.tabData}
           renderItem={({item, index}) => <Card><CardItem><Text>Default render method user for item #{index}</Text></CardItem></Card>}
           onHeaderOffset={this._onHeaderScroll.bind(this)}
         />
-
       </View>
     );
   }
   _render () {
-    console.log(this.props);
     return (
       <View>
         {withAuthContext(this._render)}
@@ -177,5 +147,5 @@ class ProfileScreen extends React.Component {
     );
   }
 }
-// export default DriverProfileScreen;
+
 export default withAuthContext(ProfileScreen);

@@ -1,16 +1,15 @@
 import React from "react";
 import {
-  Animated, Dimensions, Platform, Text, View, StyleSheet, FlatList, ScrollView, TouchableWithoutFeedback
+  Animated,
+  Dimensions,
+  Text,
+  View,
+  StyleSheet,
+  FlatList,
+  TouchableWithoutFeedback
 } from "react-native";
-import {
-  Body, Header, List, ListItem as Item, ScrollableTab, Tab, Tabs, Title
-} from "native-base";
 
-import FlexContainer from "@components/FlexContainer";
-import HeaderBar from "@molecules/HeaderBar";
-
-// import _ from "lodash";
-const _ = require("lodash");
+import _ from "lodash";
 
 const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
 const {width: SCREEN_WIDTH} = Dimensions.get("window");
@@ -29,11 +28,8 @@ const TabContext = React.createContext();
  */
 class StickyTabTemplate extends React.Component {
   _tabPanes = [];
-  // _padders =[];
   _scrollValue = 0;
   _headerOffsetYValue = 0;
-
-  // testPad = new Animated.Value(0);
 
   constructor (props) {
     super(props);
@@ -44,9 +40,6 @@ class StickyTabTemplate extends React.Component {
       activeTab: 0,
       tabData: props.tabData,
       headerDimensions: null,
-      // headerHeight: (this.props.headerHeight || 0) + TAB_BAR_HEIGHT,
-      // headerHeightAnim: new Animated.Value(0),
-
     };
   }
 
@@ -55,14 +48,12 @@ class StickyTabTemplate extends React.Component {
   }
 
   componentDidMount () {
-    // const test = this._customOnHeaderOffset.bind(this);
     const throttled = _.throttle(this._customOnHeaderOffset.bind(this), 60);
     this.state.scroll.addListener(({value}) => {
       const diff = value - this._scrollValue;
       this._scrollValue = value;
       this._headerOffsetYValue = Math.min(
         Math.max(this._headerOffsetYValue + diff, 0),
-        // this.state.headerHeight,
         this.state.headerDimensions ? this.state.headerDimensions.height : 0
       );
       throttled();
@@ -78,50 +69,16 @@ class StickyTabTemplate extends React.Component {
     // this.state.headerOffsetY.removeAllListeners();
   }
 
-  // componentDidUpdate () {
-  //   console.log("Component Updated");
-  //   console.log(this._tabPaneScroller);
-  //   console.log(this._tabPanes);
-  //   this._tabPaneRef.getNode().forceUpdate();
-  //   for (const elem in this._tabPanes) {
-  //     // elem.forceUpdate();
-  //   }
-  // }
-
   _setHeaderHeight (event) {
-    console.log(`setHeight: ${event.nativeEvent.layout.height}`);
-    // this.setState({headerDimensions: null});
     this.setState({headerDimensions: event.nativeEvent.layout}, this._initAnimations);
-    // this.setState({headerHeight: event.nativeEvent.layout.height});
-    // this.state.headerHeightAnim.setValue(event.nativeEvent.layout.height);
-    // this.state.headerHeightAnim.setOffset(event.nativeEvent.layout.height);
-    // this.setState({headerHeightAnim: new Animated.Value(event.nativeEvent.layout.height)});
-    // this.setState({
-    //   headerOffsetY: Animated.multiply(
-    //     Animated.diffClamp(this.state.scroll, 0, Animated.subtract(this.state.headerDimensions.height, TAB_BAR_HEIGHT)),
-    //     -1
-    //   )});
-    // setTimeout(() => this._tabPanes.forceUpdate(), 200);
-    // this._tabPanes.getNode().forceUpdate();
   }
 
   _initAnimations () {
-    // this.testPad.setOffset(this.state.headerDimensions.height + TAB_BAR_HEIGHT);
     this.setState({
       headerOffsetY: Animated.multiply(
         Animated.diffClamp(this.state.scroll, 0, Animated.subtract(this.state.headerDimensions.height, TAB_BAR_HEIGHT)),
         -1
       )});
-    for (const ref of this._tabPanes) {
-      // ref.getNode().forceUpdate();
-      // ref.forceUpdate();
-      // console.log(ref);
-    }
-    // for (const ref of this._padders) {
-    // ref.getNode().forceUpdate();
-    // ref.forceUpdate();
-    // console.log(ref);
-    // }
   }
 
   _setPageHeight (event) {
@@ -149,40 +106,26 @@ class StickyTabTemplate extends React.Component {
         {(context) =>
           <View
             style={{height: context.headerDimensions.height}}
-            // ref={(ref) => { props._padders[props.index] = ref; }}
           />}
       </TabContext.Consumer>
-
-    // <View style={{transform: [{scaleY: (props.height / 10) + 1}], height: 10}} />
     );
   }
 
   _renderPage ({item, index}) {
     const RenderItem = item.renderItem || this.props.renderItem;
-    // const headerHeightTransform = [{scaleY: this.state.headerHeightAnim}];
     return (
       <View style={{width: SCREEN_WIDTH}}>
-        {/* <Animated.View style={{transform: [{scaleY: this.state.headerDimensions.height}], height: 1}} /> */}
-        {/* <this._renderPadder height={this.state.headerDimensions.height}/> */}
         <AnimatedFlatList
           data={item.data}
           keyExtractor={(item, index) => "key" + index}
           renderItem={RenderItem}
-          // style={{height: this.state.pageHeight - this.state.headerHeight}}
-          // style={{height: this.state.pageHeight - this.state.headerDimensions.height}}
-          // ListHeaderComponent={<Animated.View style={{transform: [{scaleY: this.testPad}], height: 1}} />}
           ListHeaderComponent={
             <this._renderPadder
               index={index}
               height={this.state.headerDimensions.height}
-              // _padders={this._padders}
             />}
-          // contentContainerStyle={{paddingTop: this.state.headerDimensions.height}}
           scrollEventThrottle={1}
           ref={(ref) => {
-            //  console.log(Object.keys(component.props));
-            // console.log(component.props);
-            // console.log(index);
             this._tabPanes[index] = ref;
           }}
           onScroll={Animated.event(
@@ -241,7 +184,6 @@ class StickyTabTemplate extends React.Component {
   _render () {
     return (
       <View onLayout={(event) => this._setPageHeight(event)} style={{flex: 1}}>
-        {/* <this._renderPadder height={this.state.headerHeight}/> */}
         <Animated.View
           onLayout={(event) => this._setHeaderHeight(event)}
           style={{
@@ -302,5 +244,4 @@ const styles = StyleSheet.create({
   }
 });
 
-// TODO: Ensure propogation of status changes.
-// TODO: Scroll to top of tab on tab change
+// TODO: Changing to empty tabs causes error
