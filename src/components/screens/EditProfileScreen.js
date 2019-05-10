@@ -21,7 +21,6 @@ import {
   Label,
   Textarea
 } from "native-base";
-import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scrollview";
 
 import HeaderBar from "@molecules/HeaderBar";
 

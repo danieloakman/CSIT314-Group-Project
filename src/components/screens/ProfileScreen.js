@@ -15,8 +15,8 @@ import {
 } from "native-base";
 
 import ProfileHeader from "@molecules/ProfileHeader";
-
 import HeaderBar from "@molecules/HeaderBar";
+import VehicleCard from "@molecules/VehicleCard";
 
 import {withAuthContext} from "@lib/context/AuthContext";
 
@@ -72,7 +72,8 @@ class ProfileScreen extends React.Component {
       this.setState({tabData: [
         {header: "Vehicles",
           data: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
-          renderItem: ({item, index}) => <Card><CardItem><Text>Car card #{index} will go here</Text></CardItem></Card>
+          // data: new Array(5000).fill(null),
+          renderItem: (data) => <VehicleCard {...data}/>
         },
         {header: "Reviews",
           data: [1, 2, 3, 4, 5, 6, 7, 8],

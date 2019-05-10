@@ -115,7 +115,7 @@ class StickyTabTemplate extends React.Component {
     const RenderItem = item.renderItem || this.props.renderItem;
     return (
       <View style={{width: SCREEN_WIDTH}}>
-        <AnimatedFlatList
+        <AnimatedFlatList removeClippedSubviews
           data={item.data}
           keyExtractor={(item, index) => "key" + index}
           renderItem={RenderItem}

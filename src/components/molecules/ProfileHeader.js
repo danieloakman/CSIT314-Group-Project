@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
     borderRadius: 75,
     borderWidth: 1,
     borderColor: "black",
-    // marginTop: 10,
+    marginTop: 10,
     resizeMode: "cover",
     // maxWidth: 75,
     // maxHeight: 75,
