@@ -11,7 +11,7 @@ import {withAuthContext} from "@lib/context/AuthContext";
 
 class ProfileHeader extends React.Component {
   render () {
-    let auth = this.props.AuthContext;
+    let {record} = this.props;
     return (
 
       <FlexContainer size={2} style={{
@@ -21,26 +21,27 @@ class ProfileHeader extends React.Component {
         // borderBottomWidth: 1,
         // marginBottom: 15,
         backgroundColor: "#efefef",
+        // height: this.props.height
       }} >
         {/* User image and name */}
         <FlexContainer size={2} style={{ justifyContent: "flex-start" }}>
           <Image
-            source={auth.user.pictureURI
-              ? {uri: auth.user.pictureURI}
+            source={record.pictureURI
+              ? {uri: record.pictureURI}
               : require("@assets/images/robot-prod.png")}
             style={styles.userImage}
           />
 
           <Text style={styles.userName}>
-            {auth.user.firstName} {auth.user.lastName}
+            {record.firstName} {record.lastName}
           </Text>
         </FlexContainer>
         {/* User description */}
         <FlexContainer size={4} style={{ marginTop: 15 }}>
           <FlexContainer size={3} />
-          <Text style={[{ flex: 2 }, styles.centerText]}>{auth.user.description}</Text>
+          <Text style={[{ flex: 2 }, styles.centerText]}>{record.description}</Text>
           <View style={{ flex: 4 }}>
-            <Text style={styles.centerText}>Member since: {auth.user.registerDate}</Text>
+            <Text style={styles.centerText}>Member since: {record.registerDate}</Text>
             <Text style={styles.centerText}/>
             <Text style={styles.centerText}>subscriberBadge if subscriber</Text>
           </View>
