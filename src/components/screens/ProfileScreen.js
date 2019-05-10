@@ -138,6 +138,7 @@ class ProfileScreen extends React.Component {
           tabData={this.state.tabData}
           renderItem={({item, index}) => <Card><CardItem><Text>Default render method user for item #{index}</Text></CardItem></Card>}
           onHeaderOffset={this._onHeaderScroll.bind(this)}
+          renderEmpty={() => <Text style={{color: "lightgrey", fontWeight: "bold", fontSize: 16, textAlign: "center", paddingTop: 20}}>No items here...</Text>}
         />
       </View>
     );

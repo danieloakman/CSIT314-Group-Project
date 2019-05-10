@@ -113,12 +113,14 @@ class StickyTabTemplate extends React.Component {
 
   _renderPage ({item, index}) {
     const RenderItem = item.renderItem || this.props.renderItem;
+    const RenderEmpty = item.renderEmpty || this.props.renderEmpty;
     return (
       <View style={{width: SCREEN_WIDTH}}>
         <AnimatedFlatList removeClippedSubviews
           data={item.data}
           keyExtractor={(item, index) => "key" + index}
           renderItem={RenderItem}
+          ListEmptyComponent={RenderEmpty}
           ListHeaderComponent={
             <this._renderPadder
               index={index}
@@ -131,7 +133,6 @@ class StickyTabTemplate extends React.Component {
           onScroll={Animated.event(
             [{nativeEvent: {contentOffset: {y: this.state.scroll}}}],
             {useNativeDriver: true},
-
           )}
         />
       </View>
