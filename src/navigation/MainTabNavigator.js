@@ -6,6 +6,7 @@ import TabBarIcon from "@components/TabBarIcon";
 
 import ProfileScreen from "@screens/ProfileScreen";
 import EditProfileScreen from "@screens/EditProfileScreen";
+import SearchScreen from "@screens/SearchScreen";
 import DriverHomeScreen from "@screens/DriverHomeScreen";
 import MechanicHomeScreen from "@screens/MechanicHomeScreen";
 import MechanicProfileScreen from "@screens/MechanicProfileScreen";
@@ -27,6 +28,27 @@ ProfileStack.navigationOptions = {
         Platform.OS === "ios"
           ? `ios-person${focused ? "" : "-outline"}`
           : "md-person"
+      }
+    />
+  )
+};
+
+const SearchStack = createStackNavigator({
+  Search: SearchScreen
+}, {
+  defaultNavigationOptions: {
+    header: null
+  }});
+
+SearchStack.navigationOptions = {
+  tabBarLabel: "Search",
+  tabBarIcon: ({ focused }) => (
+    <TabBarIcon
+      focused={focused}
+      name={
+        Platform.OS === "ios"
+          ? `ios-search${focused ? "" : "-outline"}`
+          : "md-search"
       }
     />
   )
@@ -106,6 +128,7 @@ AdminStack.navigationOptions = {
 
 const TabStack = createBottomTabNavigator({
   ProfileStack,
+  SearchStack,
   DriverHomeStack,
   MechanicHomeStack,
   MechanicProfileStack,

@@ -48,9 +48,11 @@ class NavHeader extends React.Component {
               ? this.props.navMid
               : <Text style={styles.titleText}>{this.state.title}</Text>}
           </FlexContainer>
-          <FlexContainer style={[styles.titleComponent, styles.sideButtons]}>
-            {this.props.navRight}
-          </FlexContainer>
+          {this.props.navRight
+            ? <FlexContainer style={[styles.titleComponent, styles.sideButtons]}>
+              {this.props.navRight}
+            </FlexContainer>
+            : null}
         </View>
       </View>
     );
@@ -72,6 +74,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#EFEFEF",
     borderBottomColor: "#BBB",
     borderBottomWidth: 1,
+    paddingTop: 5
   },
   titleComponent: {
     alignItems: "flex-start",
