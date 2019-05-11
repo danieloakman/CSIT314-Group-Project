@@ -199,8 +199,10 @@ export default class DatabaseService {
   /**
    * Returns database object containing all keys that match a RegExp that are in AsyncStorage.
    * @param {RegExp} regex Can use: /sr-/, /user-/, /vehicle-/
+   * @param {Boolean} returnArray Optional: If true, returns an array instead.
+   * @returns As default returns an Object.
    */
-  static async getDatabase (regex) {
+  static async getDatabase (regex, returnArray = false) {
     try {
       let allUserKeys = await AsyncStorage.getAllKeys();
       if (allUserKeys.length < 1) return null;
@@ -210,6 +212,8 @@ export default class DatabaseService {
 
       let DatabaseArr = await AsyncStorage.multiGet(allUserKeys);
       if (DatabaseArr.length < 1) return null;
+
+      if (returnArray) return DatabaseArr;
 
       let Database = {};
       DatabaseArr.forEach(keyValuePair => {
@@ -352,8 +356,10 @@ export default class DatabaseService {
     }
   }
 
-  // todo: either update this or create another function to get a vehicle by it's plate and/or vin.
-  // Probably need some permission from all current owners of the vehicle.
+  /**
+   * Get a single vehicle by its id.
+   * @param {string} vehicleId
+   */
   static async getVehicle (vehicleId) {
     try {
       let vehicle = await AsyncStorage.getItem(`vehicle-${vehicleId}`);
@@ -362,6 +368,36 @@ export default class DatabaseService {
       // eslint-disable-next-line no-console
       console.error(`DatabaseService.getVehicle() error: ${err.stack}`);
       return null;
+    }
+  }
+
+  /**
+   * Get a vehicle(s) by any specifying any number of parameters, like make, vin, etc.
+   * @return An array of vehicles or a single vehicle if the array is only one in length.
+   */
+  static async getVehicleBySearch (params = {vehicleId: null, make: null, model: null, year: null, plate: null, vin: null}) {
+    try {
+      Object.keys(params).forEach(key => {
+        if (!params[key]) delete params[key];
+      });
+      if (!params) return null;
+      let vehicles = await this.getDatabase(/vehicle-/, true);
+      if (!vehicles) return null;
+      vehicles = vehicles.filter(keyValuePair => {
+        let vehicle = JSON.parse(keyValuePair[1]);
+        for (let key of Object.keys(params)) {
+          if ((params[key] + "").toLowerCase() !== (vehicle[key] + "").toLowerCase()) {
+            return false;
+          }
+        }
+        return true;
+      }).map(keyValuePair => JSON.parse(keyValuePair[1]));
+      if (vehicles.length === 0) return null;
+      else if (vehicles.length === 1) return vehicles[0];
+      else return vehicles;
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error(`DatabaseService.getVehicleBySearch() error: ${err.stack}`);
     }
   }
 
