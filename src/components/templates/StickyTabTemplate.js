@@ -96,7 +96,7 @@ class StickyTabTemplate extends React.Component {
   _changePage (index) {
     this.setState({activeTab: index});
     this._tabPaneRef.getNode().scrollToIndex({index});
-    this._tabPanes[index].getNode().scrollToIndex({index: 0});
+    this._tabPanes[index].getNode().scrollToOffset({offset: 0});
     this.state.scroll.setValue(0);
   }
 
