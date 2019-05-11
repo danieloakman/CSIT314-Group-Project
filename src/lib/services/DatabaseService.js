@@ -379,8 +379,18 @@ export default class DatabaseService {
     }
   }
 
+  /**
+   * Delete a single vehicle from AsyncStorage database,
+   * if it exists (won't throw an error if it doesn't).
+   * @param {string} vehicleId
+   */
   static async deleteVehicle (vehicleId) {
-    // todo
+    try {
+      await AsyncStorage.removeItem(`vehicle-${vehicleId}`);
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error(`DatabaseService.deleteVehicle() error: ${err.stack}`);
+    }
   }
 
   /**
@@ -441,8 +451,18 @@ export default class DatabaseService {
     }
   }
 
-  static async deleteServiceRequest () {
-    // todo
+  /**
+   * Delete a single service request from AsyncStorage database,
+   * if it exists (won't throw an error if it doesn't).
+   * @param {string} srId
+   */
+  static async deleteServiceRequest (srId) {
+    try {
+      await AsyncStorage.removeItem(`sr-${srId}`);
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error(`DatabaseService.deleteServiceRequest() error: ${err.stack}`);
+    }
   }
 
   /**
