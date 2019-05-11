@@ -176,7 +176,7 @@ class SignInCreateAccScreen extends React.Component {
           </View>
 
           <View style={styles.centeredRowContainer}>
-            <Text style={styles.textBesideInput}>First Name</Text>
+            <Text style={styles.textBesideInput}>Given Name</Text>
             <TextInput
               style={styles.textInput}
               editable={true}
@@ -189,7 +189,7 @@ class SignInCreateAccScreen extends React.Component {
           </View>
 
           <View style={styles.centeredRowContainer}>
-            <Text style={styles.textBesideInput}>Last Name</Text>
+            <Text style={styles.textBesideInput}>Surname</Text>
             <TextInput
               style={styles.textInput}
               editable={true}
@@ -317,9 +317,9 @@ class SignInCreateAccScreen extends React.Component {
     } else {
       // Validate create account text inputs:
       if (!this.state.crAccFirstName.trim().match(Patterns.name)) {
-        this.setState({ crAccErrorText: "Invalid first name, please correct it." });
+        this.setState({ crAccErrorText: "Invalid given name, please correct it." });
       } else if (!this.state.crAccLastName.trim().match(Patterns.name)) {
-        this.setState({ crAccErrorText: "Invalid last name, please correct it." });
+        this.setState({ crAccErrorText: "Invalid surname, please correct it." });
       } else if (!this.state.crAccEmail.trim().match(Patterns.email)) {
         this.setState({ crAccErrorText: "Invalid email, please correct it." });
       } else if (!this.state.crAccPassword.trim().match(Patterns.password)) {

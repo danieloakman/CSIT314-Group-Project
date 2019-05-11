@@ -70,14 +70,14 @@ class EditProfile extends React.Component {
       <View>
         <Text style={styles.heading}>Edit Profile</Text>
         <View style={styles.centeredRowContainer}>
-          <Text style={styles.textBesideInput}>First Name:</Text>
+          <Text style={styles.textBesideInput}>Given Name:</Text>
           <TextInput
             style={styles.textInput}
             onChangeText={firstName => this.setState({ firstName })}
           />
         </View>
         <View style={styles.centeredRowContainer}>
-          <Text style={styles.textBesideInput}>Last Name:</Text>
+          <Text style={styles.textBesideInput}>Surname:</Text>
           <TextInput
             style={styles.textInput}
             onChangeText={lastName => this.setState({ lastName })}
@@ -288,14 +288,14 @@ class SearchUser extends React.Component {
           </View>
         </View>
         <View style={styles.centeredRowContainer}>
-          <Text style={styles.textBesideInput}>First Name:</Text>
+          <Text style={styles.textBesideInput}>Given Name:</Text>
           <TextInput
             style={styles.textInput}
             onChangeText={firstName => this.setState({ firstName })}
           />
         </View>
         <View style={styles.centeredRowContainer}>
-          <Text style={styles.textBesideInput}>Last Name:</Text>
+          <Text style={styles.textBesideInput}>Surname:</Text>
           <TextInput
             style={styles.textInput}
             onChangeText={lastName => this.setState({ lastName })}
