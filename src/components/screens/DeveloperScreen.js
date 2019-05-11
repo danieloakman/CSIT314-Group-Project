@@ -125,13 +125,20 @@ export default class DeveloperScreen extends React.Component {
         <Button
           title="Simulate a bunch of async actions"
           onPress={async () => {
-            let startTime = new Date();
             // let currentLocation = await LocationService.getCurrentLocation();
             const totalActions = 1000;
-            const noOfAsyncActions = 50;
-            for (let i = 0; i < totalActions; i += noOfAsyncActions) {
+            let noOfAsyncActions = 10;
+            let meanActionRunTime = 10;
+            let startTime = new Date();
+            let i;
+            for (i = 0; i < totalActions; i++) {
               let promises = [];
               for (let j = 0; j < noOfAsyncActions; j++) {
+                if (i >= totalActions) {
+                  i--;
+                  break;
+                }
+                i++;
                 promises.push(new Promise(async resolve => {
                   try {
                     // Create driver:
@@ -176,14 +183,30 @@ export default class DeveloperScreen extends React.Component {
                   resolve(true);
                 }));
               }
-              console.log(`Started actions ${i} to ${i + noOfAsyncActions}`);
               await Promise.all(promises);
-              console.log(`Completed actions ${i} to ${i + noOfAsyncActions}`);
+              let runTime = new Date() - startTime;
+              let lastMeanActionRunTime = meanActionRunTime;
+              meanActionRunTime = runTime / i;
+              console.log(
+                `\nCompleted ${i} number of actions\n` +
+                `Overall mean run time: ${meanActionRunTime}ms`
+              );
+              if (meanActionRunTime < lastMeanActionRunTime) {
+                noOfAsyncActions = noOfAsyncActions < 10
+                  ? noOfAsyncActions + 1
+                  : Math.round(noOfAsyncActions * 1.2);
+              } else {
+                noOfAsyncActions = noOfAsyncActions < 10 && noOfAsyncActions > 1
+                  ? noOfAsyncActions - 1
+                  : Math.round(noOfAsyncActions * 0.8);
+              }
+              console.log(`Next number of async actions ${noOfAsyncActions}`);
             }
             let runTime = new Date() - startTime;
             console.log(
-              `Completed in: ${runTime}ms\n` +
-              `Mean run time: ${runTime / totalActions}ms`
+              `\nCompleted ${i} actions in: ${runTime}ms\n` +
+              `Overall mean run time: ${runTime / i}ms\n` +
+              `Async actions done per inner loop: ${noOfAsyncActions}`
             );
           }}
         />
@@ -209,6 +232,22 @@ export default class DeveloperScreen extends React.Component {
           title="Navigate to test admin"
           onPress={async () => {
             this.props.navigation.push("ProfileModal", {email: "admin@test.com"});
+          }}
+        />
+        <Button
+          title="Search for vehicles"
+          onPress={async () => {
+            console.log("Vehicles: " +
+              JSON.stringify(await DatabaseService.getVehicleBySearch({year: 2012}), null, 2)
+            );
+          }}
+        />
+        <Button
+          title="Search for users"
+          onPress={async () => {
+            console.log("Users: " +
+              JSON.stringify(await DatabaseService.getUserBySearch({firstName: "john"}, false), null, 2)
+            );
           }}
         />
       </ScrollView>
