@@ -51,6 +51,43 @@ export default class DatabaseService {
   }
 
   /**
+   * Get user(s) by specifying any number of parameters that are an attribute in the
+   * User, Driver or Mechanic classes.
+   * Parameters are not case-sensitive and are turned into strings for the matching.
+   * @param {Boolean} filterAdmins Optional, default is true. If true, will not
+   * return any users that are Admins.
+   * @return An array of users or a single user if the array is only one in length.
+   */
+  static async getUserBySearch (params = {}, filterAdmins = true) {
+    try {
+      if (Object.keys(params).length === 0) return null;
+      let users = await this.getDatabase(/user-/, true);
+      if (!users) return null;
+      let filteredUsers = [];
+      for (let keyValuePair of users) {
+        const userRecord = JSON.parse(keyValuePair[1]);
+        if (userRecord.constructor === "Admin" && filterAdmins) continue;
+        let user = new UserTypes[userRecord.constructor](userRecord.account);
+        let pass = true;
+        for (let key of Object.keys(params)) {
+          if ((params[key] + "").toLowerCase() !== (user[key] + "").toLowerCase()) {
+            pass = false;
+            break;
+          }
+        }
+        if (!pass) continue;
+        filteredUsers.push(user);
+      }
+      if (filteredUsers.length === 0) return null;
+      else if (filteredUsers.length === 1) return filteredUsers[0];
+      else return filteredUsers;
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error(`DatabaseService.getUserBySearch() error: ${err.stack}`);
+    }
+  }
+
+  /**
    * Checks if that user exists and password matches.
    * If checks pass then stores the user's email and name in persistent app storage.
    */
@@ -372,7 +409,8 @@ export default class DatabaseService {
   }
 
   /**
-   * Get a vehicle(s) by any specifying any number of parameters, like make, vin, etc.
+   * Get vehicle(s) by specifying any number of parameters, like make, vin, etc.
+   * Parameters are not case-sensitive and are turned into strings for the matching.
    * @return An array of vehicles or a single vehicle if the array is only one in length.
    */
   static async getVehicleBySearch (params = {vehicleId: null, make: null, model: null, year: null, plate: null, vin: null}) {
@@ -380,7 +418,7 @@ export default class DatabaseService {
       Object.keys(params).forEach(key => {
         if (!params[key]) delete params[key];
       });
-      if (!params) return null;
+      if (Object.keys(params).length === 0) return null;
       let vehicles = await this.getDatabase(/vehicle-/, true);
       if (!vehicles) return null;
       vehicles = vehicles.filter(keyValuePair => {
