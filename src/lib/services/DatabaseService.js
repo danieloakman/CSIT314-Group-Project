@@ -4,9 +4,9 @@ import LocationService from "@lib/services/LocationService";
 const uuid = require("uuid/v4"); // random uuid
 
 const UserTypes = {
-  Driver: require("@lib/services/users/Driver"),
-  Mechanic: require("@lib/services/users/Mechanic"),
-  Admin: require("@lib/services/users/Admin")
+  Driver: require("@model/user/Driver"),
+  Mechanic: require("@model/user/Mechanic"),
+  Admin: require("@model/user/Admin")
 };
 
 // File that can't be changed within the app:
