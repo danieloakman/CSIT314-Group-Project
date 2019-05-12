@@ -1,13 +1,13 @@
 import UserDB from "@database/user";
+import ModelWithDbConnection from "@model/ModelWithDbConnection";
 
 /**
  * Base User class
  * @abstract
  */
-export default class User {
+export default class User extends ModelWithDbConnection {
   constructor (record) {
-    // All data is stored in _doc following single source of truth principles
-    this._doc = record;
+    super(record);
 
     // Derived properties (don't get a getter as it isn't needed)
     this.fullName = `${this.givenName} ${this.surname}`;
@@ -49,13 +49,5 @@ export default class User {
 
   async setPictureURI (pictureURI) {
     await UserDB.updateUser(this, {pictureURI});
-  }
-
-  /**
-   * Set doc to new document
-   * @param {Object} document
-   */
-  async setDoc (document) {
-    this._doc = document;
   }
 }
