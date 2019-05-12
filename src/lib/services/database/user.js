@@ -1,0 +1,169 @@
+import DBConnector from "./core";
+import {AsyncStorage} from "react-native";
+import User from "@model/user/User";
+import Driver from "@model/user/Driver";
+import Mechanic from "@model/user/Mechanic";
+import Admin from "@model/user/Admin";
+
+/**
+ * @typedef {Object} UserInstantiator
+ * @property {String} type can be driver, mechanic or admin
+ * @property {String} givenName
+ * @property {String} surname
+ * @property {String} email
+ * @property {String} password
+ * @property {String | Number} phoneNo
+ */
+
+/**
+  * @typedef {Object} DBResponse
+  * @property {Boolean} ok Whether request was successful
+  * @property {String} [reason] Reason for failure
+  */
+
+const UserTypes = {
+  User, Driver, Mechanic, Admin
+};
+
+class UserDB extends DBConnector {
+  constructor () {
+    super("db.users");
+    this.db.createIndex({index: {fields: ["email", "fname", "lname", "pnumber", "type"]}});
+  }
+
+  /**
+   * Returns the correct user class instance for a specified email or id.
+   * @param {Object} obj Contains either an email, or an id. If given both will prefer id
+   * @param {String} [obj.email]
+   * @param {String} [obj.id]
+   * @return {Promise<Object>} User instance
+   */
+  async getUser ({email, id}) {
+    let record;
+    if (email) { record = await this.db.find({selector: {email}})[0]; }
+    if (id) { record = await this.db.get(id); }
+    if (record) { return new UserTypes[record.type](record); }
+    return null;
+  }
+
+  /**
+   * Gets the currently signed in user
+   * @return {Promise<Object> | Promise<null>} User instance
+   */
+  async getCurrentUser () {
+    const email = await AsyncStorage.getItem("signedInUserEmail");
+    if (email) return null;
+    const record = await this.getUser(email);
+    return record;
+  }
+
+  /**
+   * Sign in user with email and password
+   * @param {String} email
+   * @param {String} password
+   * @return {Promise<DBResponse>} see DBResponse definition
+   */
+  async signInUser (email, password) {
+    const record = await this.getUser(email);
+    if (!record) {
+      return {ok: false, reason: "An account with that email doesn't exist."};
+    } else if (record.password !== password) {
+      return {ok: false, reason: "Incorrect password."};
+    }
+    await AsyncStorage.setItem("signedInUserEmail", email);
+    this.emit("signedIn");
+    return {ok: true};
+  }
+
+  /**
+   * Signs out current user
+   * @return {Promise<DBResponse>} see DBResponse definition
+   */
+  async signOutUser () {
+    await AsyncStorage.removeItem("signedInUserEmail");
+    this.emit("signedOut");
+    return {ok: true};
+  }
+
+  /**
+   * Creates a user in the database and returns the user class
+   * @param {UserInstantiator} Object containing user info
+   * @param {Object} options Options object
+   * @param {boolean} [options.signIn=false] Whether to sign in after creating user
+   * @return {Promise<DBResponse>} see DBResponse definition
+   */
+  async createUser ({type, givenName, surname, email, password, phoneNo}, {signIn = false}) {
+    if (await this.getUser(email)) { return {ok: false, reason: "An account with that email already exists."}; }
+    const record = {
+      type, givenName, surname, email, password, phoneNo
+    };
+
+    const constructedAccount = new UserTypes[type](record);
+    await this.db.put(constructedAccount);
+    if (signIn) {
+      await AsyncStorage.setItem("signedInUserEmail", email);
+      this.emit("signedIn");
+    }
+    return {ok: true};
+  }
+
+  async batchCreateUser () {
+  }
+
+  /**
+ * Delete a user with a given email or id
+ * @param {Object} obj Contains either an email, or an id. If given both will prefer id
+ * @param {String} [obj.email]
+ * @param {String} [obj.id]
+ */
+  async deleteUser ({email, id}) {
+    if (id) {
+      await this.db.remove(id);
+    } else if (email) {
+      await this.db.remove(this.getUser(email));
+    }
+  }
+
+  /**
+ * Delete a set of users with a given email or id
+ * @param {Object} obj Contains two optional lists of emails and ids. Will work if both are given
+ * @param {String[]} [obj.emails]
+ * @param {String[]} [obj.ids]
+ */
+  async batchDeleteUser ({emails = [], ids = []}) {
+    // Faster to use map as it calls all delete functions at once, rather than waiting for each to complete
+    await Promise.all(ids.map(id => this.deleteUser({id})));
+    await Promise.all(emails.map(email => this.deleteUser({email})));
+  }
+
+  /**
+   * Updates a user in the database based on a given delta object
+   * @param {Object} UserInstance The user class instance to update
+   * @param {Object} delta An object containing the new values only
+   */
+  async updateUser (UserInstance, delta) {
+    const {doc} = UserInstance;
+    await this.db.put({...doc, ...delta, _rev: doc._rev});
+
+    // I *think* this is needed in order to get a new _rev value for next update
+    await UserInstance.setDoc(await this.db.get(doc._id));
+    this.emit("updatedUser");
+  }
+
+  /**
+   * Deletes all entries in database
+   */
+  async wipe () {
+    this.db.destroy();
+  }
+
+  /**
+   * Loads test data into database
+   */
+  async _loadTestData () {
+    const source = require("./node_modules/@assets/data/testData");
+    this.db.bulkDocs(source);
+  }
+}
+
+export default new UserDB();
