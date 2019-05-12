@@ -1,0 +1,39 @@
+[
+  {
+    "_id": "TestUser1",
+    "type": "Driver",
+    "firstName": "John",
+    "lastName": "Lennon",
+    "email": "driver@test.com",
+    "password": "test123",
+    "vehicles": []
+  },
+  {
+    "_id": "TestUser2",
+    "type": "Driver",
+    "firstName": "Paul",
+    "lastName": "Mccartney",
+    "email": "driver2@test.com",
+    "password": "test123",
+    "vehicles": []
+  },
+  {
+    "_id": "TestUser3",
+    "type": "Mechanic",
+    "firstName": "George",
+    "lastName": "Harrison",
+    "email": "mechanic@test.com",
+    "password": "test123",
+    "verifiedMechanic": false,
+    "jobs": []
+  },
+  {
+    "_id": "TestUser4",
+    "type": "Admin",
+    "firstName": "Ringo",
+    "lastName": "Star",
+    "email": "admin@test.com",
+    "password": "test123",
+    "jobs": []
+  }
+]

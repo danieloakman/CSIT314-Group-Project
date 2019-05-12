@@ -1,0 +1,24 @@
+[
+  {
+    "_id": "9fe70aad-8568-4568-92b7-f96276fdcea6",
+    "make": "Hyundai",
+    "model": "Elantra",
+    "year": 2012,
+    "plate": "N9KI45",
+    "vin": "1G4HD57276U972445",
+    "owners": [
+      "driver@test.com"
+    ]
+  },
+  {
+    "_id": "0e3ad9ab-d62f-4a90-b2d4-219227a90de6",
+    "make": "Nissan",
+    "model": "Versa",
+    "year": 2011,
+    "plate": "V6VJ1M",
+    "vin": "2G4WD552X61834033",
+    "owners": [
+      "driver2@test.com"
+    ]
+  }
+]
