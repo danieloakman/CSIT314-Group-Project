@@ -78,12 +78,12 @@ export default class DatabaseService {
         if (!pass) continue;
         filteredUsers.push(user);
       }
-      if (filteredUsers.length === 0) return null;
-      else if (filteredUsers.length === 1) return filteredUsers[0];
-      else return filteredUsers;
+      if (filteredUsers.length > 0) return filteredUsers;
+      else return null;
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error(`DatabaseService.getUserBySearch() error: ${err.stack}`);
+      return null;
     }
   }
 
@@ -430,12 +430,12 @@ export default class DatabaseService {
         }
         return true;
       }).map(keyValuePair => JSON.parse(keyValuePair[1]));
-      if (vehicles.length === 0) return null;
-      else if (vehicles.length === 1) return vehicles[0];
-      else return vehicles;
+      if (vehicles.length > 0) return vehicles;
+      else return null;
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error(`DatabaseService.getVehicleBySearch() error: ${err.stack}`);
+      return null;
     }
   }
 
