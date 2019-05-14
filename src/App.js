@@ -63,10 +63,10 @@ class App extends React.Component {
   };
 
   _handleLoadingError = error => {
-    // In this case, you might want to report the error to your error
-    // reporting service, for example Sentry
-    // eslint-disable-next-line no-console
-    console.warn(error);
+    /* eslint-disable no-console */
+    if (__DEV__) console.warn("App._handleLoadingError() error: " + error);
+    else console.log("App._handleLoadingError() error: " + error);
+    /* eslint-enable no-console */
   };
 
   _handleFinishLoading = () => {
