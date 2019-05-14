@@ -186,7 +186,7 @@ class RequestView extends React.Component {
           />
         </View>
         <View style={styles.buttons}>
-          {this.state.offerMade ? true
+          {!this.state.offerMade ? true
             : <Button
               title="Back"
               onPress={() => this.props.navigation.navigate("Home")}
