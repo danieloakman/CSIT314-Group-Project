@@ -128,12 +128,13 @@ export default class DeveloperScreen extends React.Component {
             // let currentLocation = await LocationService.getCurrentLocation();
             const totalActions = 1000;
             let noOfAsyncActions = 10;
+            const minNoOfAsyncActions = 5;
             let meanActionRunTime = 10;
             let startTime = new Date();
             let i;
-            for (i = 0; i < totalActions; i++) {
+            for (i = 1; i < totalActions; i++) {
               let promises = [];
-              for (let j = 0; j < noOfAsyncActions; j++) {
+              for (let j = 1; j < noOfAsyncActions; j++) {
                 if (i >= totalActions) {
                   i--;
                   break;
@@ -192,13 +193,9 @@ export default class DeveloperScreen extends React.Component {
                 `Overall mean run time: ${meanActionRunTime}ms`
               );
               if (meanActionRunTime < lastMeanActionRunTime) {
-                noOfAsyncActions = noOfAsyncActions < 10
-                  ? noOfAsyncActions + 1
-                  : Math.round(noOfAsyncActions * 1.2);
-              } else {
-                noOfAsyncActions = noOfAsyncActions < 10 && noOfAsyncActions > 1
-                  ? noOfAsyncActions - 1
-                  : Math.round(noOfAsyncActions * 0.8);
+                noOfAsyncActions = Math.round(noOfAsyncActions * 1.2);
+              } else if (noOfAsyncActions > minNoOfAsyncActions) {
+                noOfAsyncActions = Math.round(noOfAsyncActions * 0.8);
               }
               console.log(`Next number of async actions ${noOfAsyncActions}`);
             }
