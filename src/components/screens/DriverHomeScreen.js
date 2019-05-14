@@ -19,9 +19,9 @@ import LocationService from "@lib/services/LocationService";
 import GMapView from "@components/GoogleMapView";
 import {MapView} from "expo";
 import WindowBox from "@components/WindowBox";
+import LoadingGif from "@components/atoms/LoadingGif";
 
 import MechanicProfileViewScreen from "@screens/MechanicProfileViewScreen";
-// todo:
 class DriverHomeScreen extends React.Component {
   state = {
     user: null,
@@ -42,7 +42,6 @@ class DriverHomeScreen extends React.Component {
             enableViewCurrentOffers: user.srId && sr ? sr.status === "Awaiting offer acceptance" : false,
             enableViewActiveRequest: user.srId && sr ? sr.status === "Offer accepted" : false
           });
-          // console.log(this.state.userHasAnSR, this.state.anOfferIsAccepted);
         })
         .catch(err => { throw err; });
     });
@@ -86,11 +85,12 @@ class DriverHomeScreen extends React.Component {
 
 class RequestScreen extends React.Component {
   state = {
-    descripton: "",
+    description: "",
     vehicles: null,
     selectedVehicle: null,
     location: null, // latitude-longitude coordinates
-    user: null
+    user: null,
+    isLoading: true
   }
 
   componentDidMount () {
@@ -106,7 +106,8 @@ class RequestScreen extends React.Component {
           user,
           vehicles: vehicles.length > 0 ? vehicles : null,
           location,
-          selectedVehicle: vehicles.length > 0 ? vehicles[0] : null
+          selectedVehicle: vehicles.length > 0 ? vehicles[0] : null,
+          isLoading: false
         });
       })
       .catch(err => {
@@ -119,41 +120,56 @@ class RequestScreen extends React.Component {
       <View>
         <Text style={styles.heading}>Roadside Assistance Request</Text>
         {/* car selection dropdown input */}
-        {!this.state.location ? null
-          : <View style={styles.centeredRowContainer}>
-            <Text>Your location has been automatically retrieved.</Text>
-          </View>
-        }
-        {!this.state.vehicles
+        {this.state.isLoading
           ? <View style={styles.centeredRowContainer}>
-            <Text>We found no cars tied to your account. Please go back and add one to continue.</Text>
+            <Text style={{fontSize: 15}}>Fetching your current location... </Text>
+            <LoadingGif style={{width: 25, height: 25, alignSelf: "flex-start"}} />
           </View>
-          : <View style={styles.centeredRowContainer}>
-            <Text style={styles.textBesideInput}>Car:</Text>
-            <View style={{borderWidth: 1, borderRadius: 5}}>
-              <Picker
-                selectedValue={this.state.selectedVehicleId}
-                style={{width: 150}}
-                itemStyle={{fontSize: 20}}
-                mode="dropdown"
-                onValueChange={vehicle => this.setState({selectedVehicleId: vehicle})}>
-                {this.state.vehicles.map((vehicle, index) => {
-                  return <Picker.Item
-                    key={index}
-                    label={`${vehicle.year} ${vehicle.make}`}
-                    value={vehicle}
-                  />;
-                })}
-              </Picker>
+          : !this.state.location
+            ? <View style={styles.centeredRowContainer}>
+              <Text style={{fontSize: 15}}>Your location was not retrieved successfully.</Text>
             </View>
+            : <View style={styles.centeredRowContainer}>
+              <Text style={{fontSize: 15}}>Your location has been automatically retrieved.</Text>
+            </View>
+        }
+        {this.state.isLoading
+          ? <View style={styles.centeredRowContainer}>
+            <Text style={{fontSize: 15}}>Loading your list of cars... </Text>
+            <LoadingGif style={{width: 25, height: 25, alignSelf: "flex-start"}} />
           </View>
+          : !this.state.vehicles
+            ? <View style={styles.centeredRowContainer}>
+              <Text style={{fontSize: 15}}>We found no cars tied to your account. Please go back and add one to continue.</Text>
+            </View>
+            : <View style={styles.centeredRowContainer}>
+              <Text style={styles.textBesideInput}>Car:</Text>
+              <View style={{borderWidth: 1, borderRadius: 5}}>
+                <Picker
+                  selectedValue={this.state.selectedVehicleId}
+                  style={{width: 200}}
+                  itemStyle={{fontSize: 20}}
+                  mode="dropdown"
+                  onValueChange={vehicle => this.setState({selectedVehicleId: vehicle})}>
+                  {this.state.vehicles.map((vehicle, index) => {
+                    return <Picker.Item
+                      key={index}
+                      label={`${vehicle.year} ${vehicle.make}`}
+                      value={vehicle}
+                    />;
+                  })}
+                </Picker>
+              </View>
+            </View>
         }
         {/* Description text input */}
         <View style={styles.centeredRowContainer}>
           <Text style={styles.textBesideInput}>Description:</Text>
           <TextInput
             style={styles.textInput}
-            onChangeText={descripton => this.setState({ descripton })}
+            onChangeText={description => this.setState({ description })}
+            onSubmitEditing={async () => { await this._submitRequest(); }}
+            disabled={this.state.isLoading}
           />
         </View>
         {/* Submit Button */}
@@ -162,12 +178,14 @@ class RequestScreen extends React.Component {
             style="buttons"
             title="Submit"
             onPress={async () => { await this._submitRequest(); }}
+            disabled={this.state.isLoading}
           />
         </View>
         <View style={styles.buttons}>
           <Button
             title="Back"
             onPress={() => this.props.navigation.goBack()}
+            disabled={this.state.isLoading}
           />
         </View>
       </View>
@@ -175,12 +193,12 @@ class RequestScreen extends React.Component {
     );
   }
   async _submitRequest () {
-    if (!this.state.descripton || !this.state.selectedVehicle) {
+    if (!this.state.description || !this.state.selectedVehicle) {
       Alert.alert("Please fill in description and select a vehicle.");
       return;
     }
     let result = await DatabaseService.createServiceRequest(
-      this.state.location, this.state.user.email, this.state.selectedVehicle.id, this.state.descripton
+      this.state.location, this.state.user.email, this.state.selectedVehicle.id, this.state.description
     );
     if (!result.pass && !result.srId) {
       Alert.alert(result.reason);
@@ -205,12 +223,7 @@ class OfferList extends React.Component {
     serviceRequest: null,
     location: null,
     isLoadingMap: true,
-    selectedOffer: null,
-    sorting: "Rating",
-    waitTime: "20min",
-    cost: "$200",
-    mechanic: "Joe White",
-    rating: "4.2"
+    selectedOffer: null
   }
 
   componentDidMount () {
@@ -249,9 +262,8 @@ class OfferList extends React.Component {
               })}
           </GMapView>
         </View>
-        <View style={{flex: 1}}>
-          <Text style={styles.heading}>Offers</Text>
-          {/* sort by dropdown
+        <Text style={styles.heading}>Offers</Text>
+        {/* sort by dropdown
           <View style={styles.centeredRowContainer}>
             <Text style={styles.textBesideInput}>Sort By:</Text>
             <View style={{borderWidth: 1, borderRadius: 5}}>
@@ -269,29 +281,30 @@ class OfferList extends React.Component {
             </View>
           </View>
           */}
-          {!this.state.selectedOffer ? null
-            : <TouchableOpacity style={styles.buttonBox} onPress={() => this._selectOffer()}>
-              <View style={styles.buttonBoxText}>
-                {/* <Text>Time: {this.state.waitTime}</Text> // todo calculate waitTime */}
-                <Text>Cost: {this.state.selectedOffer.offerAmount}</Text>
-                <Text>Mechnanic: {this.state.selectedOffer.mechanicEmail}</Text>
-                <Text>Average Rating: {this.state.selectedOffer.mechanicRating}</Text>
-                <Text>Time when offered: {this.state.selectedOffer.creationDate}</Text>
-              </View>
-            </TouchableOpacity>
-          }
-          <View style={styles.buttons}>
-            <Button
-              title="Cancel Request"
-              onPress={() => this.props.navigation.popToTop()}
-            />
-          </View>
-          <View style={styles.buttons}>
-            <Button
-              title="Back"
-              onPress={() => this.props.navigation.goBack()}
-            />
-          </View>
+        {!this.state.selectedOffer ? null
+          : <TouchableOpacity style={styles.buttonBox} onPress={() => this._selectOffer()}>
+            <View style={styles.buttonBoxText}>
+              {/* <Text>Time: {this.state.waitTime}</Text> // todo calculate waitTime */}
+              <Text>Cost: {this.state.selectedOffer.offerAmount}</Text>
+              <Text>Mechnanic: {this.state.selectedOffer.mechanicEmail}</Text>
+              <Text>Average Rating: {this.state.selectedOffer.mechanicRating}</Text>
+              <Text>Time when offered: {this.state.selectedOffer.creationDate}</Text>
+            </View>
+          </TouchableOpacity>
+        }
+        <View style={styles.buttons}>
+          <Button
+            title="Cancel Request"
+            onPress={async () => { this.props.navigation.popToTop(); }}
+            disabled={this.state.isLoadingMap}
+          />
+        </View>
+        <View style={styles.buttons}>
+          <Button
+            title="Back"
+            onPress={() => this.props.navigation.goBack()}
+            disabled={this.state.isLoadingMap}
+          />
         </View>
       </View>
     );
