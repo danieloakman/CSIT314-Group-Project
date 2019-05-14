@@ -28,7 +28,7 @@ export default class LocationService {
             clearTimeout(wait);
             // Sometimes Location.getCurrentPositionAsync() hangs indefintely.
             // So for now, when the timeout is reached return a randomLocation
-            // within 50km around the uni.
+            // within 5km around the uni.
             // Maybe should change this to only happen on __DEV__ eventually.
             resolve(
               this.getRandomLocation({
@@ -103,6 +103,11 @@ export default class LocationService {
             state = address.region;
             break;
         }
+        if (!address.name) address.name = "";
+        if (!address.street) address.street = "";
+        if (!address.city) address.city = "";
+        if (!state) state = "";
+        if (!address.postalCode) address.postalCode = "";
         return `${address.name} ${address.street}, ${address.city} ${state} ${address.postalCode}`;
       }
     } catch (err) {
