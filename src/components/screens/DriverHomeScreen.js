@@ -295,7 +295,17 @@ class OfferList extends React.Component {
         <View style={styles.buttons}>
           <Button
             title="Cancel Request"
-            onPress={async () => { this.props.navigation.popToTop(); }}
+            onPress={async () => {
+              let user = this.state.user;
+              let vehicle = await DatabaseService.getVehicle(this.state.serviceRequest.vehicleId);
+              user.srId = vehicle.srId = null;
+              await Promise.all([
+                DatabaseService.saveUserChanges(user),
+                DatabaseService.saveVehicleChanges(vehicle),
+                DatabaseService.deleteServiceRequest(this.state.serviceRequest.id),
+              ]);
+              this.props.navigation.popToTop();
+            }}
             disabled={this.state.isLoadingMap}
           />
         </View>
