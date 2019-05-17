@@ -206,7 +206,7 @@ class RequestScreen extends React.Component {
     }
     // Save user and vehicle changes:
     let user = this.state.user;
-    let vehicle = this.state.selectedVehicle;
+    let vehicle = JSON.parse(JSON.stringify(this.state.selectedVehicle));
     user.srId = vehicle.srId = result.srId;
     await Promise.all([
       DatabaseService.saveUserChanges(user),
@@ -303,6 +303,12 @@ class OfferList extends React.Component {
                 DatabaseService.saveUserChanges(user),
                 DatabaseService.saveVehicleChanges(vehicle),
                 DatabaseService.deleteServiceRequest(this.state.serviceRequest.id),
+                this.state.serviceRequest.offers.map(async offer => {
+                  let mechanic = await DatabaseService.getUser(offer.mechanicEmail);
+                  mechanic.offersSent = mechanic.offersSent
+                    .filter(srId => srId !== this.state.serviceRequest.id);
+                  await DatabaseService.saveUserChanges(mechanic);
+                })
               ]);
               this.props.navigation.popToTop();
             }}
