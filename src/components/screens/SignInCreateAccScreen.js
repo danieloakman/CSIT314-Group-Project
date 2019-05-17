@@ -396,8 +396,8 @@ const styles = StyleSheet.create({
   topTab: {
     flex: 1,
     backgroundColor: Colors.tabBar,
-    borderWidth: 0.5,
-    // borderColor: "green",
+    borderBottomWidth: 1,
+    borderColor: Colors.tabBarBorderColor,
     zIndex: 5,
     paddingTop: 30,
     paddingBottom: 10,
