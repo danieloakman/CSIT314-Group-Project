@@ -11,6 +11,7 @@ import DriverHomeScreen from "@screens/DriverHomeScreen";
 import MechanicHomeScreen from "@screens/MechanicHomeScreen";
 import MechanicProfileScreen from "@screens/MechanicProfileScreen";
 import AdminScreen from "@screens/AdminScreen";
+import {withAuthContext} from "@lib/context/AuthContext";
 
 const ProfileStack = createStackNavigator({
   Profile: ProfileScreen
@@ -54,12 +55,28 @@ SearchStack.navigationOptions = {
   )
 };
 
-const DriverHomeStack = createStackNavigator({
-  DriverHome: {screen: DriverHomeScreen}
+class HomeScreen extends React.Component {
+  render () {
+    let user = this.props.AuthContext.user;
+    switch (user.type) {
+      case "driver":
+        return <DriverHomeScreen/>;
+      case "mechanic":
+        return <MechanicHomeScreen/>;
+      case "admin":
+        return <AdminScreen/>;
+      default:
+        return null;
+    }
+  }
+}
+
+const HomeStack = createStackNavigator({
+  Home: withAuthContext(HomeScreen)
 });
 
-DriverHomeStack.navigationOptions = {
-  tabBarLabel: "Driver Home",
+HomeStack.navigationOptions = {
+  tabBarLabel: "Home",
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
@@ -67,60 +84,6 @@ DriverHomeStack.navigationOptions = {
         Platform.OS === "ios"
           ? "ios-home"
           : "md-home"
-      }
-    />
-  )
-};
-
-const MechanicHomeStack = createStackNavigator({
-  MechanicHome: {screen: MechanicHomeScreen}
-});
-
-MechanicHomeStack.navigationOptions = {
-  tabBarLabel: "Mechanic Home",
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon
-      focused={focused}
-      name={
-        Platform.OS === "ios"
-          ? "ios-home"
-          : "md-home"
-      }
-    />
-  )
-};
-
-const MechanicProfileStack = createStackNavigator({
-  MechanicProfile: {screen: MechanicProfileScreen}
-});
-
-MechanicProfileStack.navigationOptions = {
-  tabBarLabel: "Mechanic Profile",
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon
-      focused={focused}
-      name={
-        Platform.OS === "ios"
-          ? `ios-person${focused ? "" : "-outline"}`
-          : "md-person"
-      }
-    />
-  )
-};
-
-const AdminStack = createStackNavigator({
-  Admin: {screen: AdminScreen}
-});
-
-AdminStack.navigationOptions = {
-  tabBarLabel: "Admin Screen",
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon
-      focused={focused}
-      name={
-        Platform.OS === "ios"
-          ? `ios-person${focused ? "" : "-outline"}`
-          : "md-person"
       }
     />
   )
@@ -129,10 +92,7 @@ AdminStack.navigationOptions = {
 const TabStack = createBottomTabNavigator({
   ProfileStack,
   SearchStack,
-  DriverHomeStack,
-  MechanicHomeStack,
-  MechanicProfileStack,
-  AdminStack
+  HomeStack
 },
 {
   initialRouteName: "ProfileStack"
