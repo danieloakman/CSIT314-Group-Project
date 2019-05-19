@@ -10,6 +10,9 @@ import {
 import DatabaseService from "@lib/services/DatabaseService";
 import LocationService from "@lib/services/LocationService";
 import {FileSystem} from "expo";
+import PhoneNumberLink from "@components/atoms/PhoneNumberLink";
+import DirectionsLink from "@components/atoms/DirectionsLink";
+
 const cars = require("../../../dataGenerator/datasets/cars");
 const names = require("../../../dataGenerator/datasets/names");
 const uuid = require("uuid/v4");
@@ -246,6 +249,15 @@ export default class DeveloperScreen extends React.Component {
               JSON.stringify(await DatabaseService.getUserBySearch({firstName: "john"}, false), null, 2)
             );
           }}
+        />
+        <PhoneNumberLink phoneNo="1234567890" style={{fontSize: 25}}/>
+        <DirectionsLink
+          destination={{
+            latitude: "-33.849884",
+            longitude: "151.025748"
+          }}
+          text="Get directions to props.destination"
+          style={{fontSize: 25}}
         />
       </ScrollView>
     );
