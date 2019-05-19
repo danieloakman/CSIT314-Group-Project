@@ -28,7 +28,9 @@
     "android": {
       "package": "com.group19.CSIT314_Group_Project",
       "config": {
-        "googleMaps": { "apiKey": "AIzaSyCwYB5dfJ48Et5yy5PdLQBWNw6znhhvVqU" }
+        "googleMaps": {
+          "apiKey": "AIzaSyCwYB5dfJ48Et5yy5PdLQBWNw6znhhvVqU"
+        }
       }
     },
     "entryPoint": "./src/App.js"
