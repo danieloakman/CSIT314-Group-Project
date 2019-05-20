@@ -20,6 +20,7 @@ import GMapView from "@components/GoogleMapView";
 import {MapView} from "expo";
 import WindowBox from "@components/WindowBox";
 import LoadingGif from "@components/atoms/LoadingGif";
+import Problems from "@constants/CommonFaults";
 
 import MechanicProfileViewScreen from "@screens/MechanicProfileViewScreen";
 class DriverHomeScreen extends React.Component {
@@ -85,7 +86,7 @@ class DriverHomeScreen extends React.Component {
 
 class RequestScreen extends React.Component {
   state = {
-    description: "",
+    description: "Other",
     vehicles: null,
     selectedVehicle: null,
     location: null, // latitude-longitude coordinates
@@ -162,16 +163,38 @@ class RequestScreen extends React.Component {
               </View>
             </View>
         }
-        {/* Description text input */}
+        {/* Description dropdown, not working */}
+        {/*
         <View style={styles.centeredRowContainer}>
-          <Text style={styles.textBesideInput}>Description:</Text>
-          <TextInput
-            style={styles.textInput}
-            onChangeText={description => this.setState({ description })}
-            onSubmitEditing={async () => { await this._submitRequest(); }}
-            disabled={this.state.isLoading}
-          />
+          <Text style={styles.textBesideInput}>Sort By:</Text>
+          <View style={{borderWidth: 1, borderRadius: 5}}>
+            <Picker
+              selectedValue={this.state.description}
+              style={{ width: 150 }}
+              itemStyle={{ fontSize: 20 }}
+              mode="dropdown"
+              onValueChange={description => this.setState({ description })}>
+              {Problems.map((descriptionValue, index) => {
+                return <Picker.Item key={index} label={descriptionValue.toString()} value={descriptionValue}/>;
+              })}
+            </Picker>
+          </View>
         </View>
+        */}
+        {/* Description text input, disable unless 'other' is selected */}
+        {/*
+        {!this.state.description === "other" ? null
+          : <View style={styles.centeredRowContainer}>
+            <Text style={styles.textBesideInput}>Description:</Text>
+            <TextInput
+              style={styles.textInput}
+              onChangeText={description => this.setState({ description })}
+              onSubmitEditing={async () => { await this._submitRequest(); }}
+              disabled={this.state.isLoading}
+            />
+          </View>
+        }
+        */}
         {/* Submit Button */}
         <View style={styles.buttons}>
           <Button
@@ -223,7 +246,8 @@ class OfferList extends React.Component {
     serviceRequest: null,
     location: null,
     isLoadingMap: true,
-    selectedOffer: null
+    selectedOffer: null,
+    maxRadius: 50
   }
 
   componentDidMount () {
@@ -263,6 +287,22 @@ class OfferList extends React.Component {
           </GMapView>
         </View>
         <Text style={styles.heading}>Offers</Text>
+        {/* max radius dropdown */}
+        <View style={styles.centeredRowContainer}>
+          <Text style={styles.textBesideInput}>Max Radius:</Text>
+          <View style={{borderWidth: 1, borderRadius: 5}}>
+            <Picker
+              selectedValue={this.state.maxRadius}
+              style={{ width: 150 }}
+              itemStyle={{ fontSize: 20 }}
+              mode="dropdown"
+              onValueChange={maxRadius => this.setState({ maxRadius })}>
+              {[25, 50, 100, 150, 200].map((radiusValue, index) => {
+                return <Picker.Item key={index} label={radiusValue.toString()} value={radiusValue}/>;
+              })}
+            </Picker>
+          </View>
+        </View>
         {/* sort by dropdown
           <View style={styles.centeredRowContainer}>
             <Text style={styles.textBesideInput}>Sort By:</Text>

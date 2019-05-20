@@ -6,6 +6,7 @@ import {
   Button,
   TextInput,
   Alert,
+  Picker
 } from "react-native";
 import {createStackNavigator, createAppContainer} from "react-navigation";
 import DatabaseService from "@lib/services/DatabaseService";
@@ -48,7 +49,8 @@ class RequestList extends React.Component {
     serviceRequests: [],
     isLoadingMap: true,
     selectedSR: null,
-    srSelected: false
+    srSelected: false,
+    maxDistance: 50
   }
 
   render () {
@@ -90,7 +92,23 @@ class RequestList extends React.Component {
               <Text>Description: {this.state.selectedSR.description}</Text>
             </View>
           }
-          {/* NOTE: haven't tested if diable works properly */}
+          {/* max radius dropdown */}
+          <View style={styles.centeredRowContainer}>
+            <Text style={styles.textBesideInput}>Max Radius:</Text>
+            <View style={{borderWidth: 1, borderRadius: 5}}>
+              <Picker
+                selectedValue={this.state.maxRadius}
+                style={{ width: 150 }}
+                itemStyle={{ fontSize: 20 }}
+                mode="dropdown"
+                onValueChange={maxRadius => this.setState({ maxRadius })}>
+                {[25, 50, 100, 150, 200].map((radiusValue, index) => {
+                  return <Picker.Item key={index} label={radiusValue.toString()} value={radiusValue}/>;
+                })}
+              </Picker>
+            </View>
+          </View>
+          {/* NOTE: haven't tested if disabled works properly */}
           <View style={styles.buttons}>
             <Button
               title="View Request"
