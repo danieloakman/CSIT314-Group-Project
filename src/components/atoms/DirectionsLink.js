@@ -24,7 +24,7 @@ export default class DirectionsLink extends React.Component {
             {textDecorationLine: "underline", color: "#0066ff", fontWeight: "bold"},
             this.props.style
           ]}>
-          {this.props.text}
+          {this.props.title}
         </Text>
       </TouchableOpacity>
     );

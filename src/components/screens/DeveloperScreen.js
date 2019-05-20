@@ -256,7 +256,7 @@ export default class DeveloperScreen extends React.Component {
             latitude: "-33.849884",
             longitude: "151.025748"
           }}
-          text="Get directions to props.destination"
+          title="Get directions to props.destination"
           style={{fontSize: 25}}
         />
       </ScrollView>
