@@ -69,19 +69,26 @@ class RequestList extends React.Component {
           >
             {this.state.isLoadingMap ? null
               : this.state.serviceRequests.map((sr, index) => {
-                return <MapView.Marker
-                  key={index}
-                  coordinate={{
-                    latitude: sr.location.coords.latitude,
-                    longitude: sr.location.coords.longitude
-                  }}
-                  title={sr.description}
-                  description={`Distance: ${Math.floor(sr.distance * 100) / 100}km`}
-                  onPress={async () => {
-                    this.setState({selectedSR: sr});
-                    this.setState({srSelected: true});
-                  }}
-                />;
+                if (
+                  // Don't show any markers that this mechanic has made an offer for already:
+                  sr.offers.filter(offer => {
+                    return offer.mechanicEmail === this.state.user.email;
+                  }).length === 0
+                ) {
+                  return <MapView.Marker
+                    key={index}
+                    coordinate={{
+                      latitude: sr.location.coords.latitude,
+                      longitude: sr.location.coords.longitude
+                    }}
+                    title={sr.description}
+                    description={`Distance: ${Math.floor(sr.distance * 100) / 100}km`}
+                    onPress={async () => {
+                      this.setState({selectedSR: sr});
+                      this.setState({srSelected: true});
+                    }}
+                  />;
+                }
               })}
           </GMapView>
           <Text style={styles.heading}>Nearby Requests</Text>
@@ -143,7 +150,6 @@ class RequestView extends React.Component {
     user: null,
     location: null,
     offerMade: false,
-    status: "no offer made"
   }
   componentWillMount () {
     /* get parameters from the list item which was clicked */
@@ -162,7 +168,7 @@ class RequestView extends React.Component {
           <Text>Distance: {`${Math.round(this.state.selectedSR.distance * 100) / 100}km`}</Text>
           <Text>Time: {this.state.selectedSR.creationDate}</Text>
           <Text>Description: {this.state.selectedSR.description}</Text>
-          <Text>Status: {this.state.status}</Text>
+          <Text>Status: {this.state.selectedSR.status}</Text>
         </View>
         <View style={styles.buttons}>
           <Button
