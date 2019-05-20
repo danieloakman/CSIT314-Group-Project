@@ -1,18 +1,16 @@
 
-const other = "Other";
-export default {
-  other,
-  flatTyre: "Flat Tyre",
-  flatBattery: "Flat Battery",
-  overheating: "Overheating",
-  outOfFuel: "Out of Fuel",
-  transmission: "Transmission",
-  lights: "Lights",
-  alternator: "Alternator",
-  checkEngineLight: "Check Engine Light",
-  oilPressureWarningLight: "Oil Pressure Warning",
-  windshield: "Windshield",
-  steeringWheel: "Steering Wheel",
-  starterMotor: "Starter Motor",
-  clutch: "Clutch"
-};
+export default [
+  "Flat Tyre",
+  "Flat Battery",
+  "Overheating",
+  "Out of Fuel",
+  "Transmission",
+  "Lights",
+  "Alternator",
+  "Check Engine Light",
+  "Oil Pressure Warning",
+  "Windshield",
+  "Steering Wheel",
+  "Starter Motor",
+  "Clutch"
+];

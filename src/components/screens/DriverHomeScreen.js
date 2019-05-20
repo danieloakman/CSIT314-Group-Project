@@ -163,38 +163,33 @@ class RequestScreen extends React.Component {
               </View>
             </View>
         }
-        {/* Description dropdown, not working */}
-        {/*
         <View style={styles.centeredRowContainer}>
-          <Text style={styles.textBesideInput}>Sort By:</Text>
+          <Text style={styles.textBesideInput}>Description of Fault:</Text>
           <View style={{borderWidth: 1, borderRadius: 5}}>
             <Picker
-              selectedValue={this.state.description}
+              selectedValue={Problems.includes(this.state.description) ? this.state.description : "Other"}
               style={{ width: 150 }}
               itemStyle={{ fontSize: 20 }}
-              mode="dropdown"
               onValueChange={description => this.setState({ description })}>
               {Problems.map((descriptionValue, index) => {
                 return <Picker.Item key={index} label={descriptionValue.toString()} value={descriptionValue}/>;
               })}
+              <Picker.Item label="Other" value="Other"/>
             </Picker>
           </View>
         </View>
-        */}
-        {/* Description text input, disable unless 'other' is selected */}
-        {/*
-        {!this.state.description === "other" ? null
+        {/* Description text input, disable unless 'Other' is selected because that's not in the Problems array. */}
+        {Problems.includes(this.state.description) ? null
           : <View style={styles.centeredRowContainer}>
-            <Text style={styles.textBesideInput}>Description:</Text>
+            <Text style={styles.textBesideInput}>Your description:</Text>
             <TextInput
-              style={styles.textInput}
+              style={[styles.textInput, {width: "55%"}]} // todo: Should probably make a multi-line text input here
               onChangeText={description => this.setState({ description })}
               onSubmitEditing={async () => { await this._submitRequest(); }}
               disabled={this.state.isLoading}
             />
           </View>
         }
-        */}
         {/* Submit Button */}
         <View style={styles.buttons}>
           <Button
@@ -271,13 +266,16 @@ class OfferList extends React.Component {
             {this.state.isLoadingMap ? null
               : this.state.serviceRequest.offers.map((offer, index) => {
                 const distance = LocationService.getDistanceBetween(offer.location.coords, this.state.location.coords);
+                const rating = !isNaN(parseFloat(offer.mechanicRating))
+                  ? offer.mechanicRating + "/5"
+                  : offer.mechanicRating;
                 return <MapView.Marker
                   key={index}
                   coordinate={{
                     latitude: offer.location.coords.latitude,
                     longitude: offer.location.coords.longitude
                   }}
-                  title={`$${offer.offerAmount}, Rating: ${offer.mechanicRating}/5`}
+                  title={`$${offer.offerAmount}, Rating: ${rating}`}
                   description={`Distance: ${Math.floor(distance * 100) / 100}km`}
                   onPress={() => {
                     this.setState({selectedOffer: offer});
@@ -467,7 +465,7 @@ class ActiveServiceRequest extends React.Component {
   }
 
   render () {
-    return ( // todo: fill out this screen.
+    return (
       <WindowBox>
         <Text style={styles.heading}>Active Request</Text>
         <View style={styles.centeredRowContainer}>
