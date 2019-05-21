@@ -9,6 +9,7 @@ module.exports = class User {
     this.phoneNo = "";
     this.registerDate = "";
     this.pictureURI = "";
+    this.location = "";
     // add any more variables common to all classes derived from User
   }
 

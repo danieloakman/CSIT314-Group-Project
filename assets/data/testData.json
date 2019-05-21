@@ -1,52 +1,44 @@
 {
   "users": {
     "driver@test.com": {
-      "constructor": "Driver",
-      "account": {
-        "firstName": "John",
-        "lastName": "Lennon",
-        "email": "driver@test.com",
-        "password": "test123",
-        "vehicleIds": [
-          "9fe70aad-8568-4568-92b7-f96276fdcea6"
-        ]
-      }
+      "type": "driver",
+      "firstName": "John",
+      "lastName": "Lennon",
+      "email": "driver@test.com",
+      "password": "test123",
+      "vehicleIds": [
+        "9fe70aad-8568-4568-92b7-f96276fdcea6"
+      ]
     },
     "driver2@test.com": {
-      "constructor": "Driver",
-      "account": {
-        "firstName": "Paul",
-        "lastName": "Mccartney",
-        "email": "driver2@test.com",
-        "password": "test123",
-        "srId": "d0155f80-47b7-434e-ba0d-980cee2da5aa",
-        "vehicleIds": [
-          "0e3ad9ab-d62f-4a90-b2d4-219227a90de6"
-        ]
-      }
+      "type": "driver",
+      "firstName": "Paul",
+      "lastName": "Mccartney",
+      "email": "driver2@test.com",
+      "password": "test123",
+      "srId": "d0155f80-47b7-434e-ba0d-980cee2da5aa",
+      "vehicleIds": [
+        "0e3ad9ab-d62f-4a90-b2d4-219227a90de6"
+      ]
     },
     "mechanic@test.com": {
-      "constructor": "Mechanic",
-      "account": {
-        "firstName": "George",
-        "lastName": "Harrison",
-        "email": "mechanic@test.com",
-        "password": "test123",
-        "verifiedMechanic": false,
-        "rating": "Un-rated",
-        "srId": null,
-        "offersSent": []
-      }
+      "type": "mechanic",
+      "firstName": "George",
+      "lastName": "Harrison",
+      "email": "mechanic@test.com",
+      "password": "test123",
+      "verifiedMechanic": false,
+      "rating": "Un-rated",
+      "srId": null,
+      "offersSent": []
     },
     "admin@test.com": {
-      "constructor": "Admin",
-      "account": {
-        "firstName": "Ringo",
-        "lastName": "Star",
-        "email": "admin@test.com",
-        "password": "test123",
-        "jobs": []
-      }
+      "type": "admin",
+      "firstName": "Ringo",
+      "lastName": "Star",
+      "email": "admin@test.com",
+      "password": "test123",
+      "jobs": []
     }
   },
   "vehicles": {

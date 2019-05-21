@@ -4,9 +4,9 @@ import LocationService from "@lib/services/LocationService";
 const uuid = require("uuid/v4"); // random uuid
 
 const UserTypes = {
-  Driver: require("@lib/services/users/Driver"),
-  Mechanic: require("@lib/services/users/Mechanic"),
-  Admin: require("@lib/services/users/Admin")
+  driver: require("@lib/services/users/Driver"),
+  mechanic: require("@lib/services/users/Mechanic"),
+  admin: require("@lib/services/users/Admin")
 };
 
 // File that can't be changed within the app:
@@ -26,7 +26,7 @@ export default class DatabaseService {
       let userRecord = await AsyncStorage.getItem(`user-${email}`);
       if (!userRecord) return null;
       else userRecord = JSON.parse(userRecord);
-      return new UserTypes[userRecord.constructor](userRecord.account);
+      return new UserTypes[userRecord.type](userRecord);
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error(`DatabaseService.getUser() error: ${err.stack}`);
@@ -66,8 +66,8 @@ export default class DatabaseService {
       let filteredUsers = [];
       for (let keyValuePair of users) {
         const userRecord = JSON.parse(keyValuePair[1]);
-        if (userRecord.constructor === "Admin" && filterAdmins) continue;
-        let user = new UserTypes[userRecord.constructor](userRecord.account);
+        if (userRecord.type === "admin" && filterAdmins) continue;
+        let user = new UserTypes[userRecord.type](userRecord);
         let pass = true;
         for (let key of Object.keys(params)) {
           if ((params[key] + "").toLowerCase() !== (user[key] + "").toLowerCase()) {
@@ -139,30 +139,28 @@ export default class DatabaseService {
    */
   static async createUser (type, firstName, lastName, email, password, phoneNo, signInAswell = false) {
     let userRecord = {
-      constructor: type,
-      account: {
-        firstName: firstName,
-        lastName: lastName,
-        email: email,
-        password: password,
-        phoneNo: phoneNo,
-      }
+      type,
+      firstName,
+      lastName,
+      email,
+      password,
+      phoneNo,
     };
     // Check if that user exists already:
-    if (await this.getUser(userRecord.account.email)) {
+    if (await this.getUser(userRecord.email)) {
       return {pass: false, reason: "An account with that email already exists."};
     }
 
     // Send userRecord through the corresponding class constructor
     // to declare and initialise any attributes not passed to the creatUser() function:
-    userRecord.account = new UserTypes[userRecord.constructor](userRecord.account);
+    userRecord = new UserTypes[userRecord.type](userRecord);
 
     try {
       let keyValuePair = [
-        [`user-${userRecord.account.email}`, JSON.stringify(userRecord)]
+        [`user-${userRecord.email}`, JSON.stringify(userRecord)]
       ];
       if (signInAswell) {
-        keyValuePair.push(["signedInUserEmail", userRecord.account.email]);
+        keyValuePair.push(["signedInUserEmail", userRecord.email]);
         this.emitter.emit("signedIn");
       }
       await AsyncStorage.multiSet(keyValuePair);
@@ -219,10 +217,7 @@ export default class DatabaseService {
     try {
       await AsyncStorage.mergeItem(
         `user-${userClassObject.email}`,
-        JSON.stringify({
-          constructor: userClassObject.constructor,
-          account: userClassObject
-        })
+        JSON.stringify(userClassObject)
       );
       this.emitter.emit("updatedUser");
       return true;
