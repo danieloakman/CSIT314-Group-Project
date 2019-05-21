@@ -139,7 +139,7 @@ export default class DatabaseService {
    */
   static async createUser (type, firstName, lastName, email, password, phoneNo, signInAswell = false) {
     let userRecord = {
-      type,
+      type: type.toLowerCase(),
       firstName,
       lastName,
       email,
