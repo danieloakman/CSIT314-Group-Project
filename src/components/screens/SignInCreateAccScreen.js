@@ -5,12 +5,15 @@ import {
   StyleSheet,
   Text,
   View,
-  Button,
+  // Button,
   Picker,
   TextInput,
   KeyboardAvoidingView,
   TouchableOpacity
 } from "react-native";
+import {
+  Toast
+} from "native-base";
 import WindowBox from "@components/WindowBox";
 import Patterns from "@constants/UserInputRegex";
 import DatabaseService from "@lib/services/DatabaseService";
@@ -37,7 +40,17 @@ class SignInCreateAccScreen extends React.Component {
     signInPassword: "",
     signInErrorText: "",
     signInButtonColor: Colors.wideButton,
-    signInButtonTextColor: "white"
+    signInButtonTextColor: "white",
+    users: null // only used for quick sign in when in dev
+  }
+
+  componentWillMount () {
+    if (__DEV__) {
+      DatabaseService.getDatabase(/user-/, true)
+        .then(users => {
+          this.setState({users});
+        }).catch(err => { throw err; });
+    }
   }
 
   render () {
@@ -137,11 +150,27 @@ class SignInCreateAccScreen extends React.Component {
           </View>
 
           <Text style={styles.errorText}>{this.state.signInErrorText}</Text>
+
           {__DEV__ &&
-            <View>
-              {this._renderDevQuickSignInButton("driver@test.com", "test123")}
-              {this._renderDevQuickSignInButton("mechanic@test.com", "test123")}
-              {this._renderDevQuickSignInButton("admin@test.com", "test123")}
+            <View style={[styles.centeredRowContainer, {borderWidth: 2, borderRadius: 10, borderColor: "blue"}]}>
+              <Text style={styles.textBesideInput}>DEV quick sign in: </Text>
+              <Picker
+                style={{width: 200}}
+                itemStyle={{fontSize: 20}}
+                onValueChange={async user => {
+                  const result = await DatabaseService.signInUser(user.email, user.password);
+                  if (!result.pass) this.setState({ signInErrorText: result.reason });
+                }}>
+                {!this.state.users ? null
+                  : this.state.users.map((user, index) => {
+                    user = JSON.parse(user[1]);
+                    return (<Picker.Item
+                      key={index}
+                      label={user.email}
+                      value={user}
+                    />);
+                  })}
+              </Picker>
             </View>
           }
 
@@ -301,8 +330,13 @@ class SignInCreateAccScreen extends React.Component {
     );
     if (!result.pass) this.setState({crAccErrorText: result.reason});
     else {
-      // Change to main screen:
-      // this.props.navigation.navigate("Main");
+      Toast.show({
+        text: `Created ${this.state.crAccEmail}, you can now sign in.`,
+        duration: 5000,
+        type: "success",
+        style: {margin: 10, borderRadius: 15}
+      });
+      this.setState({selected: "SignIn"});
     }
   }
 
@@ -330,25 +364,25 @@ class SignInCreateAccScreen extends React.Component {
     }
   }
 
-  _renderDevQuickSignInButton (email, password) {
-    return (
-      <View style={styles.wideButtonContainer}>
-        <Button
-          onPress={async () => {
-            // Attempt to sign the user in:
-            const result = await DatabaseService.signInUser(email, password);
-            if (!result.pass) this.setState({ signInErrorText: result.reason });
-            else {
-              // Change screen to Main:
-              // this.props.navigation.navigate("Main");
-            }
-          }}
-          title={`DEV_OPTION: Sign in with ${email}`}
-          style={styles.wideButton}
-        />
-      </View>
-    );
-  }
+  // _renderDevQuickSignInButton (email, password, index = 0) {
+  //   return (
+  //     <View style={styles.wideButtonContainer} key={index}>
+  //       <Button
+  //         onPress={async () => {
+  //           // Attempt to sign the user in:
+  //           const result = await DatabaseService.signInUser(email, password);
+  //           if (!result.pass) this.setState({ signInErrorText: result.reason });
+  //           else {
+  //             // Change screen to Main:
+  //             // this.props.navigation.navigate("Main");
+  //           }
+  //         }}
+  //         title={`Sign in: ${email}`}
+  //         style={styles.wideButton}
+  //       />
+  //     </View>
+  //   );
+  // }
 }
 export default withAuthContext(SignInCreateAccScreen);
 

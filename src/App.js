@@ -1,5 +1,6 @@
 import React from "react";
 import { Platform, StatusBar, StyleSheet, View } from "react-native";
+import { Root } from "native-base";
 import { AppLoading, Asset, Font, Icon, registerRootComponent } from "expo";
 import { useScreens } from "react-native-screens";
 import AppNavigator from "./navigation/AppNavigator";
@@ -27,16 +28,18 @@ class App extends React.Component {
       );
     } else {
       return (
-        <ThemeProvider>
-          <AuthProvider>
-            <View style={styles.container}>
-              {/* {Platform.OS === "ios" && <StatusBar barStyle="default" />} */}
-              <AppNavigator
-                ref={navRef => { NavigationService.setTopLevelNavigator(navRef); }}
-              />
-            </View>
-          </AuthProvider>
-        </ThemeProvider>
+        <Root>
+          <ThemeProvider>
+            <AuthProvider>
+              <View style={styles.container}>
+                {/* {Platform.OS === "ios" && <StatusBar barStyle="default" />} */}
+                <AppNavigator
+                  ref={navRef => { NavigationService.setTopLevelNavigator(navRef); }}
+                />
+              </View>
+            </AuthProvider>
+          </ThemeProvider>
+        </Root>
       );
     }
   }
@@ -45,7 +48,9 @@ class App extends React.Component {
     return Promise.all([
       Asset.loadAsync([
         require("@assets/images/robot-dev.png"),
-        require("@assets/images/robot-prod.png")
+        require("@assets/images/robot-prod.png"),
+        require("@assets/images/car-broken-down.png"),
+        require("@assets/images/loading.gif")
       ]),
       Font.loadAsync({
         "Roboto": require("native-base/Fonts/Roboto.ttf"),
