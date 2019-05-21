@@ -12,10 +12,26 @@ import LocationService from "@lib/services/LocationService";
 import {FileSystem} from "expo";
 import PhoneNumberLink from "@components/atoms/PhoneNumberLink";
 import DirectionsLink from "@components/atoms/DirectionsLink";
+import {Toast} from "native-base";
 
+const authentication = require("../../../dataGenerator/datasets/authentication");
 const cars = require("../../../dataGenerator/datasets/cars");
+const descriptions = require("../../../dataGenerator/datasets/descriptions").description;
+const locations = require("../../../dataGenerator/datasets/locations");
 const names = require("../../../dataGenerator/datasets/names");
+const phoneNumbers = require("../../../dataGenerator/datasets/phoneNumbers");
 const uuid = require("uuid/v4");
+
+/**
+ * Gets a random location within kmRadius of one of the locations in locations.json.
+ */
+function getRandomLocationFromFile () {
+  let loc = locations[Math.floor((Math.random() * locations.length - 1) + 1)];
+  return LocationService.getRandomLocation(
+    { latitude: loc.latitude, longitude: loc.longitude },
+    loc.kmRadius
+  );
+}
 
 export default class DeveloperScreen extends React.Component {
   static navigationOptions = {
@@ -42,17 +58,74 @@ export default class DeveloperScreen extends React.Component {
           }}
         />
         <Button
+          title="Wipe database"
+          onPress={async () => {
+            await DatabaseService.wipeDatabase();
+            console.log("Done wipe database. Should sign out now.");
+          }}
+        />
+        <Button
           title="Wipe and re-initialise database"
           onPress={async () => {
             await DatabaseService.initialiseDatabase({forceWipe: true});
-            console.log("Done wipe database. Should sign out now.");
+            console.log("Done wipe database and re-initialise. Should sign out now.");
           }}
         />
         <Button
           title="Merge testData.json into database"
           onPress={async () => {
-            await DatabaseService.initialiseDatabase({forceWipe: false});
+            await DatabaseService.initialiseDatabase({mergeDatabaseFile: true});
             console.log("Done merge database. Should sign out now.");
+          }}
+        />
+        <Button
+          title="Generate and console log testData"
+          onPress={async () => {
+            // WIP:
+            await DatabaseService.wipeDatabase();
+            // Create the four original user's:
+            for (let user of [
+              ["Driver", "John", "Lennon", "driver@test.com", "test123", "04123456789"],
+              ["Driver", "Paul", "Mccartney", "driver2@test.com", "test123", "04023456789"],
+              ["Mechanic", "George", "Harrison", "mechanic@test.com", "test123", "04003456789"],
+              ["Admin", "Ringo", "Star", "admin@test.com", "test123", "04000456789"]
+            ]) {
+              await DatabaseService.createUser(
+                user[0], user[1], user[2], user[3], user[4], user[5]
+              );
+              user = await DatabaseService.getUser(user[3]);
+              if (user[0] === "Driver") {
+                user.description = descriptions[Math.floor((Math.random() * descriptions.length - 1) + 1)];
+              }
+              user.location = getRandomLocationFromFile();
+              await DatabaseService.saveUserChanges(user);
+            }
+            // Create 100 Driver's and Mechanics:
+            let promises = [];
+            for (let i = 0; i < 100; i++) {
+              for (let type of ["Driver", "Mechanic"]) {
+                promises.push(new Promise(async resolve => {
+                  let firstName = names.firstNames[Math.floor((Math.random() * names.firstNames.length - 1) + 1)];
+                  let lastName = names.lastNames[Math.floor((Math.random() * names.lastNames.length - 1) + 1)];
+                  let email = authentication.emails[Math.floor((Math.random() * authentication.emails.length - 1) + 1)];
+                  let phoneNo = phoneNumbers[Math.floor((Math.random() * phoneNumbers.length - 1) + 1)];
+                  let password = authentication.passwords[Math.floor((Math.random() * authentication.passwords.length - 1) + 1)];
+                  await DatabaseService.createUser(
+                    type, firstName, lastName, email, password, phoneNo
+                  );
+                  let user = await DatabaseService.getUser(email);
+                  if (type === "Driver") {
+                    user.description = descriptions[Math.floor((Math.random() * descriptions.length - 1) + 1)];
+                  }
+                  user.location = getRandomLocationFromFile();
+                  await DatabaseService.saveUserChanges(user);
+                  resolve(true);
+                }));
+              }
+            }
+            await Promise.all(promises);
+            // todo: generate 1000 service requests randomly across the 100 drivers and all the other stuff along with that.
+            console.log("DB: " + JSON.stringify(await DatabaseService.getDatabase()));
           }}
         />
         <Button

@@ -1,94 +1,88 @@
 {
-  "users": {
-    "driver@test.com": {
-      "type": "driver",
-      "firstName": "John",
-      "lastName": "Lennon",
-      "email": "driver@test.com",
-      "password": "test123",
-      "vehicleIds": [
-        "9fe70aad-8568-4568-92b7-f96276fdcea6"
-      ]
-    },
-    "driver2@test.com": {
-      "type": "driver",
-      "firstName": "Paul",
-      "lastName": "Mccartney",
-      "email": "driver2@test.com",
-      "password": "test123",
-      "srId": "d0155f80-47b7-434e-ba0d-980cee2da5aa",
-      "vehicleIds": [
-        "0e3ad9ab-d62f-4a90-b2d4-219227a90de6"
-      ]
-    },
-    "mechanic@test.com": {
-      "type": "mechanic",
-      "firstName": "George",
-      "lastName": "Harrison",
-      "email": "mechanic@test.com",
-      "password": "test123",
-      "verifiedMechanic": false,
-      "rating": "Un-rated",
-      "srId": null,
-      "offersSent": []
-    },
-    "admin@test.com": {
-      "type": "admin",
-      "firstName": "Ringo",
-      "lastName": "Star",
-      "email": "admin@test.com",
-      "password": "test123",
-      "jobs": []
-    }
+  "user-driver@test.com": {
+    "type": "driver",
+    "firstName": "John",
+    "lastName": "Lennon",
+    "email": "driver@test.com",
+    "password": "test123",
+    "vehicleIds": [
+      "9fe70aad-8568-4568-92b7-f96276fdcea6"
+    ]
   },
-  "vehicles": {
-    "9fe70aad-8568-4568-92b7-f96276fdcea6": {
-      "id": "9fe70aad-8568-4568-92b7-f96276fdcea6",
-      "make": "Hyundai",
-      "model": "Elantra",
-      "year": 2012,
-      "plate": "N9KI45",
-      "vin": "1G4HD57276U972445",
-      "owners": [
-        "driver@test.com"
-      ]
-    },
-    "0e3ad9ab-d62f-4a90-b2d4-219227a90de6": {
-      "id": "0e3ad9ab-d62f-4a90-b2d4-219227a90de6",
-      "make": "Nissan",
-      "model": "Versa",
-      "year": 2011,
-      "plate": "V6VJ1M",
-      "vin": "2G4WD552X61834033",
-      "srId": "d0155f80-47b7-434e-ba0d-980cee2da5aa",
-      "owners": [
-        "driver2@test.com"
-      ]
-    }
+  "user-driver2@test.com": {
+    "type": "driver",
+    "firstName": "Paul",
+    "lastName": "Mccartney",
+    "email": "driver2@test.com",
+    "password": "test123",
+    "srId": "d0155f80-47b7-434e-ba0d-980cee2da5aa",
+    "vehicleIds": [
+      "0e3ad9ab-d62f-4a90-b2d4-219227a90de6"
+    ]
   },
-  "serviceRequests": {
-    "d0155f80-47b7-434e-ba0d-980cee2da5aa": {
-      "id": "d0155f80-47b7-434e-ba0d-980cee2da5aa",
-      "location": {
-        "timestamp": 1557223186000,
-        "mocked": false,
-        "coords": {
-          "heading": 0,
-          "longitude": 150.874157,
-          "speed": 0,
-          "altitude": 37.599998474121094,
-          "latitude": -34.436349,
-          "accuracy": 16.340999603271484
-        }
-      },
-      "driverEmail": "driver2@test.com",
-      "vehicleId": "0e3ad9ab-d62f-4a90-b2d4-219227a90de6",
-      "description": "Engine blew up",
-      "assignedMechanicEmail": null,
-      "offers": [],
-      "status": "Awaiting offer acceptance",
-      "creationDate": "2019-05-07T10:04:27.944Z",
-      "completionDate": null
-    }
+  "user-mechanic@test.com": {
+    "type": "mechanic",
+    "firstName": "George",
+    "lastName": "Harrison",
+    "email": "mechanic@test.com",
+    "password": "test123",
+    "verifiedMechanic": false,
+    "rating": "Un-rated",
+    "srId": null,
+    "offersSent": []
+  },
+  "user-admin@test.com": {
+    "type": "admin",
+    "firstName": "Ringo",
+    "lastName": "Star",
+    "email": "admin@test.com",
+    "password": "test123",
+    "jobs": []
+  },
+  "vehicle-9fe70aad-8568-4568-92b7-f96276fdcea6": {
+    "id": "9fe70aad-8568-4568-92b7-f96276fdcea6",
+    "make": "Hyundai",
+    "model": "Elantra",
+    "year": 2012,
+    "plate": "N9KI45",
+    "vin": "1G4HD57276U972445",
+    "owners": [
+      "driver@test.com"
+    ]
+  },
+  "vehicle-0e3ad9ab-d62f-4a90-b2d4-219227a90de6": {
+    "id": "0e3ad9ab-d62f-4a90-b2d4-219227a90de6",
+    "make": "Nissan",
+    "model": "Versa",
+    "year": 2011,
+    "plate": "V6VJ1M",
+    "vin": "2G4WD552X61834033",
+    "srId": "d0155f80-47b7-434e-ba0d-980cee2da5aa",
+    "owners": [
+      "driver2@test.com"
+    ]
+  },
+  "sr-d0155f80-47b7-434e-ba0d-980cee2da5aa": {
+    "id": "d0155f80-47b7-434e-ba0d-980cee2da5aa",
+    "location": {
+      "timestamp": 1557223186000,
+      "mocked": false,
+      "coords": {
+        "heading": 0,
+        "longitude": 150.874157,
+        "speed": 0,
+        "altitude": 37.599998474121094,
+        "latitude": -34.436349,
+        "accuracy": 16.340999603271484
+      }
+    },
+    "driverEmail": "driver2@test.com",
+    "vehicleId": "0e3ad9ab-d62f-4a90-b2d4-219227a90de6",
+    "description": "Engine blew up",
+    "assignedMechanicEmail": null,
+    "offers": [],
+    "status": "Awaiting offer acceptance",
+    "creationDate": "2019-05-07T10:04:27.944Z",
+    "completionDate": null
   }
 }

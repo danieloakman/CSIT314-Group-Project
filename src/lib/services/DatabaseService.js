@@ -145,6 +145,7 @@ export default class DatabaseService {
       email,
       password,
       phoneNo,
+      registerDate: new Date()
     };
     // Check if that user exists already:
     if (await this.getUser(userRecord.email)) {
@@ -234,13 +235,15 @@ export default class DatabaseService {
    * @param {Boolean} returnArray Optional: If true, returns an array instead.
    * @returns As default returns an Object.
    */
-  static async getDatabase (regex, returnArray = false) {
+  static async getDatabase (regex = null, returnArray = false) {
     try {
       let allUserKeys = await AsyncStorage.getAllKeys();
       if (allUserKeys.length < 1) return null;
 
-      allUserKeys = allUserKeys.filter(key => key.match(regex));
-      if (allUserKeys.length < 1) return null;
+      if (regex) {
+        allUserKeys = allUserKeys.filter(key => key.match(regex));
+        if (allUserKeys.length < 1) return null;
+      }
 
       let DatabaseArr = await AsyncStorage.multiGet(allUserKeys);
       if (DatabaseArr.length < 1) return null;
@@ -259,6 +262,18 @@ export default class DatabaseService {
   }
 
   /**
+   * Deletes ALL keys in AsyncStorage, including "signedInUserEmail" and any others.
+   */
+  static async wipeDatabase () {
+    try {
+      await AsyncStorage.clear();
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error(`DatabaseService.wipeDatabase() error: ${err.stack}`);
+    }
+  }
+
+  /**
    * If database doesn't exist in AsyncStorage, then initialise/load
    * databaseFile into it.
    * @param {Boolean} forceWipe If true, deletes all keys in AsyncStorage first.
@@ -270,27 +285,15 @@ export default class DatabaseService {
   static async initialiseDatabase (options = {forceWipe: false, mergeDatabaseFile: false}) {
     try {
       if (options.forceWipe) {
-        // Delete ALL keys in AsyncStorage, including "signedInUserEmail" and any others:
-        let keys = await AsyncStorage.getAllKeys();
-        if (keys.length > 0) AsyncStorage.multiRemove(keys);
+        await this.wipeDatabase();
       }
       let database = await this.getDatabase(/user-/);
       if (!database) {
         // Initialise AsyncStorage database with the database.json file:
         database = [];
-        for (let key of Object.keys(databaseFile.users)) {
+        for (let key of Object.keys(databaseFile)) {
           database.push(
-            [`user-${key}`, JSON.stringify(databaseFile.users[key])]
-          );
-        }
-        for (let key of Object.keys(databaseFile.vehicles)) {
-          database.push(
-            [`vehicle-${key}`, JSON.stringify(databaseFile.vehicles[key])]
-          );
-        }
-        for (let key of Object.keys(databaseFile.serviceRequests)) {
-          database.push(
-            [`sr-${key}`, JSON.stringify(databaseFile.serviceRequests[key])]
+            [key, JSON.stringify(databaseFile[key])]
           );
         }
         await AsyncStorage.multiSet(database);
@@ -311,19 +314,9 @@ export default class DatabaseService {
   static async mergeDatabaseFileIntoAsyncStorage () {
     try {
       let mergeKeyValuePairArr = [];
-      for (let key of Object.keys(databaseFile.users)) {
+      for (let key of Object.keys(databaseFile)) {
         mergeKeyValuePairArr.push(
-          [`user-${key}`, JSON.stringify(databaseFile.users[key])]
-        );
-      }
-      for (let key of Object.keys(databaseFile.vehicles)) {
-        mergeKeyValuePairArr.push(
-          [`vehicle-${key}`, JSON.stringify(databaseFile.vehicles[key])]
-        );
-      }
-      for (let key of Object.keys(databaseFile.serviceRequests)) {
-        mergeKeyValuePairArr.push(
-          [`sr-${key}`, JSON.stringify(databaseFile.serviceRequests[key])]
+          [key, JSON.stringify(databaseFile[key])]
         );
       }
       await AsyncStorage.multiMerge(mergeKeyValuePairArr);

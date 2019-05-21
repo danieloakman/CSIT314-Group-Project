@@ -166,7 +166,7 @@ class SignInCreateAccScreen extends React.Component {
                     user = JSON.parse(user[1]);
                     return (<Picker.Item
                       key={index}
-                      label={user.email}
+                      label={`${user.type}, ${user.email}`}
                       value={user}
                     />);
                   })}

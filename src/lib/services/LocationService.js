@@ -28,15 +28,15 @@ export default class LocationService {
             clearTimeout(wait);
             // Sometimes Location.getCurrentPositionAsync() hangs indefintely.
             // So for now, when the timeout is reached return a randomLocation
-            // within 5km around the uni.
+            // within 2km around the uni.
             // Maybe should change this to only happen on __DEV__ eventually.
             resolve(
               this.getRandomLocation({
                 latitude: -34.406419,
                 longitude: 150.882327
-              }, 5)
+              }, 2)
             );
-          }, 3000); // Timeout of 3 seconds.
+          }, 2000); // Timeout of 2 seconds.
         })
       ]);
     }
