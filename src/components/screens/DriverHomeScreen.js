@@ -10,10 +10,15 @@ import {
   Button,
   TouchableOpacity,
   TextInput,
-  Alert,
-  Picker
+  Picker,
+  Slider,
+  Keyboard
 } from "react-native";
 import {createStackNavigator, createAppContainer} from "react-navigation";
+import {
+  Toast,
+  Textarea
+} from "native-base";
 import DatabaseService from "@lib/services/DatabaseService";
 import LocationService from "@lib/services/LocationService";
 import GMapView from "@components/GoogleMapView";
@@ -26,6 +31,7 @@ import MechanicProfileViewScreen from "@screens/MechanicProfileViewScreen";
 class DriverHomeScreen extends React.Component {
   state = {
     user: null,
+    serviceRequest: null,
     enableRequestAssistance: false,
     enableViewCurrentOffers: false,
     enableViewActiveRequest: false,
@@ -39,6 +45,7 @@ class DriverHomeScreen extends React.Component {
           let sr = await DatabaseService.getServiceRequest(user.srId);
           this.setState({
             user,
+            serviceRequest: sr,
             enableRequestAssistance: !user.srId,
             enableViewCurrentOffers: user.srId && sr ? sr.status === "Awaiting offer acceptance" : false,
             enableViewActiveRequest: user.srId && sr ? sr.status === "Offer accepted" : false
@@ -74,7 +81,15 @@ class DriverHomeScreen extends React.Component {
           {!this.state.user ? null
             : <Button
               title="View Active Assistance Request"
-              onPress={() => this.props.navigation.navigate("ActiveServiceRequest", {user: this.state.user})}
+              onPress={() => {
+                this.props.navigation.navigate(
+                  "ActiveServiceRequest",
+                  {
+                    user: this.state.user,
+                    serviceRequest: this.state.serviceRequest
+                  }
+                );
+              }}
               disabled={!this.state.enableViewActiveRequest}
             />
           }
@@ -98,7 +113,14 @@ class RequestScreen extends React.Component {
     LocationService.getCurrentLocation()
       .then(async location => {
         let user = this.props.navigation.getParam("user", "The current user");
-        if (!location) Alert.alert("Cannot continue unless location permission is enabled.");
+        if (!location) {
+          Toast.show({
+            text: "Cannot continue unless location permission is enabled.",
+            duration: 5000,
+            type: "danger",
+            style: {margin: 10, borderRadius: 15}
+          });
+        }
         let vehicles = [];
         for (let id of user.vehicleIds) {
           vehicles.push(await DatabaseService.getVehicle(id));
@@ -212,14 +234,24 @@ class RequestScreen extends React.Component {
   }
   async _submitRequest () {
     if (!this.state.description || !this.state.selectedVehicle) {
-      Alert.alert("Please fill in description and select a vehicle.");
+      Toast.show({
+        text: "Please fill in description and select a vehicle.",
+        duration: 5000,
+        type: "warning",
+        style: {margin: 10, borderRadius: 15}
+      });
       return;
     }
     let result = await DatabaseService.createServiceRequest(
       this.state.location, this.state.user.email, this.state.selectedVehicle.id, this.state.description
     );
     if (!result.pass && !result.srId) {
-      Alert.alert(result.reason);
+      Toast.show({
+        text: result.reason,
+        duration: 5000,
+        type: "danger",
+        style: {margin: 10, borderRadius: 15}
+      });
       return;
     }
     // Save user and vehicle changes:
@@ -230,6 +262,12 @@ class RequestScreen extends React.Component {
       DatabaseService.saveUserChanges(user),
       DatabaseService.saveVehicleChanges(vehicle)
     ]);
+    Toast.show({
+      text: "Created assistance request! New offers will appear momentarily.",
+      duration: 5000,
+      type: "success",
+      style: {margin: 10, borderRadius: 15}
+    });
     this.props.navigation.goBack();
   }
 }
@@ -443,7 +481,12 @@ class OfferView extends React.Component {
         resolve(true);
       })
     ]);
-    Alert.alert("Offer accepted!");
+    Toast.show({
+      text: "Offer accepted!",
+      duration: 5000,
+      type: "success",
+      style: {margin: 10, borderRadius: 15}
+    });
     this.props.navigation.navigate("Home");
   }
 }
@@ -451,17 +494,38 @@ class OfferView extends React.Component {
 class ActiveServiceRequest extends React.Component {
   state = {
     user: null,
-    rating: 5
+    serviceRequest: null,
+    rating: 5,
+    comments: "",
+    isLoading: true
   }
 
   componentDidMount () {
     this.setState({
       user: this.props.navigation.getParam("user", "Currently signed in driver"),
+      serviceRequest: this.props.navigation.getParam("serviceRequest")
     });
   }
 
   async _completeServiceRequest () {
-    //
+    // todo: await DatabaseService.createPayment();
+    Toast.show({
+      text: "Completed service request!",
+      duration: 5000,
+      type: "success",
+      style: {margin: 10, borderRadius: 15}
+    });
+    this.props.navigation.goBack();
+  }
+
+  async _cancelOffer () {
+    Toast.show({
+      text: "Cancelled assistance, please choose an another offer.",
+      duration: 5000,
+      type: "warning",
+      style: {margin: 10, borderRadius: 15}
+    });
+    this.props.navigation.goBack();
   }
 
   render () {
@@ -469,26 +533,43 @@ class ActiveServiceRequest extends React.Component {
       <WindowBox>
         <Text style={styles.heading}>Active Request</Text>
         <View style={styles.centeredRowContainer}>
-          <Text style={styles.textBesideInput}>Rating:</Text>
-          <View style={{borderWidth: 1, borderRadius: 5}}>
-            <Picker
-              selectedValue={this.state.rating}
-              style={{ width: 150 }}
-              itemStyle={{ fontSize: 20 }}
-              mode="dropdown"
-              onValueChange={rating => this.setState({ rating })}>
-              {[1, 2, 3, 4, 5].map((ratingValue, index) => {
-                return <Picker.Item key={index} label={ratingValue.toString()} value={ratingValue}/>;
-              })}
-            </Picker>
-          </View>
+          <Text style={styles.textBesideInput}>Rating: {this.state.rating}/5</Text>
+          <Slider
+            value={this.state.rating}
+            onValueChange={rating => this.setState({rating})}
+            maximumValue={5}
+            minimumValue={1}
+            step={0.25}
+            style={{width: "60%"}}
+            ref={ref => { this.sliderInput = ref; }}
+          />
         </View>
+        <Textarea
+          bordered
+          rowSpan={4}
+          style={{
+            marginLeft: 20,
+            marginRight: 20,
+            marginBottom: 10,
+            fontSize: 20
+          }}
+          placeholder="Any additional comments."
+          onChangeText={comments => this.setState({comments})}
+          onSubmitEditing={Keyboard.dismiss}
+        />
         <View style={styles.buttons}>
           <Button
             title="Complete Assisstance Request"
             onPress={async () => {
-              // await this._completeServiceRequest();
-              Alert.alert("Completed Assistance Request!");
+              await this._completeServiceRequest();
+            }}
+          />
+        </View>
+        <View style={styles.buttons}>
+          <Button
+            title="Cancel assisstance and re-choose another offer"
+            onPress={async () => {
+              await this._cancelOffer();
             }}
           />
         </View>
