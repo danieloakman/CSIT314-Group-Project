@@ -48,6 +48,13 @@ class SignInCreateAccScreen extends React.Component {
     if (__DEV__) {
       DatabaseService.getDatabase(/user-/, true)
         .then(users => {
+          users.unshift([
+            "NONE",
+            JSON.stringify({
+              type: "NONE",
+              email: "No user selected"
+            })
+          ]);
           this.setState({users});
         }).catch(err => { throw err; });
     }
