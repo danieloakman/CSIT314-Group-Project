@@ -27,7 +27,82 @@ import WindowBox from "@components/WindowBox";
 import LoadingGif from "@components/atoms/LoadingGif";
 import Problems from "@constants/CommonFaults";
 
-import MechanicProfileViewScreen from "@screens/MechanicProfileViewScreen";
+// import MechanicProfileViewScreen from "@screens/MechanicProfileViewScreen";
+import MakeRequestScreen from "@components/screens/DriverMakeRequestScreen";
+import ViewOffersScreen from "@components/screens/DriverOffersScreen";
+import AvtiveRequestScreen from "@components/screens/DriverActiveRequestScreen";
+export default class DriverHomeScreen extends React.Component {
+  state = {
+    user: null,
+    serviceRequest: null,
+    enableRequestAssistance: false,
+    enableViewCurrentOffers: false,
+    enableViewActiveRequest: false,
+  }
+
+  componentDidMount () {
+    const {navigation} = this.props;
+    navigation.addListener("willFocus", () => { // todo: maybe make a better refresh screen method
+      DatabaseService.getSignedInUser()
+        .then(async user => {
+          let sr = await DatabaseService.getServiceRequest(user.srId);
+          this.setState({
+            user,
+            serviceRequest: sr,
+            enableRequestAssistance: !user.srId,
+            enableViewCurrentOffers: user.srId && sr ? sr.status === "Awaiting offer acceptance" : false,
+            enableViewActiveRequest: user.srId && sr ? sr.status === "Offer accepted" : false
+          });
+        })
+        .catch(err => { throw err; });
+    });
+  }
+
+  render () {
+    return (
+      <View>
+        <Text style={styles.heading}>Home</Text>
+        <View style={styles.buttons}>
+          {!this.state.user ? null
+            : <Button
+              title="Request Assistance"
+              onPress={() => this.props.navigation.navigate(MakeRequestScreen, {user: this.state.user})}
+              disabled={!this.state.enableRequestAssistance}
+            />
+          }
+        </View>
+        <View style={styles.buttons}>
+          {!this.state.user ? null
+            : <Button
+              title="View Current Offers"
+              onPress={() => this.props.navigation.navigate(ViewOffersScreen, {user: this.state.user})}
+              disabled={!this.state.enableViewCurrentOffers}
+            />
+          }
+        </View>
+        <View style={styles.buttons}>
+          {!this.state.user ? null
+            : <Button
+              title="View Active Assistance Request"
+              onPress={() => {
+                this.props.navigation.navigate(
+                  AvtiveRequestScreen,
+                  {
+                    user: this.state.user,
+                    serviceRequest: this.state.serviceRequest
+                  }
+                );
+              }}
+              disabled={!this.state.enableViewActiveRequest}
+            />
+          }
+        </View>
+      </View>
+    );
+  }
+}
+
+/*
 class DriverHomeScreen extends React.Component {
   state = {
     user: null,
@@ -142,7 +217,6 @@ class RequestScreen extends React.Component {
     return (
       <View>
         <Text style={styles.heading}>Roadside Assistance Request</Text>
-        {/* car selection dropdown input */}
         {this.state.isLoading
           ? <View style={styles.centeredRowContainer}>
             <Text style={{fontSize: 15}}>Fetching your current location... </Text>
@@ -200,7 +274,6 @@ class RequestScreen extends React.Component {
             </Picker>
           </View>
         </View>
-        {/* Description text input, disable unless 'Other' is selected because that's not in the Problems array. */}
         {Problems.includes(this.state.description) ? null
           : <View style={styles.centeredRowContainer}>
             <Text style={styles.textBesideInput}>Your description:</Text>
@@ -212,7 +285,6 @@ class RequestScreen extends React.Component {
             />
           </View>
         }
-        {/* Submit Button */}
         <View style={styles.buttons}>
           <Button
             style="buttons"
@@ -271,7 +343,8 @@ class RequestScreen extends React.Component {
     this.props.navigation.goBack();
   }
 }
-
+*/
+/*
 // offers screen
 class OfferList extends React.Component {
   state = {
@@ -323,7 +396,6 @@ class OfferList extends React.Component {
           </GMapView>
         </View>
         <Text style={styles.heading}>Offers</Text>
-        {/* max radius dropdown */}
         <View style={styles.centeredRowContainer}>
           <Text style={styles.textBesideInput}>Max Radius:</Text>
           <View style={{borderWidth: 1, borderRadius: 5}}>
@@ -339,28 +411,9 @@ class OfferList extends React.Component {
             </Picker>
           </View>
         </View>
-        {/* sort by dropdown
-          <View style={styles.centeredRowContainer}>
-            <Text style={styles.textBesideInput}>Sort By:</Text>
-            <View style={{borderWidth: 1, borderRadius: 5}}>
-              <Picker
-                selectedValue={this.state.sorting}
-                style={{width: 150}}
-                itemStyle={{fontSize: 20}}
-                mode="dropdown"
-                onValueChange={sorting => this.setState({ sorting })}>
-                <Picker.Item label="Rating" value="Rating" />
-                <Picker.Item label="Cost" value="Cost" />
-                <Picker.Item label="Time" value="Time" />
-                <Picker.Item label="Name" value="Name" />
-              </Picker>
-            </View>
-          </View>
-          */}
         {!this.state.selectedOffer ? null
           : <TouchableOpacity style={styles.buttonBox} onPress={() => this._selectOffer()}>
             <View style={styles.buttonBoxText}>
-              {/* <Text>Time: {this.state.waitTime}</Text> // todo calculate waitTime */}
               <Text>Cost: {this.state.selectedOffer.offerAmount}</Text>
               <Text>Mechnanic: {this.state.selectedOffer.mechanicEmail}</Text>
               <Text>Average Rating: {this.state.selectedOffer.mechanicRating}</Text>
@@ -401,7 +454,6 @@ class OfferList extends React.Component {
       </View>
     );
   }
-  /* Note will need to set states first depending on what was clicked */
   _selectOffer () {
     this.props.navigation.navigate("OfferView", {
       offer: this.state.selectedOffer,
@@ -419,7 +471,6 @@ class OfferView extends React.Component {
   }
 
   componentWillMount () {
-    /* get parameters from the list item which was clicked */
     this.setState({
       offer: this.props.navigation.getParam("offer", "The selected offer"),
       user: this.props.navigation.getParam("user", "Currently signed in driver"),
@@ -432,7 +483,6 @@ class OfferView extends React.Component {
       <View>
         <Text style={styles.heading}>Offer</Text>
         <View style={styles.buttonBoxText}>
-          {/* <Text>Time: {waitTime}</Text> */}
           <Text>Cost: {this.state.offer.offerAmount}</Text>
           <Text>Mechnanic: {this.state.offer.mechanicEmail}</Text>
           <Text>Average Rating: {this.state.offer.mechanicRating}</Text>
@@ -595,7 +645,6 @@ const MainNavigator = createStackNavigator(
   },
   {
     initialRouteName: "Home",
-    /* header stuff (used for all these screens) */
     defaultNavigationOptions: {
       header: null
     }
@@ -607,7 +656,7 @@ export default class App extends React.Component {
     return <AppContainer />;
   }
 }
-
+*/
 const styles = StyleSheet.create({
   heading: {
     fontSize: 20,

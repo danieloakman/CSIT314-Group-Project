@@ -13,7 +13,39 @@ import DatabaseService from "@lib/services/DatabaseService";
 import GMapView from "@components/GoogleMapView";
 import {MapView} from "expo";
 
-// todo:
+// used for separating screens
+import RequestListScreen from "@components/screens/MechanicRequestList";
+import RequestViewScreen from "@components/screens/MechanicRequestView";
+
+export default class MechanicHomeScreen extends React.Component {
+  render () {
+    return (
+      <View>
+        <Text style={styles.heading}>Home</Text>
+        <View style={styles.buttons}>
+          <Button
+            title="View Nearby Requests"
+            onPress={() => this.props.navigation.navigate(RequestListScreen) }
+          />
+        </View>
+        <View style={styles.buttons}>
+          <Button
+            title="View Current Offer"
+            onPress={() => this.props.navigation.navigate(RequestViewScreen) }
+          />
+        </View>
+        <View style={styles.buttons}>
+          <Button
+            title="View Active Assistance Request"
+            onPress={() => this.props.navigation.navigate(RequestViewScreen) }
+          />
+        </View>
+      </View>
+    );
+  }
+}
+
+/*
 class MechanicHomeScreen extends React.Component {
   render () {
     return (
@@ -41,7 +73,6 @@ class MechanicHomeScreen extends React.Component {
     );
   }
 }
-
 class RequestList extends React.Component {
   state = {
     user: null,
@@ -99,7 +130,6 @@ class RequestList extends React.Component {
               <Text>Description: {this.state.selectedSR.description}</Text>
             </View>
           }
-          {/* max radius dropdown */}
           <View style={styles.centeredRowContainer}>
             <Text style={styles.textBesideInput}>Max Radius:</Text>
             <View style={{borderWidth: 1, borderRadius: 5}}>
@@ -115,7 +145,6 @@ class RequestList extends React.Component {
               </Picker>
             </View>
           </View>
-          {/* NOTE: haven't tested if disabled works properly */}
           <View style={styles.buttons}>
             <Button
               title="View Request"
@@ -133,7 +162,6 @@ class RequestList extends React.Component {
       </View>
     );
   }
-  /* Note will need to set states first depending on what was clicked */
   _viewRequest () {
     this.props.navigation.navigate("RequestView", {
       selectedSR: this.state.selectedSR,
@@ -142,7 +170,6 @@ class RequestList extends React.Component {
     });
   }
 }
-// if possible, make map to and from
 class RequestView extends React.Component {
   state = {
     offerAmount: null,
@@ -152,7 +179,6 @@ class RequestView extends React.Component {
     offerMade: false,
   }
   componentWillMount () {
-    /* get parameters from the list item which was clicked */
     const { navigation } = this.props;
     this.setState({
       selectedSR: navigation.getParam("selectedSR", "The selected service request"),
@@ -200,7 +226,6 @@ class RequestView extends React.Component {
             }}
           />
         </View>
-        {/* for cancelling requests (not implemented yet) */}
         <Text>Offered Amount: ${this.state.offerAmount}</Text>
         <View style={styles.buttons}>
           <Button
@@ -268,7 +293,6 @@ const MainNavigator = createStackNavigator(
   },
   {
     initialRouteName: "Home",
-    /* header stuff (used for all these screens) */
     defaultNavigationOptions: {
       header: null
     }
@@ -280,7 +304,7 @@ export default class App extends React.Component {
     return <AppContainer />;
   }
 }
-
+*/
 const styles = StyleSheet.create({
   heading: {
     fontSize: 20,
