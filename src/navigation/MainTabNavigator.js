@@ -7,10 +7,16 @@ import TabBarIcon from "@components/TabBarIcon";
 import ProfileScreen from "@screens/ProfileScreen";
 import EditProfileScreen from "@screens/EditProfileScreen";
 import SearchScreen from "@screens/SearchScreen";
-import DriverHomeScreen from "@screens/DriverHomeScreen";
-import MechanicHomeScreen from "@screens/MechanicHomeScreen";
-import MechanicProfileScreen from "@screens/MechanicProfileScreen";
-import AdminScreen from "@screens/AdminScreen";
+import HomeScreen from "@screens/HomeScreen";
+
+import DriverActiveRequestScreen from "@screens/DriverActiveRequestScreen";
+import DriverMakeRequestScreen from "@screens/DriverMakeRequestScreen";
+import DriverOffersScreen from "@screens/DriverOffersScreen";
+import DriverViewOfferScreen from "@screens/DriverViewOfferScreen";
+
+import MechanicRequestViewScreen from "@components/screens/MechanicRequestView";
+import MechanicRequestListScreen from "@components/screens/MechanicRequestList";
+
 import {withAuthContext} from "@lib/context/AuthContext";
 
 const ProfileStack = createStackNavigator({
@@ -55,25 +61,12 @@ SearchStack.navigationOptions = {
   )
 };
 
-class HomeScreen extends React.Component {
-  render () {
-    let user = this.props.AuthContext.user;
-    switch (user.type) {
-      case "driver":
-        return <DriverHomeScreen/>;
-      case "mechanic":
-        return <MechanicHomeScreen/>;
-      case "admin":
-        return <AdminScreen/>;
-      default:
-        return null;
-    }
-  }
-}
-
 const HomeStack = createStackNavigator({
   Home: withAuthContext(HomeScreen)
-});
+}, {
+  defaultNavigationOptions: {
+    header: null
+  }});
 
 HomeStack.navigationOptions = {
   tabBarLabel: "Home",
@@ -102,7 +95,12 @@ const ModalStack = createStackNavigator({
   TabStack,
   EditProfileModal: EditProfileScreen,
   ProfileModal: ProfileScreen,
-
+  DriverActiveRequestModal: DriverActiveRequestScreen,
+  DriverMakeRequestModal: DriverMakeRequestScreen,
+  DriverOffersModal: DriverOffersScreen,
+  DriverViewOfferModal: DriverViewOfferScreen,
+  MechanicRequestViewModal: MechanicRequestViewScreen,
+  MechanicRequestListModal: MechanicRequestListScreen
 },
 {
   initialRouteName: "TabStack",

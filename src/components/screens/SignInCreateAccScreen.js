@@ -339,6 +339,7 @@ class SignInCreateAccScreen extends React.Component {
     else {
       Toast.show({
         text: `Created ${this.state.crAccEmail}, you can now sign in.`,
+        buttonText: "Okay",
         duration: 5000,
         type: "success",
         style: {margin: 10, borderRadius: 15}

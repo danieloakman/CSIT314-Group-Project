@@ -1,8 +1,6 @@
 /* eslint-disable no-console */
 import React from "react";
 import {
-  StyleSheet,
-  View,
   Button,
   TextInput,
   Alert

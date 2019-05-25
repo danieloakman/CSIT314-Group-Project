@@ -5,7 +5,7 @@ import {
 } from "expo";
 
 const toRadians = (degrees) => { return degrees * (Math.PI / 180); };
-const toDegrees = (radians) => { return radians / (Math.PI / 180); };
+// const toDegrees = (radians) => { return radians / (Math.PI / 180); };
 
 export default class LocationService {
   /**

@@ -21,8 +21,8 @@ module.exports = class User {
     for (const prop in userRecord) {
       if (this[prop] !== undefined) {
         this[prop] = userRecord[prop];
-      // eslint-disable-next-line no-console
       } else {
+        // eslint-disable-next-line no-console
         console.warn(`Attribute "${prop}" is not declared in this User.`);
       }
     }
