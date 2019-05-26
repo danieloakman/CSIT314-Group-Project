@@ -11,12 +11,17 @@ import {
   Picker,
   Image
 } from "react-native";
-import {createStackNavigator, createAppContainer} from "react-navigation";
-// todo:
-class MechanicProfileScreen extends React.Component {
+import {createStackNavigator, createAppContainer, withNavigation} from "react-navigation";
+import HeaderBar from "@molecules/HeaderBar";
+
+class AdminScreen extends React.Component {
   render () {
     return (
       <View>
+        <HeaderBar
+          navMid={<Text style={styles.heading}>Admin Screen</Text>}
+          navRight={<View/>} // Just to center the heading
+        />
         {/* profile image and description (placeholder image) */}
         <View style={styles.centeredRowContainer}>
           <Image
@@ -358,7 +363,7 @@ class SearchResults extends React.Component {
 
 const MainNavigator = createStackNavigator(
   {
-    Home: MechanicProfileScreen,
+    Home: AdminScreen,
     EditProfile: EditProfile,
     HistoryList: HistoryList,
     HistoryItem: HistoryItem,
@@ -376,11 +381,13 @@ const MainNavigator = createStackNavigator(
   }
 );
 const AppContainer = createAppContainer(MainNavigator);
-export default class App extends React.Component {
+class App extends React.Component {
   render () {
     return <AppContainer />;
   }
 }
+
+export default withNavigation(App);
 
 const styles = StyleSheet.create({
   heading: {

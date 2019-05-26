@@ -7,10 +7,17 @@ import TabBarIcon from "@components/TabBarIcon";
 import ProfileScreen from "@screens/ProfileScreen";
 import EditProfileScreen from "@screens/EditProfileScreen";
 import SearchScreen from "@screens/SearchScreen";
-import DriverHomeScreen from "@screens/DriverHomeScreen";
-import MechanicHomeScreen from "@screens/MechanicHomeScreen";
-import MechanicProfileScreen from "@screens/MechanicProfileScreen";
-import AdminScreen from "@screens/AdminScreen";
+import HomeScreen from "@screens/HomeScreen";
+
+import DriverActiveRequestScreen from "@screens/DriverActiveRequestScreen";
+import DriverMakeRequestScreen from "@screens/DriverMakeRequestScreen";
+import DriverOffersScreen from "@screens/DriverOffersScreen";
+import DriverViewOfferScreen from "@screens/DriverViewOfferScreen";
+
+import MechanicRequestViewScreen from "@components/screens/MechanicRequestView";
+import MechanicRequestListScreen from "@components/screens/MechanicRequestList";
+
+import {withAuthContext} from "@lib/context/AuthContext";
 
 const ProfileStack = createStackNavigator({
   Profile: ProfileScreen
@@ -54,12 +61,15 @@ SearchStack.navigationOptions = {
   )
 };
 
-const DriverHomeStack = createStackNavigator({
-  DriverHome: {screen: DriverHomeScreen}
-});
+const HomeStack = createStackNavigator({
+  Home: withAuthContext(HomeScreen)
+}, {
+  defaultNavigationOptions: {
+    header: null
+  }});
 
-DriverHomeStack.navigationOptions = {
-  tabBarLabel: "Driver Home",
+HomeStack.navigationOptions = {
+  tabBarLabel: "Home",
   tabBarIcon: ({ focused }) => (
     <TabBarIcon
       focused={focused}
@@ -67,60 +77,6 @@ DriverHomeStack.navigationOptions = {
         Platform.OS === "ios"
           ? "ios-home"
           : "md-home"
-      }
-    />
-  )
-};
-
-const MechanicHomeStack = createStackNavigator({
-  MechanicHome: {screen: MechanicHomeScreen}
-});
-
-MechanicHomeStack.navigationOptions = {
-  tabBarLabel: "Mechanic Home",
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon
-      focused={focused}
-      name={
-        Platform.OS === "ios"
-          ? "ios-home"
-          : "md-home"
-      }
-    />
-  )
-};
-
-const MechanicProfileStack = createStackNavigator({
-  MechanicProfile: {screen: MechanicProfileScreen}
-});
-
-MechanicProfileStack.navigationOptions = {
-  tabBarLabel: "Mechanic Profile",
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon
-      focused={focused}
-      name={
-        Platform.OS === "ios"
-          ? `ios-person${focused ? "" : "-outline"}`
-          : "md-person"
-      }
-    />
-  )
-};
-
-const AdminStack = createStackNavigator({
-  Admin: {screen: AdminScreen}
-});
-
-AdminStack.navigationOptions = {
-  tabBarLabel: "Admin Screen",
-  tabBarIcon: ({ focused }) => (
-    <TabBarIcon
-      focused={focused}
-      name={
-        Platform.OS === "ios"
-          ? `ios-person${focused ? "" : "-outline"}`
-          : "md-person"
       }
     />
   )
@@ -129,10 +85,7 @@ AdminStack.navigationOptions = {
 const TabStack = createBottomTabNavigator({
   ProfileStack,
   SearchStack,
-  DriverHomeStack,
-  MechanicHomeStack,
-  MechanicProfileStack,
-  AdminStack
+  HomeStack
 },
 {
   initialRouteName: "ProfileStack"
@@ -142,7 +95,12 @@ const ModalStack = createStackNavigator({
   TabStack,
   EditProfileModal: EditProfileScreen,
   ProfileModal: ProfileScreen,
-
+  DriverActiveRequestModal: DriverActiveRequestScreen,
+  DriverMakeRequestModal: DriverMakeRequestScreen,
+  DriverOffersModal: DriverOffersScreen,
+  DriverViewOfferModal: DriverViewOfferScreen,
+  MechanicRequestViewModal: MechanicRequestViewScreen,
+  MechanicRequestListModal: MechanicRequestListScreen
 },
 {
   initialRouteName: "TabStack",

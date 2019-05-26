@@ -16,7 +16,10 @@ export default class LoadingGif extends React.Component {
         justifyContent: "center",
         alignItems: "center"
       }}>
-        <Image source={require("@assets/images/loading.gif")}/>
+        <Image
+          source={require("@assets/images/loading.gif")}
+          style={this.props.style}
+        />
       </View>
     );
   }

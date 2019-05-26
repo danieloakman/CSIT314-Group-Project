@@ -5,7 +5,7 @@ import {
 } from "expo";
 
 const toRadians = (degrees) => { return degrees * (Math.PI / 180); };
-const toDegrees = (radians) => { return radians / (Math.PI / 180); };
+// const toDegrees = (radians) => { return radians / (Math.PI / 180); };
 
 export default class LocationService {
   /**
@@ -28,15 +28,15 @@ export default class LocationService {
             clearTimeout(wait);
             // Sometimes Location.getCurrentPositionAsync() hangs indefintely.
             // So for now, when the timeout is reached return a randomLocation
-            // within 50km around the uni.
+            // within 2km around the uni.
             // Maybe should change this to only happen on __DEV__ eventually.
             resolve(
               this.getRandomLocation({
                 latitude: -34.406419,
                 longitude: 150.882327
-              }, 5)
+              }, 2)
             );
-          }, 3000); // Timeout of 3 seconds.
+          }, 2000); // Timeout of 2 seconds.
         })
       ]);
     }
@@ -103,6 +103,11 @@ export default class LocationService {
             state = address.region;
             break;
         }
+        if (!address.name) address.name = "";
+        if (!address.street) address.street = "";
+        if (!address.city) address.city = "";
+        if (!state) state = "";
+        if (!address.postalCode) address.postalCode = "";
         return `${address.name} ${address.street}, ${address.city} ${state} ${address.postalCode}`;
       }
     } catch (err) {

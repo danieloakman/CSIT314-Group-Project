@@ -1,0 +1,47 @@
+[
+  {
+    "latitude": -34.422422,
+    "longitude": 150.877569,
+    "kmRadius": 2
+  },
+  {
+    "latitude": -34.390515,
+    "longitude": 150.884622,
+    "kmRadius": 2
+  },
+  {
+    "latitude": -34.438566,
+    "longitude": 150.868609,
+    "kmRadius": 2
+  },
+  {
+    "latitude": -34.448576,
+    "longitude": 150.850566,
+    "kmRadius": 2
+  },
+  {
+    "latitude": -34.471006,
+    "longitude": 150.872386,
+    "kmRadius": 2
+  },
+  {
+    "latitude": -34.571199,
+    "longitude": 150.845457,
+    "kmRadius": 2
+  },
+  {
+    "latitude": -34.370879,
+    "longitude": 150.897902,
+    "kmRadius": 2
+  },
+  {
+    "latitude": -34.350938,
+    "longitude": 150.901637,
+    "kmRadius": 2
+  },
+  {
+    "latitude": -33.849884,
+    "longitude": 151.025748,
+    "kmRadius": 2
+  }
+]

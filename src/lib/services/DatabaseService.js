@@ -26,7 +26,7 @@ export default class DatabaseService {
       let userRecord = await AsyncStorage.getItem(`user-${email}`);
       if (!userRecord) return null;
       else userRecord = JSON.parse(userRecord);
-      return new UserTypes[userRecord.constructor](userRecord.account);
+      return new UserTypes[userRecord.type](userRecord);
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error(`DatabaseService.getUser() error: ${err.stack}`);
@@ -46,6 +46,43 @@ export default class DatabaseService {
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error(`DatabaseService.getSignedInUser() error: ${err.stack}`);
+      return null;
+    }
+  }
+
+  /**
+   * Get user(s) by specifying any number of parameters that are an attribute in the
+   * User, Driver or Mechanic classes.
+   * Parameters are not case-sensitive and are turned into strings for the matching.
+   * @param {Boolean} filterAdmins Optional, default is true. If true, will not
+   * return any users that are Admins.
+   * @return An array of users or a single user if the array is only one in length.
+   */
+  static async getUserBySearch (params = {}, filterAdmins = true) {
+    try {
+      if (Object.keys(params).length === 0) return null;
+      let users = await this.getDatabase(/user-/, true);
+      if (!users) return null;
+      let filteredUsers = [];
+      for (let keyValuePair of users) {
+        const userRecord = JSON.parse(keyValuePair[1]);
+        if (userRecord.type === "admin" && filterAdmins) continue;
+        let user = new UserTypes[userRecord.type](userRecord);
+        let pass = true;
+        for (let key of Object.keys(params)) {
+          if ((params[key] + "").toLowerCase() !== (user[key] + "").toLowerCase()) {
+            pass = false;
+            break;
+          }
+        }
+        if (!pass) continue;
+        filteredUsers.push(user);
+      }
+      if (filteredUsers.length > 0) return filteredUsers;
+      else return null;
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error(`DatabaseService.getUserBySearch() error: ${err.stack}`);
       return null;
     }
   }
@@ -102,30 +139,29 @@ export default class DatabaseService {
    */
   static async createUser (type, firstName, lastName, email, password, phoneNo, signInAswell = false) {
     let userRecord = {
-      constructor: type,
-      account: {
-        firstName: firstName,
-        lastName: lastName,
-        email: email,
-        password: password,
-        phoneNo: phoneNo,
-      }
+      type: type.toLowerCase(),
+      firstName,
+      lastName,
+      email,
+      password,
+      phoneNo,
+      registerDate: new Date()
     };
     // Check if that user exists already:
-    if (await this.getUser(userRecord.account.email)) {
+    if (await this.getUser(userRecord.email)) {
       return {pass: false, reason: "An account with that email already exists."};
     }
 
     // Send userRecord through the corresponding class constructor
     // to declare and initialise any attributes not passed to the creatUser() function:
-    userRecord.account = new UserTypes[userRecord.constructor](userRecord.account);
+    userRecord = new UserTypes[userRecord.type](userRecord);
 
     try {
       let keyValuePair = [
-        [`user-${userRecord.account.email}`, JSON.stringify(userRecord)]
+        [`user-${userRecord.email}`, JSON.stringify(userRecord)]
       ];
       if (signInAswell) {
-        keyValuePair.push(["signedInUserEmail", userRecord.account.email]);
+        keyValuePair.push(["signedInUserEmail", userRecord.email]);
         this.emitter.emit("signedIn");
       }
       await AsyncStorage.multiSet(keyValuePair);
@@ -182,10 +218,7 @@ export default class DatabaseService {
     try {
       await AsyncStorage.mergeItem(
         `user-${userClassObject.email}`,
-        JSON.stringify({
-          constructor: userClassObject.constructor,
-          account: userClassObject
-        })
+        JSON.stringify(userClassObject)
       );
       this.emitter.emit("updatedUser");
       return true;
@@ -199,17 +232,23 @@ export default class DatabaseService {
   /**
    * Returns database object containing all keys that match a RegExp that are in AsyncStorage.
    * @param {RegExp} regex Can use: /sr-/, /user-/, /vehicle-/
+   * @param {Boolean} returnArray Optional: If true, returns an array instead.
+   * @returns As default returns an Object.
    */
-  static async getDatabase (regex) {
+  static async getDatabase (regex = null, returnArray = false) {
     try {
       let allUserKeys = await AsyncStorage.getAllKeys();
       if (allUserKeys.length < 1) return null;
 
-      allUserKeys = allUserKeys.filter(key => key.match(regex));
-      if (allUserKeys.length < 1) return null;
+      if (regex) {
+        allUserKeys = allUserKeys.filter(key => key.match(regex));
+        if (allUserKeys.length < 1) return null;
+      }
 
       let DatabaseArr = await AsyncStorage.multiGet(allUserKeys);
       if (DatabaseArr.length < 1) return null;
+
+      if (returnArray) return DatabaseArr;
 
       let Database = {};
       DatabaseArr.forEach(keyValuePair => {
@@ -219,6 +258,18 @@ export default class DatabaseService {
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error(`DatabaseService.getDatabase() error: ${err.stack}`);
+    }
+  }
+
+  /**
+   * Deletes ALL keys in AsyncStorage, including "signedInUserEmail" and any others.
+   */
+  static async wipeDatabase () {
+    try {
+      await AsyncStorage.clear();
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error(`DatabaseService.wipeDatabase() error: ${err.stack}`);
     }
   }
 
@@ -234,27 +285,15 @@ export default class DatabaseService {
   static async initialiseDatabase (options = {forceWipe: false, mergeDatabaseFile: false}) {
     try {
       if (options.forceWipe) {
-        // Delete ALL keys in AsyncStorage, including "signedInUserEmail" and any others:
-        let keys = await AsyncStorage.getAllKeys();
-        if (keys.length > 0) AsyncStorage.multiRemove(keys);
+        await this.wipeDatabase();
       }
       let database = await this.getDatabase(/user-/);
       if (!database) {
         // Initialise AsyncStorage database with the database.json file:
         database = [];
-        for (let key of Object.keys(databaseFile.users)) {
+        for (let key of Object.keys(databaseFile)) {
           database.push(
-            [`user-${key}`, JSON.stringify(databaseFile.users[key])]
-          );
-        }
-        for (let key of Object.keys(databaseFile.vehicles)) {
-          database.push(
-            [`vehicle-${key}`, JSON.stringify(databaseFile.vehicles[key])]
-          );
-        }
-        for (let key of Object.keys(databaseFile.serviceRequests)) {
-          database.push(
-            [`sr-${key}`, JSON.stringify(databaseFile.serviceRequests[key])]
+            [key, JSON.stringify(databaseFile[key])]
           );
         }
         await AsyncStorage.multiSet(database);
@@ -275,19 +314,9 @@ export default class DatabaseService {
   static async mergeDatabaseFileIntoAsyncStorage () {
     try {
       let mergeKeyValuePairArr = [];
-      for (let key of Object.keys(databaseFile.users)) {
+      for (let key of Object.keys(databaseFile)) {
         mergeKeyValuePairArr.push(
-          [`user-${key}`, JSON.stringify(databaseFile.users[key])]
-        );
-      }
-      for (let key of Object.keys(databaseFile.vehicles)) {
-        mergeKeyValuePairArr.push(
-          [`vehicle-${key}`, JSON.stringify(databaseFile.vehicles[key])]
-        );
-      }
-      for (let key of Object.keys(databaseFile.serviceRequests)) {
-        mergeKeyValuePairArr.push(
-          [`sr-${key}`, JSON.stringify(databaseFile.serviceRequests[key])]
+          [key, JSON.stringify(databaseFile[key])]
         );
       }
       await AsyncStorage.multiMerge(mergeKeyValuePairArr);
@@ -352,8 +381,10 @@ export default class DatabaseService {
     }
   }
 
-  // todo: either update this or create another function to get a vehicle by it's plate and/or vin.
-  // Probably need some permission from all current owners of the vehicle.
+  /**
+   * Get a single vehicle by its id.
+   * @param {string} vehicleId
+   */
   static async getVehicle (vehicleId) {
     try {
       let vehicle = await AsyncStorage.getItem(`vehicle-${vehicleId}`);
@@ -361,6 +392,37 @@ export default class DatabaseService {
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error(`DatabaseService.getVehicle() error: ${err.stack}`);
+      return null;
+    }
+  }
+
+  /**
+   * Get vehicle(s) by specifying any number of parameters, like make, vin, etc.
+   * Parameters are not case-sensitive and are turned into strings for the matching.
+   * @return An array of vehicles or a single vehicle if the array is only one in length.
+   */
+  static async getVehicleBySearch (params = {vehicleId: null, make: null, model: null, year: null, plate: null, vin: null}) {
+    try {
+      Object.keys(params).forEach(key => {
+        if (!params[key]) delete params[key];
+      });
+      if (Object.keys(params).length === 0) return null;
+      let vehicles = await this.getDatabase(/vehicle-/, true);
+      if (!vehicles) return null;
+      vehicles = vehicles.filter(keyValuePair => {
+        let vehicle = JSON.parse(keyValuePair[1]);
+        for (let key of Object.keys(params)) {
+          if ((params[key] + "").toLowerCase() !== (vehicle[key] + "").toLowerCase()) {
+            return false;
+          }
+        }
+        return true;
+      }).map(keyValuePair => JSON.parse(keyValuePair[1]));
+      if (vehicles.length > 0) return vehicles;
+      else return null;
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error(`DatabaseService.getVehicleBySearch() error: ${err.stack}`);
       return null;
     }
   }
@@ -379,8 +441,18 @@ export default class DatabaseService {
     }
   }
 
+  /**
+   * Delete a single vehicle from AsyncStorage database,
+   * if it exists (won't throw an error if it doesn't).
+   * @param {string} vehicleId
+   */
   static async deleteVehicle (vehicleId) {
-    // todo
+    try {
+      await AsyncStorage.removeItem(`vehicle-${vehicleId}`);
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error(`DatabaseService.deleteVehicle() error: ${err.stack}`);
+    }
   }
 
   /**
@@ -441,8 +513,18 @@ export default class DatabaseService {
     }
   }
 
-  static async deleteServiceRequest () {
-    // todo
+  /**
+   * Delete a single service request from AsyncStorage database,
+   * if it exists (won't throw an error if it doesn't).
+   * @param {string} srId
+   */
+  static async deleteServiceRequest (srId) {
+    try {
+      await AsyncStorage.removeItem(`sr-${srId}`);
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error(`DatabaseService.deleteServiceRequest() error: ${err.stack}`);
+    }
   }
 
   /**
