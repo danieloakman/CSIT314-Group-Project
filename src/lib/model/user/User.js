@@ -16,43 +16,10 @@ export default class User extends ModelWithDbConnection {
     this.fullName = `${this.givenName} ${this.surname}`;
   }
 
-  // Getters to access document properties (Use as if class attribute)
-  get type () { return this._doc.type; }
-  get givenName () { return this._doc.givenName; }
-  get surname () { return this._doc.surname; }
-  get email () { return this._doc.email; }
-  get password () { return this._doc.password; }
-  get phoneNo () { return this._doc.phoneNo; }
-  get registerDate () { return this._doc.registerDate; }
-  get pictureURI () { return this._doc.pictureURI; }
-
-  // Setters to update properties on a user
-
-  async setGivenName (givenName) {
-    await UserDB.updateUser(this, {givenName});
-    this.fullName = `${this.givenName} ${this.surname}`;
-  }
-
-  async setSurname (surname) {
-    await UserDB.updateUser(this, {surname});
-    this.fullName = `${this.givenName} ${this.surname}`;
-  }
-
-  async setEmail (email) {
-    await UserDB.updateUser(this, {email});
-  }
-
-  async setPhoneNo (phoneNo) {
-    await UserDB.updateUser(this, {phoneNo});
-  }
-
-  async setRegisterDate (registerDate) {
-    await UserDB.updateUser(this, {registerDate});
-  }
-
-  async setPictureURI (pictureURI) {
-    await UserDB.updateUser(this, {pictureURI});
-  }
+  /**
+   * Initialize child fields with default values
+   */
+  async init () {}
 
   /**
    * Returns the correct user class instance for a specified email or id.
@@ -116,4 +83,42 @@ export default class User extends ModelWithDbConnection {
   // Sign in and out should be done through user model (aka this class) rather than db in case we ever want to do more in the abstraction layer
   static signInUser = UserDB.signInUser;
   static signOutUser = UserDB.signOutUser;
+
+  // Getters to access document properties (Use as if class attribute)
+  get type () { return this._doc.type; }
+  get givenName () { return this._doc.givenName; }
+  get surname () { return this._doc.surname; }
+  get email () { return this._doc.email; }
+  get password () { return this._doc.password; }
+  get phoneNo () { return this._doc.phoneNo; }
+  get registerDate () { return this._doc.registerDate; }
+  get pictureURI () { return this._doc.pictureURI; }
+
+  // Setters to update properties on a user
+
+  async setGivenName (givenName) {
+    await UserDB.updateUser(this, {givenName});
+    this.fullName = `${this.givenName} ${this.surname}`;
+  }
+
+  async setSurname (surname) {
+    await UserDB.updateUser(this, {surname});
+    this.fullName = `${this.givenName} ${this.surname}`;
+  }
+
+  async setEmail (email) {
+    await UserDB.updateUser(this, {email});
+  }
+
+  async setPhoneNo (phoneNo) {
+    await UserDB.updateUser(this, {phoneNo});
+  }
+
+  async setRegisterDate (registerDate) {
+    await UserDB.updateUser(this, {registerDate});
+  }
+
+  async setPictureURI (pictureURI) {
+    await UserDB.updateUser(this, {pictureURI});
+  }
 }
