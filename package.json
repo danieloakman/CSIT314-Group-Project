@@ -17,6 +17,7 @@
     "dreamjs": "^0.2.0",
     "eslint-import-resolver-babel-module": "^5.0.1",
     "expo": "^32.0.0",
+    "fuse.js": "^3.4.4",
     "lodash": "^4.17.11",
     "native-base": "^2.12.1",
     "pouchdb-find": "^7.0.0",
