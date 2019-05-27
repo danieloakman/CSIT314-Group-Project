@@ -1,6 +1,6 @@
 import DBConnector from "./core";
 
-class UserDB extends DBConnector {
+class RequestDB extends DBConnector {
   constructor () {
     super("db.requests");
   }
@@ -22,4 +22,4 @@ class UserDB extends DBConnector {
   }
 }
 
-export default new UserDB();
+export default new RequestDB();
