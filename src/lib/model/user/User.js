@@ -78,6 +78,7 @@ export default class User extends ModelWithDbConnection {
  * @param {String} [identifier.id]
  */
   static async deleteUser (identifier) {
+    // TODO: Remove all references to user
     UserDB.deleteUser(identifier);
   }
 
