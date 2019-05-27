@@ -5,6 +5,7 @@ import {AsyncStorage} from "react-native";
   * @typedef {Object} DBResponse
   * @property {Boolean} ok Whether request was successful
   * @property {String} [reason] Reason for failure
+  * @property {Object} [record] The record successfully created in db
   */
 
 class UserDB extends DBConnector {
@@ -77,7 +78,7 @@ class UserDB extends DBConnector {
       await AsyncStorage.setItem("signedInUserID", resp.id);
       this.emit("signedIn");
     }
-    return {ok: true};
+    return {ok: true, record};
   }
 
   async batchCreateUser () {
