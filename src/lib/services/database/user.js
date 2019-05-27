@@ -63,12 +63,18 @@ class UserDB extends DBConnector {
    * @return {Promise<DBResponse>} see DBResponse definition
    */
   async createUser (record, {signIn = false}) {
-    if (await this.getUser({id: record._id})) {
+    // Check if user exists
+    if (await this.getUser({email: record.email})) {
       return {ok: false, reason: "An account with that email already exists."};
     }
-    await this.db.put(record);
+
+    // Insert into db
+    const resp = await this.db.post(record._doc);
+
+    // Set document in class to value from db
+    await record.setDoc(this.db.get(resp.id));
     if (signIn) {
-      await AsyncStorage.setItem("signedInUserID", record._id);
+      await AsyncStorage.setItem("signedInUserID", resp.id);
       this.emit("signedIn");
     }
     return {ok: true};
