@@ -1,4 +1,6 @@
 import User from "./User";
+import UserDB from "@database/user";
+import _ from "lodash";
 
 /**
  * Driver class
@@ -10,6 +12,58 @@ export default class Driver extends User {
     this._doc.activeRequest = null;
     this._doc.requestHistory = [];
     this._doc.isMember = false;
+  }
+
+  async setDescription (description) {
+    await UserDB.updateUser(this, {description});
+  }
+
+  /**
+   * Adds a given vehicle to the driver profile
+   * @param {String} vehicleID
+   */
+  async addVehicle (vehicleID) {
+    const vehicles = this.vehicles;
+    vehicles.push(vehicleID);
+    await UserDB.updateUser(this, {vehicles});
+  }
+
+  /**
+   * Removes a given vehicle from the driver profile. Does not actually delete the vehicle
+   * @param {String} vehicleID
+   */
+  async removeVehicle (vehicleID) {
+    const vehicles = this.vehicles;
+    _.pull(vehicles, vehicleID);
+    await UserDB.updateUser(this, {vehicles});
+  }
+
+  /**
+   * Adds a given request to the driver profile
+   * @param {String} requestID
+   */
+  async addRequest (requestID) {
+    const requestHistory = this.requestHistory;
+    requestHistory.push(requestID);
+    await UserDB.updateUser(this, {requestHistory});
+  }
+
+  /**
+   * Removes a given request from the driver profile. Does not actually delete the request
+   * @param {String} requestID
+   */
+  async removeRequest (requestID) {
+    const requestHistory = this.requestHistory;
+    _.pull(requestHistory, requestID);
+    await UserDB.updateUser(this, {requestHistory});
+  }
+
+  /**
+   * Sets the active request for the user. Can be set to null for no active request
+   * @param {String} requestID
+   */
+  async setActiveRequest (requestID) {
+    await UserDB.updateUser(this, {activeRequest: requestID});
   }
 
   get description () { return this._doc.description; }
