@@ -67,6 +67,7 @@ export default class User extends ModelWithDbConnection {
       type, givenName, surname, email, password, phoneNo
     };
     const constructedAccount = new User.UserTypes[type](record);
+    constructedAccount.init();
     return UserDB.createUser(constructedAccount, signIn);
   }
 
