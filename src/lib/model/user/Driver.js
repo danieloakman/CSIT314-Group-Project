@@ -25,6 +25,7 @@ export default class Driver extends User {
   async addVehicle (vehicleID) {
     const vehicles = this.vehicles;
     vehicles.push(vehicleID);
+    // TODO: add reference to driver to vehicle
     await UserDB.updateUser(this, {vehicles});
   }
 
@@ -35,6 +36,7 @@ export default class Driver extends User {
   async removeVehicle (vehicleID) {
     const vehicles = this.vehicles;
     _.pull(vehicles, vehicleID);
+    // TODO: remove reference to driver from vehicle
     await UserDB.updateUser(this, {vehicles});
   }
 
@@ -45,6 +47,7 @@ export default class Driver extends User {
   async addRequest (requestID) {
     const requestHistory = this.requestHistory;
     requestHistory.push(requestID);
+    // TODO: add reference to driver to request
     await UserDB.updateUser(this, {requestHistory});
   }
 
@@ -55,6 +58,7 @@ export default class Driver extends User {
   async removeRequest (requestID) {
     const requestHistory = this.requestHistory;
     _.pull(requestHistory, requestID);
+    // TODO: remove reference to driver from request
     await UserDB.updateUser(this, {requestHistory});
   }
 
