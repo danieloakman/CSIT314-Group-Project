@@ -143,13 +143,6 @@ class UserDB extends DBConnector {
   }
 
   /**
-   * Deletes all entries in database
-   */
-  async wipe () {
-    this.db.destroy();
-  }
-
-  /**
    * Loads test data into database
    */
   async _loadTestData () {

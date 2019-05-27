@@ -8,6 +8,9 @@ class DBConnector {
   static DBs = [];
   constructor (name) {
     this.db = new PouchDB(name);
+    DBConnector.DBs.push(this.db);
+
+    // TODO: Move emitter to mixin
     this._emitter = new Emitter();
     this.on = this._emitter.on;
     this.once = this._emitter.once;
@@ -17,9 +20,25 @@ class DBConnector {
 
   static async loadTestData (wipe) {
     // this.DBs.map((db) => { db._loadTestData(); });
+    if (wipe) { await this.wipeAll(); }
     for (const db in this.DBs) {
-      if (wipe) { await db.wipe(); }
       await db._loadTestData();
+    }
+  }
+
+  /**
+   * Deletes all entries in this database
+   */
+  async wipe () {
+    await this.db.destroy();
+  }
+
+  /**
+   * Deletes all entries in all databases
+   */
+  static async wipeAll () {
+    for (const db in this.DBs) {
+      await db.wipe();
     }
   }
 }
