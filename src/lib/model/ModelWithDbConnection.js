@@ -11,7 +11,7 @@ export default class ModelWithDbConnection {
   }
 
   /**
-   * Set doc to new document
+   * Set doc to new document. Should only be used by db backend.
    * @param {Object} document
    */
   async setDoc (document) {

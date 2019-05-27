@@ -79,6 +79,16 @@ export default class User extends ModelWithDbConnection {
   }
 
   /**
+ * @typedef {Object} UserInstantiator
+ * @property {String} type can be driver, mechanic or admin
+ * @property {String} givenName
+ * @property {String} surname
+ * @property {String} email
+ * @property {String} password
+ * @property {String | Number} phoneNo
+ */
+
+  /**
    * Creates a user class and attempts to insert into database
    * @param {UserInstantiator} Object containing user info
    * @param {Object} options Options object
@@ -102,4 +112,8 @@ export default class User extends ModelWithDbConnection {
   static async deleteUser (identifier) {
     UserDB.deleteUser(identifier);
   }
+
+  // Sign in and out should be done through user model (aka this class) rather than db in case we ever want to do more in the abstraction layer
+  static signInUser = UserDB.signInUser;
+  static signOutUser = UserDB.signOutUser;
 }

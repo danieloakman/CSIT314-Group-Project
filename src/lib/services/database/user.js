@@ -2,16 +2,6 @@ import DBConnector from "./core";
 import {AsyncStorage} from "react-native";
 
 /**
- * @typedef {Object} UserInstantiator
- * @property {String} type can be driver, mechanic or admin
- * @property {String} givenName
- * @property {String} surname
- * @property {String} email
- * @property {String} password
- * @property {String | Number} phoneNo
- */
-
-/**
   * @typedef {Object} DBResponse
   * @property {Boolean} ok Whether request was successful
   * @property {String} [reason] Reason for failure
