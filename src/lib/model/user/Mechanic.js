@@ -18,3 +18,4 @@ export default class Mechanic extends User {
   get activeRequest () { return this._doc.activeRequest; }
   get offersSent () { return this._doc.offersSent; }
 }
+User.UserTypes.push(Mechanic);

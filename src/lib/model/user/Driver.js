@@ -11,3 +11,4 @@ export default class Driver extends User {
   get requestHistory () { return this._doc.requestHistory; }
   get isMember () { return this._doc.isMember; }
 }
+User.UserTypes.push(Driver);

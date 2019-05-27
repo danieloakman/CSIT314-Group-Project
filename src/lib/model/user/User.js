@@ -1,11 +1,14 @@
 import UserDB from "@database/user";
 import ModelWithDbConnection from "@model/ModelWithDbConnection";
+import {AsyncStorage} from "react-native";
 
 /**
  * Base User class
  * @abstract
  */
 export default class User extends ModelWithDbConnection {
+  static UserTypes = [User];
+
   constructor (record) {
     super(record);
 
@@ -49,5 +52,54 @@ export default class User extends ModelWithDbConnection {
 
   async setPictureURI (pictureURI) {
     await UserDB.updateUser(this, {pictureURI});
+  }
+
+  /**
+   * Returns the correct user class instance for a specified email or id.
+   * @param {Object} identifier Contains either an email, or an id. If given both will prefer id
+   * @param {String} [identifier.email]
+   * @param {String} [identifier.id]
+   * @return {Promise<Object>} User instance
+   */
+  static async getUser (identifier) {
+    const record = UserDB.getUser(identifier);
+    if (record) { return new User.UserTypes[record.type](record); }
+    return null;
+  }
+
+  /**
+   * Gets the currently signed in user
+   * @return {Promise<Object> | Promise<null>} User instance
+   */
+  static async getCurrentUser () {
+    const id = await AsyncStorage.getItem("signedInUserID");
+    if (id) return null;
+    const record = await this.getUser({id});
+    return record;
+  }
+
+  /**
+   * Creates a user class and attempts to insert into database
+   * @param {UserInstantiator} Object containing user info
+   * @param {Object} options Options object
+   * @param {boolean} [options.signIn=false] Whether to sign in after creating user
+   * @return {Promise<DBResponse>} see DBResponse definition
+   */
+  static async createUser ({type, givenName, surname, email, password, phoneNo}, {signIn = false}) {
+    const record = {
+      type, givenName, surname, email, password, phoneNo
+    };
+    const constructedAccount = new User.UserTypes[type](record);
+    return UserDB.createUser(constructedAccount, signIn);
+  }
+
+  /**
+ * Delete a user with a given email or id
+ * @param {Object} identifier Contains either an email, or an id. If given both will prefer id
+ * @param {String} [identifier.email]
+ * @param {String} [identifier.id]
+ */
+  static async deleteUser (identifier) {
+    UserDB.deleteUser(identifier);
   }
 }

@@ -24,28 +24,16 @@ class UserDB extends DBConnector {
   }
 
   /**
-   * Returns the correct user class instance for a specified email or id.
+   * Returns a user document
    * @param {Object} obj Contains either an email, or an id. If given both will prefer id
    * @param {String} [obj.email]
    * @param {String} [obj.id]
-   * @return {Promise<Object>} User instance
+   * @return {Promise<Object>} Either a user record or null
    */
   async getUser ({email, id}) {
     let record;
     if (email) { record = await this.db.find({selector: {email}})[0]; }
     if (id) { record = await this.db.get(id); }
-    if (record) { return new UserTypes[record.type](record); }
-    return null;
-  }
-
-  /**
-   * Gets the currently signed in user
-   * @return {Promise<Object> | Promise<null>} User instance
-   */
-  async getCurrentUser () {
-    const email = await AsyncStorage.getItem("signedInUserEmail");
-    if (email) return null;
-    const record = await this.getUser(email);
     return record;
   }
 
@@ -56,13 +44,13 @@ class UserDB extends DBConnector {
    * @return {Promise<DBResponse>} see DBResponse definition
    */
   async signInUser (email, password) {
-    const record = await this.getUser(email);
+    const record = await this.getUser({email});
     if (!record) {
       return {ok: false, reason: "An account with that email doesn't exist."};
     } else if (record.password !== password) {
       return {ok: false, reason: "Incorrect password."};
     }
-    await AsyncStorage.setItem("signedInUserEmail", email);
+    await AsyncStorage.setItem("signedInUserID", record._id);
     this.emit("signedIn");
     return {ok: true};
   }
@@ -72,28 +60,25 @@ class UserDB extends DBConnector {
    * @return {Promise<DBResponse>} see DBResponse definition
    */
   async signOutUser () {
-    await AsyncStorage.removeItem("signedInUserEmail");
+    await AsyncStorage.removeItem("signedInUserID");
     this.emit("signedOut");
     return {ok: true};
   }
 
   /**
-   * Creates a user in the database and returns the user class
-   * @param {UserInstantiator} Object containing user info
+   * Attempts to insert a new user into the database
+   * @param {User} Object containing user info
    * @param {Object} options Options object
    * @param {boolean} [options.signIn=false] Whether to sign in after creating user
    * @return {Promise<DBResponse>} see DBResponse definition
    */
-  async createUser ({type, givenName, surname, email, password, phoneNo}, {signIn = false}) {
-    if (await this.getUser(email)) { return {ok: false, reason: "An account with that email already exists."}; }
-    const record = {
-      type, givenName, surname, email, password, phoneNo
-    };
-
-    const constructedAccount = new UserTypes[type](record);
-    await this.db.put(constructedAccount);
+  async createUser (record, {signIn = false}) {
+    if (await this.getUser({id: record._id})) {
+      return {ok: false, reason: "An account with that email already exists."};
+    }
+    await this.db.put(record);
     if (signIn) {
-      await AsyncStorage.setItem("signedInUserEmail", email);
+      await AsyncStorage.setItem("signedInUserID", record._id);
       this.emit("signedIn");
     }
     return {ok: true};
@@ -146,7 +131,7 @@ class UserDB extends DBConnector {
    * Loads test data into database
    */
   async _loadTestData () {
-    const source = require("./node_modules/@assets/data/testData");
+    const source = require("@assets/data/testData");
     this.db.bulkDocs(source);
   }
 }
