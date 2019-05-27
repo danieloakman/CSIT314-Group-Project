@@ -1,9 +1,5 @@
 import DBConnector from "./core";
 import {AsyncStorage} from "react-native";
-import User from "@model/user/User";
-import Driver from "@model/user/Driver";
-import Mechanic from "@model/user/Mechanic";
-import Admin from "@model/user/Admin";
 
 /**
  * @typedef {Object} UserInstantiator
@@ -20,10 +16,6 @@ import Admin from "@model/user/Admin";
   * @property {Boolean} ok Whether request was successful
   * @property {String} [reason] Reason for failure
   */
-
-const UserTypes = {
-  User, Driver, Mechanic, Admin
-};
 
 class UserDB extends DBConnector {
   constructor () {
