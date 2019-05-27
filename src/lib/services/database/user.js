@@ -109,7 +109,7 @@ class UserDB extends DBConnector {
    * @param {Object} delta An object containing the new values only
    */
   async updateUser (UserInstance, delta) {
-    const {doc} = UserInstance;
+    const doc = UserInstance._doc;
     await this.db.put({...doc, ...delta, _rev: doc._rev});
 
     // I *think* this is needed in order to get a new _rev value for next update
