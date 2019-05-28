@@ -29,9 +29,9 @@ class MechanicHomeScreen extends React.Component {
         .then(sr => {
           this.setState({
             serviceRequest: sr,
-            enableNearbyRequests: !user.srId,
-            enableViewCurrentOffers: !user.srId && user.offersSent.length > 0,
-            enableViewActiveRequest: user.srId
+            enableNearbyRequests: !user.srId && user.verifiedMechanic,
+            enableViewCurrentOffers: !user.srId && user.offersSent.length > 0 && user.verifiedMechanic,
+            enableViewActiveRequest: user.srId && user.verifiedMechanic
           });
         }).catch(err => { throw err; });
     });
@@ -43,39 +43,46 @@ class MechanicHomeScreen extends React.Component {
         <HeaderBar
           title="Mechanic Home Screen"
         />
-        <View style={styles.buttonContainer}>
-          {!this.state.user ? null
-            : <Button full info
+        {this.state.user &&
+        <View style={{flex: 1}}>
+          {!this.state.user.verifiedMechanic &&
+          <View style={styles.buttonContainer}>
+            <Button full info
+              style={styles.button}
+              onPress={() => this.props.navigation.navigate("MechanicVerificationModal", {user: this.state.user}) }
+              disabled={this.state.user.awaitingVerification}
+            >
+              <Text style={{fontSize: 17}}>Verify your Account</Text>
+            </Button>
+          </View>}
+          <View style={styles.buttonContainer}>
+            <Button full info
               style={styles.button}
               onPress={() => this.props.navigation.navigate("MechanicRequestListModal") }
               disabled={!this.state.enableNearbyRequests}
             >
               <Text style={{fontSize: 17}}>View Nearby Requests</Text>
             </Button>
-          }
-        </View>
-        <View style={styles.buttonContainer}>
-          {!this.state.user ? null
-            : <Button full info
+          </View>
+          <View style={styles.buttonContainer}>
+            <Button full info
               style={styles.button}
               onPress={() => this.props.navigation.navigate("MechanicRequestViewModal") }
               disabled={!this.state.enableViewCurrentOffers}
             >
               <Text style={{fontSize: 17}}>View Current Offers</Text>
             </Button>
-          }
-        </View>
-        <View style={styles.buttonContainer}>
-          {!this.state.user ? null
-            : <Button full info
+          </View>
+          <View style={styles.buttonContainer}>
+            <Button full info
               style={styles.button}
               onPress={() => this.props.navigation.navigate("MechanicRequestViewModal") }
               disabled={!this.state.enableViewActiveRequest}
             >
               <Text style={{fontSize: 17}}>View Active Assistance Request</Text>
             </Button>
-          }
-        </View>
+          </View>
+        </View>}
       </View>
     );
   }

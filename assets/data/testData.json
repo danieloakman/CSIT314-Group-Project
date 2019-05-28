@@ -44,11 +44,11 @@
     "rating": "Un-rated",
     "srId": null,
     "offersSent": [],
-    "phoneNo": "04003456789",
+    "phoneNo": null,
     "bsb": null,
-    "bankAccountNo": "1234567891",
-    "mechanicLicenceNo": "1234567",
-    "awaitingVerification": true
+    "bankAccountNo": null,
+    "mechanicLicenceNo": null,
+    "awaitingVerification": false
   },
   "user-admin@test.com": {
     "type": "admin",
