@@ -52,7 +52,13 @@ class MechanicHomeScreen extends React.Component {
               onPress={() => this.props.navigation.navigate("MechanicVerificationModal", {user: this.state.user}) }
               disabled={this.state.user.awaitingVerification}
             >
-              <Text style={{fontSize: 17}}>Verify your Account</Text>
+              <Text style={
+                this.state.user.awaitingVerification
+                  ? {fontSize: 17, color: "green"}
+                  : {fontSize: 17}
+              }>
+                {this.state.user.awaitingVerification ? "Verification in progress..." : "Verify your Account"}
+              </Text>
             </Button>
           </View>}
           <View style={styles.buttonContainer}>
