@@ -31,8 +31,7 @@ export default class OfferView extends React.Component {
       return (
         <View>
           <HeaderBar
-            navMid={<Text style={styles.heading}>Offer</Text>}
-            navRight={<View/>} // Just to center the header
+            title="Offer"
           />
           <View style={styles.buttonBoxText}>
             {/* <Text>Time: {waitTime}</Text> */}

@@ -65,9 +65,7 @@ export default class RequestScreen extends React.Component {
           <ScrollView>
             <HeaderBar
               navLeft={this.state.isLoading ? <View/> : null}
-              navMid={
-                <Text style={[styles.heading, {marginRight: 30}]}>Roadside Assistance Request</Text>
-              }
+              title="Roadside Assistance Request"
             />
             {/* car selection dropdown input */}
             {this.state.isLoading

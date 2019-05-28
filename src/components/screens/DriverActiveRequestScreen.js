@@ -61,10 +61,7 @@ export default class ActiveServiceRequest extends React.Component {
       return (
         <View>
           <ScrollView>
-            <HeaderBar
-              navMid={<Text style={styles.heading}>Active Request</Text>}
-              navRight={<View/>} // Just to center the heading
-            />
+            <HeaderBar title="Active Request"/>
             <View style={styles.centeredRowContainer}>
               <Text style={styles.textBesideInput}>Rating: {this.state.rating}/5</Text>
               <Slider

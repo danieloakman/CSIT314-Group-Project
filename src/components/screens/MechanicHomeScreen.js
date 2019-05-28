@@ -41,8 +41,7 @@ class MechanicHomeScreen extends React.Component {
     return (
       <View style={{flex: 1}}>
         <HeaderBar
-          navMid={<Text style={styles.heading}>Mechanic Home Screen</Text>}
-          navRight={<View/>} // Just to center the header
+          title="Mechanic Home Screen"
         />
         <View style={styles.buttonContainer}>
           {!this.state.user ? null

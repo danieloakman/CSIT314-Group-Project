@@ -29,8 +29,7 @@ export default class RequestList extends React.Component {
         <View style={{flex: 1}}>
           <HeaderBar
             navLeft={this.state.isLoadingMap ? <View/> : null}
-            navMid={<Text style={styles.heading}>Nearby Requests</Text>}
-            navRight={<View/>} // Just to center the header
+            title="Nearby Requests"
           />
           <View style={{flex: 1}}>
             <GMapView

@@ -20,10 +20,7 @@ class AdminScreen extends React.Component {
     let user = this.props.AuthContext.user;
     return (
       <View style={{flex: 1}}>
-        <HeaderBar
-          navMid={<Text style={styles.heading}>Admin Home Screen</Text>}
-          navRight={<View/>} // Just to center the heading
-        />
+        <HeaderBar title="Admin Home Screen"/>
         {user &&
           <View style={{flex: 1}}>
             <View style={styles.centeredRowContainer}>

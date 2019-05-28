@@ -33,10 +33,7 @@ export default class RequestView extends React.Component {
     render () {
       return (
         <View>
-          <HeaderBar
-            navMid={<Text style={styles.heading}>Request</Text>}
-            navRight={<View/>} // Just to center the header
-          />
+          <HeaderBar title="Request"/>
           <View>
             <Text>Distance: {`${Math.round(this.state.selectedSR.distance * 100) / 100}km`}</Text>
             <Text>Time: {this.state.selectedSR.creationDate}</Text>

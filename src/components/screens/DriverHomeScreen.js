@@ -40,10 +40,7 @@ class DriverHomeScreen extends React.Component {
   render () {
     return (
       <View style={{flex: 1}}>
-        <HeaderBar
-          navMid={<Text style={styles.heading}>Driver Home Screen</Text>}
-          navRight={<View/>} // Just to center the heading
-        />
+        <HeaderBar title="Driver Home Screen"/>
         <View style={styles.buttonContainer}>
           {!this.state.user ? null
             : <Button full info

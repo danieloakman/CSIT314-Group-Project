@@ -38,7 +38,7 @@ class AdminVerificationScreen extends React.Component {
     return (
       <View style={{flex: 1}}>
         <HeaderBar
-          navMid={<Text style={styles.heading}>Verification of Mechanics</Text>}
+          title="Verification of Mechanics"
           navRight={<HelpButton
             message="Swipe left and right then press the green and red buttons to approve and deny mechanics."
           />}
