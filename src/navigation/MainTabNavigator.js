@@ -17,6 +17,8 @@ import DriverViewOfferScreen from "@screens/DriverViewOfferScreen";
 import MechanicRequestViewScreen from "@components/screens/MechanicRequestView";
 import MechanicRequestListScreen from "@components/screens/MechanicRequestList";
 
+import AdminVerificationScreen from "@components/screens/AdminVerificationScreen";
+
 import {withAuthContext} from "@lib/context/AuthContext";
 
 const ProfileStack = createStackNavigator({
@@ -100,7 +102,8 @@ const ModalStack = createStackNavigator({
   DriverOffersModal: DriverOffersScreen,
   DriverViewOfferModal: DriverViewOfferScreen,
   MechanicRequestViewModal: MechanicRequestViewScreen,
-  MechanicRequestListModal: MechanicRequestListScreen
+  MechanicRequestListModal: MechanicRequestListScreen,
+  AdminVerificationModal: AdminVerificationScreen
 },
 {
   initialRouteName: "TabStack",
