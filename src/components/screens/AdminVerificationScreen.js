@@ -3,17 +3,9 @@ import {
   StyleSheet,
   View,
   ScrollView,
-  TouchableOpacity,
-  Alert,
-  Picker,
-  Image,
-  Platform
 } from "react-native";
 import {
-  Accordion,
   Button,
-  Card,
-  CardItem,
   Icon,
   Text,
   Tabs,
@@ -21,16 +13,12 @@ import {
   Toast,
   SwipeRow,
   Left,
-  Right
 } from "native-base";
-import { Ionicons } from "@expo/vector-icons";
 import {withNavigation} from "react-navigation";
 import HeaderBar from "@molecules/HeaderBar";
 import PhoneNumberLink from "@components/atoms/PhoneNumberLink";
 import DatabaseService from "@lib/services/DatabaseService";
-import Colors from "@constants/Colors";
 import HelpButton from "@atoms/HelpButton";
-const alert = Alert.alert;
 
 class AdminVerificationScreen extends React.Component {
   state = {
@@ -139,7 +127,7 @@ class AdminVerificationScreen extends React.Component {
     this.setState({
       mechanics: this.state.mechanics.map(listedMechanic => {
         if (listedMechanic.email === mechanic.email) {
-          return mechanic.email;
+          return mechanic;
         } else return listedMechanic;
       })
     });
@@ -159,7 +147,7 @@ class AdminVerificationScreen extends React.Component {
     this.setState({
       mechanics: this.state.mechanics.map(listedMechanic => {
         if (listedMechanic.email === mechanic.email) {
-          return mechanic.email;
+          return mechanic;
         } else return listedMechanic;
       })
     });
@@ -196,88 +184,5 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     justifyContent: "center",
     alignSelf: "center"
-  },
-  card: {
-    flex: 1
-  },
-  cardItem: {
-    flex: 1
-  },
-  background: {
-    backgroundColor: "black",
-    width: 100,
-    height: 100
-  },
-  buttonContainer: {
-    flex: 1,
-    paddingLeft: 20,
-    paddingRight: 20,
-    paddingTop: 10,
-    paddingBottom: 10,
-    marginTop: 2,
-    marginBottom: 2
-  },
-  button: {
-    flex: 1,
-    borderRadius: 10,
-    height: 30
-  },
-  textBesideInput: {
-    fontSize: 20
-  },
-  textInput: {
-    fontSize: 20,
-    borderWidth: 1,
-    borderRadius: 3,
-    marginLeft: 5,
-    width: "60%",
-    paddingLeft: 5,
-    backgroundColor: "white"
-  },
-  wideButtonContainer: {
-    paddingLeft: 20,
-    paddingRight: 20,
-    paddingTop: 5,
-    paddingBottom: 5
-  },
-  wideButton: {
-    // backgroundColor: Colors.wideButton,
-    borderWidth: 1,
-    borderRadius: 4,
-    padding: 5
-  },
-  centeredRowContainer: {
-    // flex: 1,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginTop: 5,
-    marginBottom: 5,
-    marginLeft: 20,
-    marginRight: 20
-  },
-  textBox: {
-    fontSize: 20,
-    borderWidth: 1,
-    borderRadius: 3,
-    marginLeft: 5,
-    width: "90%",
-    paddingLeft: 5,
-    backgroundColor: "white",
-    marginBottom: 5,
-    alignSelf: "center"
-  },
-  buttonBox: {
-    alignSelf: "center",
-    backgroundColor: "yellow",
-    borderWidth: 1,
-    borderRadius: 3,
-    marginTop: 2,
-    marginBottom: 2
-  },
-  buttonBoxText: {
-    justifyContent: "center",
-    padding: 10,
-    fontSize: 20
   }
 });
