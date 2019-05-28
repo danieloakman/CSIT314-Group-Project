@@ -30,9 +30,18 @@ export default class RequestScreen extends React.Component {
     }
 
     componentDidMount () {
-      LocationService.getCurrentLocation()
-        .then(async location => {
-          let user = this.props.navigation.getParam("user", "The current user");
+      let user = this.props.navigation.getParam("user");
+      new Promise(async resolve => {
+        let vehicles = await Promise.all(
+          user.vehicleIds.map(async id => DatabaseService.getVehicle(id))
+        );
+        let location;
+        if (user.location) {
+          // Try to use the location already in user, if it exists:
+          location = user.location;
+        } else {
+          // Retrieve current location then store in user:
+          location = user.location = await LocationService.getCurrentLocation();
           if (!location) {
             Toast.show({
               text: "Cannot continue unless location permission is enabled.",
@@ -41,22 +50,17 @@ export default class RequestScreen extends React.Component {
               type: "danger",
               style: {margin: 10, borderRadius: 15}
             });
-          }
-          let vehicles = [];
-          for (let id of user.vehicleIds) {
-            vehicles.push(await DatabaseService.getVehicle(id));
-          }
-          this.setState({
-            user,
-            vehicles: vehicles.length > 0 ? vehicles : null,
-            location,
-            selectedVehicle: vehicles.length > 0 ? vehicles[0] : null,
-            isLoading: false
-          });
-        })
-        .catch(err => {
-          throw err;
+          } else await DatabaseService.saveUserChanges(user);
+        }
+        this.setState({
+          user,
+          vehicles: vehicles.length > 0 ? vehicles : null,
+          location,
+          selectedVehicle: vehicles.length > 0 ? vehicles[0] : null,
+          isLoading: false
         });
+        resolve(true);
+      });
     }
 
     render () {

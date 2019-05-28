@@ -5,6 +5,7 @@ import {
 } from "react-native";
 import {MapView} from "expo";
 import LocationService from "@lib/services/LocationService";
+import DatabaseService from "@lib/services/DatabaseService";
 import LoadingGif from "@components/atoms/LoadingGif";
 
 /**
@@ -21,13 +22,25 @@ export default class GMapView extends React.Component {
   }
 
   componentDidMount () {
-    LocationService.getCurrentLocation().then(async location => {
+    DatabaseService.getSignedInUser().then(async user => {
+      let location;
+      if (user.location) {
+        // Try to use the user's already stored location:
+        location = user.location;
+      } else {
+        // Retrieve the user's location:
+        location = await LocationService.getCurrentLocation();
+      }
       if (location) {
-        let address = await LocationService.getAddress(
-          location.coords.latitude, location.coords.longitude
-        );
-        location.address = address ? address.addressStr : "Address unavailable";
-        location.title = "Current Location";
+        if (!location.address) {
+          let address = await LocationService.getAddress(
+            location.coords.latitude, location.coords.longitude
+          );
+          location.address = address ? address.addressStr : "Address unavailable";
+          user.location = location;
+          await DatabaseService.saveUserChanges(user);
+          location.title = "Current Location";
+        }
         this.setState({
           isLoading: false,
           currentLocation: location,
