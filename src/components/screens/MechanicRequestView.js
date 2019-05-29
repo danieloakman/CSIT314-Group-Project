@@ -12,8 +12,9 @@ import {
 } from "native-base";
 import DatabaseService from "@lib/services/DatabaseService";
 import HeaderBar from "@molecules/HeaderBar";
+import { withNavigation } from "react-navigation";
 
-export default class RequestView extends React.Component {
+class RequestView extends React.Component {
     state = {
       offerAmount: null,
       selectedSR: null,
@@ -126,6 +127,8 @@ export default class RequestView extends React.Component {
       this.props.navigation.goBack();
     }
 }
+
+export default withNavigation(RequestView);
 
 const styles = StyleSheet.create({
   heading: {
