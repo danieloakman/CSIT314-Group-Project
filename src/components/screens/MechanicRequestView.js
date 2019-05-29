@@ -123,7 +123,6 @@ export default class RequestView extends React.Component {
         type: "success",
         style: {margin: 10, marginBottom: 60, borderRadius: 15}
       });
-      // NOTE: need to change active buttons on home screen
       this.props.navigation.goBack();
     }
 }

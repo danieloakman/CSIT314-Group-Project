@@ -75,7 +75,7 @@ export default class RequestScreen extends React.Component {
             {this.state.isLoading
               ? <View style={styles.centeredRowContainer}>
                 <Text style={{fontSize: 15}}>Fetching your current location... </Text>
-                <LoadingGif style={{width: 25, height: 25, alignSelf: "flex-start"}} />
+                <LoadingGif imageStyle={{width: 25, height: 25, alignSelf: "flex-start"}} />
               </View>
               : !this.state.location
                 ? <View style={styles.centeredRowContainer}>
@@ -88,7 +88,7 @@ export default class RequestScreen extends React.Component {
             {this.state.isLoading
               ? <View style={styles.centeredRowContainer}>
                 <Text style={{fontSize: 15}}>Loading your list of cars... </Text>
-                <LoadingGif style={{width: 25, height: 25, alignSelf: "flex-start"}} />
+                <LoadingGif imageStyle={{width: 25, height: 25, alignSelf: "flex-start"}} />
               </View>
               : !this.state.vehicles
                 ? <View style={styles.centeredRowContainer}>

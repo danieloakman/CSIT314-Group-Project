@@ -1,8 +1,13 @@
 import React from "react";
 import {
-  View,
-  Text
+  View
 } from "react-native";
+import {
+  Button,
+  Icon,
+  Text,
+  Fab,
+} from "native-base";
 import {MapView} from "expo";
 import LocationService from "@lib/services/LocationService";
 import DatabaseService from "@lib/services/DatabaseService";
@@ -14,8 +19,14 @@ import LoadingGif from "@components/atoms/LoadingGif";
  * Can use onPressCurrentLocation prop to access current location marker data.
  * Can use onLocationRetrieved to get current location after this component
  * has loaded it's map.
+ * @prop onPressNext - Callback for when the the button on the right is pressed. This
+ * button only appears when this is used.
+ * @prop onPressPrevious - Callback for when the the button on the left is pressed. This
+ * button only appears when this is used.
+ * @prop topArea - A view container that's overlayed over the map at the top.
+ * @prop bottomArea - A view container that's overlayed over the map at the bottom.
  */
-export default class GMapView extends React.Component {
+export default class GoogleMapView extends React.Component {
   state = {
     isLoading: true,
     currentLocation: null // The location of whoever is running this client.
@@ -87,6 +98,83 @@ export default class GMapView extends React.Component {
             />
             {this.props.children}
           </MapView>
+          <View
+            style={{
+              position: "absolute",
+              alignSelf: "center",
+              marginTop: 0
+            }}>
+            {this.props.topArea}
+          </View>
+          <View
+            style={{
+              position: "absolute",
+              bottom: 0,
+              alignSelf: "center"
+            }}>
+            {this.props.bottomArea}
+          </View>
+          {this.props.onPressPrevious && <View
+            style={{
+              position: "absolute",
+              left: -27,
+              bottom: "40%",
+              width: 60,
+              height: 150
+            }}>
+            <View style={{flex: 1}}>
+              <Button full
+                style={{
+                  flex: 1,
+                  borderRadius: 30,
+                  backgroundColor: "rgba(150, 150, 150, 0.3)"
+                }}
+                onPress={() => { this.props.onPressPrevious(); }}>
+                <Icon type="MaterialIcons" name="navigate-before" style={{fontSize: 45}}/>
+              </Button>
+            </View>
+          </View>}
+          {this.props.onPressNext && <View
+            style={{
+              position: "absolute",
+              right: -27,
+              bottom: "40%",
+              width: 60,
+              height: 150
+            }}>
+            <View style={{flex: 1}}>
+              <Button full
+                style={{
+                  flex: 1,
+                  borderRadius: 30,
+                  backgroundColor: "rgba(150, 150, 150, 0.3)"
+                }}
+                onPress={() => { this.props.onPressNext(); }}>
+                <Icon type="MaterialIcons" name="navigate-next" style={{fontSize: 45, marginLeft: 0}}/>
+              </Button>
+            </View>
+          </View>}
+          {/* <Fab
+            direction="up"
+            position="bottomLeft"
+            containerStyle={{marginBottom: 20, marginLeft: -15}}
+            style={{backgroundColor: "grey"}}
+            active={this.state.fabActive}
+            onPress={() => this.setState({ fabActive: !this.state.fabActive })}>
+            <Icon type="MaterialIcons" name="more-vert" style={{fontSize: 40}} />
+            <Button info style={{backgroundColor: "grey"}}
+              onPress={() => { this.props.onPressSort && this.props.onPressFabSort(); }}>
+              <Icon active type="MaterialIcons" name="sort" style={{fontSize: 30}} />
+            </Button>
+            <Button info style={{backgroundColor: "grey"}}
+              onPress={() => { this.props.onPressFabPrevious && this.props.onPressFabPrevious(); }}>
+              <Icon active type="MaterialIcons" name="navigate-before" style={{fontSize: 40}} />
+            </Button>
+            <Button info style={{backgroundColor: "grey"}}
+              onPress={() => { this.props.onPressFabNext && this.props.onPressFabNext(); }}>
+              <Icon active type="MaterialIcons" name="navigate-next" style={{fontSize: 40}} />
+            </Button>
+          </Fab> */}
         </View>
       );
     } else if (!this.state.isLoading && !this.state.currentLocation) {
