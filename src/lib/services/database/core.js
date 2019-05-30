@@ -84,7 +84,7 @@ class DBConnector {
 
     // Perform fuzzy search to apply scores
     const fuse = new Fuse(results.values(), options);
-    let result = fuse.search(term);
+    let result = await fuse.search(term);
 
     // Add dbName value to each entry as they may be merged into an array with entries from multiple dbs
     if (!excludeType) {

@@ -174,7 +174,7 @@ class UserDB extends DBConnector {
    */
   async _loadTestData () {
     const source = require("@assets/data/testData");
-    this.db.bulkDocs(source);
+    await this.db.bulkDocs(source);
   }
 }
 

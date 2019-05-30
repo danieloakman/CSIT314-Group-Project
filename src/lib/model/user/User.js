@@ -29,7 +29,7 @@ export default class User extends ModelWithDbConnection {
    * @return {Promise<Object>} User instance
    */
   static async getUser (identifier) {
-    const record = UserDB.getUser(identifier);
+    const record = await UserDB.getUser(identifier);
     if (record) { return new User.UserTypes[record.type](record); }
     return null;
   }
@@ -67,7 +67,7 @@ export default class User extends ModelWithDbConnection {
       type, givenName, surname, email, password, phoneNo
     };
     const constructedAccount = new User.UserTypes[type](record);
-    constructedAccount.init();
+    await constructedAccount.init();
     return UserDB.createUser(constructedAccount, signIn);
   }
 
@@ -79,7 +79,7 @@ export default class User extends ModelWithDbConnection {
  */
   static async deleteUser (identifier) {
     // TODO: Remove all references to user
-    UserDB.deleteUser(identifier);
+    await UserDB.deleteUser(identifier);
   }
 
   // Sign in and out should be done through user model (aka this class) rather than db in case we ever want to do more in the abstraction layer
