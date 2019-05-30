@@ -17,4 +17,6 @@ export default class ModelWithDbConnection {
   async setDoc (document) {
     this._doc = document;
   }
+
+  get id () { return this._doc._id; }
 }

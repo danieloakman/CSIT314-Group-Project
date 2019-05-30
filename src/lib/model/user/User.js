@@ -88,7 +88,6 @@ export default class User extends ModelWithDbConnection {
 
   // Getters to access document properties (Use as if class attribute)
   get type () { return this._doc.type; }
-  get id () { return this._doc._id; }
   get givenName () { return this._doc.givenName; }
   get surname () { return this._doc.surname; }
   get email () { return this._doc.email; }
