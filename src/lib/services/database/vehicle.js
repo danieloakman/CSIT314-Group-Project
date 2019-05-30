@@ -10,10 +10,11 @@ import DBConnector from "./core";
 class VehicleDB extends DBConnector {
   constructor () {
     super("db.vehicles");
+    this.db.createIndex({index: {fields: ["make", "model", "year", "plate", "vin"]}});
   }
 
-  async getVehicle ({id}) {
-    return this.db.get(id);
+  async getVehicle (vehicleID) {
+    return this.db.get(vehicleID);
   }
 
   async createVehicle (record) {
@@ -29,8 +30,8 @@ class VehicleDB extends DBConnector {
     this.emit("updatedVehicle");
   }
 
-  async deleteVehicle ({id}) {
-    await this.db.remove(id);
+  async deleteVehicle (vehicleID) {
+    await this.db.remove(vehicleID);
   }
 }
 
