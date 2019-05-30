@@ -11,6 +11,10 @@ export default class Mechanic extends User {
     this._doc.aggregateRating = 0; // Value between 0 and 10, where odd values are half-stars and even values are full stars. Can be decimal. (i.e. 7 = 3.5 stars and 8.4 = 4.2 stars)
     this._doc.activeRequest = null; // Service request ID currently assigned
     this._doc.offersSent = []; // List of service request IDs where this mechanic sent an offer
+    this._doc.bsb = null;
+    this._doc.bankAccountNo = null;
+    this._doc.mechanicLicenceNo = null; // References their NSW motor vehicle repairer licence
+    this._doc.awaitingVerification = false; // if true, this mechanic shows up in the list for verification by an admin
   }
 
   /**
@@ -56,5 +60,9 @@ export default class Mechanic extends User {
   get aggregateRating () { return this._doc.aggregateRating; }
   get activeRequest () { return this._doc.activeRequest; }
   get offersSent () { return this._doc.offersSent; }
+  get bsb () { return this._doc.bsb; }
+  get bankAccountNo () { return this._doc.bankAccountNo; }
+  get mechanicLicenceNo () { return this._doc.mechanicLicenceNo; }
+  get awaitingVerification () { return this._doc.awaitingVerification; }
 }
 User.UserTypes.push(Mechanic);
