@@ -16,8 +16,8 @@ import LoadingGif from "@components/atoms/LoadingGif";
 /**
  * A map that initially focuses on the client's current location.
  * Add more markers as children of this with key's that are >= 0.
- * Can use onPressCurrentLocation prop to access current location marker data.
- * Can use onLocationRetrieved to get current location after this component
+ * @prop onPressCurrentLocation prop to access current location marker data.
+ * @prop onLocationRetrieved to get current location after this component
  * has loaded it's map.
  * @prop onPressNext - Callback for when the the button on the right is pressed. This
  * button only appears when this is used.

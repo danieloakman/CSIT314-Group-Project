@@ -13,6 +13,7 @@ import DriverActiveRequestScreen from "@screens/DriverActiveRequestScreen";
 import DriverMakeRequestScreen from "@screens/DriverMakeRequestScreen";
 import DriverOffersScreen from "@screens/DriverOffersScreen";
 import DriverViewOfferScreen from "@screens/DriverViewOfferScreen";
+import DriverPayMemDetailsScreen from "@screens/DriverPayMemDetailsScreen";
 
 import MechanicRequestViewScreen from "@components/screens/MechanicRequestView";
 import MechanicRequestListScreen from "@components/screens/MechanicRequestList";
@@ -102,6 +103,7 @@ const ModalStack = createStackNavigator({
   DriverMakeRequestModal: DriverMakeRequestScreen,
   DriverOffersModal: DriverOffersScreen,
   DriverViewOfferModal: DriverViewOfferScreen,
+  DriverPayMemDetailsModal: DriverPayMemDetailsScreen,
   MechanicRequestViewModal: MechanicRequestViewScreen,
   MechanicRequestListModal: MechanicRequestListScreen,
   MechanicVerificationModal: MechanicVerificationScreen,

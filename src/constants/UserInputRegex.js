@@ -18,5 +18,14 @@ export default {
   bankAccountNo: /^[1-9]{10}$/,
 
   // Motor vehicle repairer licence number, With or without "MVRL" then 7 digits:
-  mechanicLicenceNo: /^(MVRL|)\d{7}$/i
+  mechanicLicenceNo: /^(MVRL|)\d{7}$/i,
+
+  // Card number:
+  cardNo: /^\d{16}$/,
+
+  // Card expiry:
+  cardExpiry: /^(1[0-2]|[1-9])\/\d{2}$/,
+
+  // Card CSV:
+  cardCSV: /^\d{3}$/
 };

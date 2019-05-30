@@ -1,6 +1,5 @@
 import React from "react";
 import {
-  StyleSheet,
   View,
   ScrollView,
 } from "react-native";
@@ -177,12 +176,3 @@ class MechanicListItem extends React.Component {
     );
   }
 }
-
-const styles = StyleSheet.create({
-  heading: {
-    fontSize: 20,
-    fontWeight: "bold",
-    justifyContent: "center",
-    alignSelf: "center"
-  }
-});

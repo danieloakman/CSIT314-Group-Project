@@ -27,11 +27,12 @@ class DriverHomeScreen extends React.Component {
     navigation.addListener("willFocus", () => { // todo: maybe make a better refresh screen method
       DatabaseService.getServiceRequest(user.srId)
         .then(sr => {
+          const hasACardOrMembership = user.validCardDetails || user.membership;
           this.setState({
             serviceRequest: sr,
-            enableRequestAssistance: !user.srId,
-            enableViewCurrentOffers: user.srId && sr ? sr.status === "Awaiting offer acceptance" : false,
-            enableViewActiveRequest: user.srId && sr ? sr.status === "Offer accepted" : false
+            enableRequestAssistance: hasACardOrMembership && !user.srId,
+            enableViewCurrentOffers: hasACardOrMembership && user.srId && sr ? sr.status === "Awaiting offer acceptance" : false,
+            enableViewActiveRequest: hasACardOrMembership && user.srId && sr ? sr.status === "Offer accepted" : false
           });
         }).catch(err => { throw err; });
     });
@@ -41,6 +42,16 @@ class DriverHomeScreen extends React.Component {
     return (
       <View style={{flex: 1}}>
         <HeaderBar title="Driver Home Screen"/>
+        <View style={styles.buttonContainer}>
+          {!this.state.user ? null
+            : <Button full info
+              style={styles.button}
+              onPress={() => this.props.navigation.navigate("DriverPayMemDetailsModal", { user: this.state.user })}
+            >
+              <Text style={{fontSize: 17}}>Membership and Card Details</Text>
+            </Button>
+          }
+        </View>
         <View style={styles.buttonContainer}>
           {!this.state.user ? null
             : <Button full info
