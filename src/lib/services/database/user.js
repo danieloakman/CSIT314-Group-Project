@@ -11,7 +11,7 @@ import {AsyncStorage} from "react-native";
 class UserDB extends DBConnector {
   constructor () {
     super("db.users");
-    this.db.createIndex({index: {fields: ["email", "fname", "lname", "pnumber", "type"]}});
+    this.db.createIndex({index: {fields: ["email", "fname", "lname", "pnumber", "type", "vehicles"]}});
   }
 
   /**
@@ -99,7 +99,7 @@ class UserDB extends DBConnector {
   }
 
   /**
- * Delete a set of users with a given email or id
+ * Delete a set of users with a given email or id. This is not in the user class as normally it would not be used
  * @param {Object} obj Contains two optional lists of emails and ids. Will work if both are given
  * @param {String[]} [obj.emails]
  * @param {String[]} [obj.ids]
@@ -122,6 +122,17 @@ class UserDB extends DBConnector {
     // I *think* this is needed in order to get a new _rev value for next update
     await UserInstance.setDoc(await this.db.get(doc._id));
     this.emit("updatedUser");
+  }
+
+  /**
+   * Gets a list of userIDs which contain the given vehicleID
+   * @param {String} vehicleID
+   */
+  async getUsersWithVehicle (vehicleID) {
+    return this.db.find({
+      selector: {vehicles: {$elemMatch: vehicleID}},
+      fields: ["_id"]
+    });
   }
 
   /**

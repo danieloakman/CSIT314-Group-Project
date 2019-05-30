@@ -10,7 +10,7 @@ export default class Driver extends User {
     this._doc.description = "";
     this._doc.vehicles = [];
     this._doc.activeRequest = null;
-    this._doc.requestHistory = [];
+    // this._doc.requestHistory = [];
     this._doc.isMember = false;
   }
 
@@ -25,7 +25,6 @@ export default class Driver extends User {
   async addVehicle (vehicleID) {
     const vehicles = this._doc.vehicles;
     vehicles.push(vehicleID);
-    // TODO: add reference to driver to vehicle
     await UserDB.updateUser(this, {vehicles});
   }
 
@@ -36,31 +35,31 @@ export default class Driver extends User {
   async removeVehicle (vehicleID) {
     const vehicles = this._doc.vehicles;
     _.pull(vehicles, vehicleID);
-    // TODO: remove reference to driver from vehicle
     await UserDB.updateUser(this, {vehicles});
   }
 
-  /**
-   * Adds a given request to the driver profile
-   * @param {String} requestID
-   */
-  async addRequest (requestID) {
-    const requestHistory = this._doc.requestHistory;
-    requestHistory.push(requestID);
-    // TODO: add reference to driver to request
-    await UserDB.updateUser(this, {requestHistory});
-  }
+  // Details about a request, such as who made it, should be stored in the request only
+  // /**
+  //  * Adds a given request to the driver profile
+  //  * @param {String} requestID
+  //  */
+  // async addRequest (requestID) {
+  //   const requestHistory = this._doc.requestHistory;
+  //   requestHistory.push(requestID);
+  //   // TODO: add reference to driver to request
+  //   await UserDB.updateUser(this, {requestHistory});
+  // }
 
-  /**
-   * Removes a given request from the driver profile. Does not actually delete the request
-   * @param {String} requestID
-   */
-  async removeRequest (requestID) {
-    const requestHistory = this._doc.requestHistory;
-    _.pull(requestHistory, requestID);
-    // TODO: remove reference to driver from request
-    await UserDB.updateUser(this, {requestHistory});
-  }
+  // /**
+  //  * Removes a given request from the driver profile. Does not actually delete the request
+  //  * @param {String} requestID
+  //  */
+  // async removeRequest (requestID) {
+  //   const requestHistory = this._doc.requestHistory;
+  //   _.pull(requestHistory, requestID);
+  //   // TODO: remove reference to driver from request
+  //   await UserDB.updateUser(this, {requestHistory});
+  // }
 
   /**
    * Sets the active request for the user. Can be set to null for no active request

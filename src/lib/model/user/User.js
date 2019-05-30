@@ -83,11 +83,12 @@ export default class User extends ModelWithDbConnection {
   }
 
   // Sign in and out should be done through user model (aka this class) rather than db in case we ever want to do more in the abstraction layer
-  static signInUser = UserDB.signInUser;
-  static signOutUser = UserDB.signOutUser;
+  static signInUser = UserDB.signInUser.bind(UserDB);
+  static signOutUser = UserDB.signOutUser.bind(UserDB);
 
   // Getters to access document properties (Use as if class attribute)
   get type () { return this._doc.type; }
+  get id () { return this._doc._id; }
   get givenName () { return this._doc.givenName; }
   get surname () { return this._doc.surname; }
   get email () { return this._doc.email; }
@@ -122,5 +123,13 @@ export default class User extends ModelWithDbConnection {
 
   async setPictureURI (pictureURI) {
     await UserDB.updateUser(this, {pictureURI});
+  }
+
+  /**
+   * Sets multiple values in the user at once
+   * @param {Object} delta The delta object containing changed values
+   */
+  async setMulti (delta) {
+    await UserDB.updateUser(this, delta);
   }
 }
