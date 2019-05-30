@@ -14,8 +14,6 @@ import {MapView} from "expo";
 import HeaderBar from "@molecules/HeaderBar";
 import LoadingGif from "@components/atoms/LoadingGif";
 
-// import RequestViewScreen from "@components/screens/MechanicRequestView";
-
 export default class RequestList extends React.Component {
     state = {
       user: null,
@@ -54,7 +52,6 @@ export default class RequestList extends React.Component {
               onPressPrevious={() => {
                 //
               }}
-              // topArea={<Button><Text>top</Text></Button>}
               bottomArea={
                 <View style={styles.centeredRowContainer}>
                   <Text>Radius:</Text>
@@ -119,40 +116,11 @@ export default class RequestList extends React.Component {
                 />}
             </GMapView>
             {this.state.isLoadingMarkers && <LoadingGif containerStyle={{position: "absolute", alignSelf: "center", bottom: "40%"}}/>}
-            {/* {!this.state.selectedSR ? null
-              : <View>
-                <Text>Distance: {`${Math.round(this.state.selectedSR.distance * 100) / 100}km`}</Text>
-                <Text>Time: {this.state.selectedSR.creationDate}</Text>
-                <Text>Description: {this.state.selectedSR.description}</Text>
-              </View>
-            }
-            <View style={styles.centeredRowContainer}>
-              <Text style={styles.textBesideInput}>Max Radius:</Text>
-              <View style={{borderWidth: 1, borderRadius: 5}}>
-                <Picker
-                  selectedValue={this.state.maxRadius}
-                  style={{ width: 150 }}
-                  itemStyle={{ fontSize: 20 }}
-                  mode="dropdown"
-                  onValueChange={maxRadius => this.setState({ maxRadius })}>
-                  {[25, 50, 100, 150, 200].map((radiusValue, index) => {
-                    return <Picker.Item key={index} label={radiusValue.toString()} value={radiusValue}/>;
-                  })}
-                </Picker>
-              </View>
-            </View>
-            <View style={styles.buttons}>
-              <Button
-                title="View Request"
-                onPress={() => this._viewRequest(this.state.selectedSR)}
-                disabled={!this.state.srSelected}
-              />
-            </View> */}
           </View>
         </View>
       );
     }
-    /* Note will need to set states first depending on what was clicked */
+
     _viewRequest (sr) {
       this.props.navigation.navigate("MechanicRequestViewModal", {
         selectedSR: sr,
@@ -163,21 +131,6 @@ export default class RequestList extends React.Component {
 }
 
 const styles = StyleSheet.create({
-  heading: {
-    fontSize: 20,
-    fontWeight: "bold",
-    justifyContent: "center",
-    alignSelf: "center"
-  },
-  buttons: {
-    paddingLeft: 50,
-    paddingRight: 50,
-    marginTop: 2,
-    marginBottom: 2
-  },
-  textBesideInput: {
-    fontSize: 20
-  },
   centeredRowContainer: {
     // flex: 1,
     flexDirection: "row",

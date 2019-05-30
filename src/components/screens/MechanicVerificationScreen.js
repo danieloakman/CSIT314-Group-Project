@@ -20,10 +20,7 @@ import Patterns from "@constants/UserInputRegex";
 
 class MechanicVerificationScreen extends React.Component {
   state = {
-    user: null,
-    bsb: "",
-    bankAccountNo: "",
-    mechanicLicenceNo: ""
+    user: null
   };
 
   componentWillMount () {
@@ -39,17 +36,25 @@ class MechanicVerificationScreen extends React.Component {
         <View style={{flex: 1, marginHorizontal: 20}}>
           <KeyboardAvoidingView style={{flex: 1}} behavior="padding">
             <ScrollView >
-              <Text style={{marginHorizontal: 10, marginTop: 10, fontSize: 17}}>
-                Please enter and submit the following fields. The BSB and account number will be where we deposit your earnings.
-                After submission, an Administrator will verify your account which may take some time.
+              <Text style={{marginTop: 10, fontSize: 17}}>
+                {!this.state.user.verifiedMechanic &&
+                "Please enter and submit the following fields. The BSB and account number will be where we deposit your earnings." +
+                "After submission, an Administrator will verify your account which may take some time."}
+                {this.state.user.verifiedMechanic &&
+                "You may update your bank account details and licence number here if you wish. Keep in mind that you will need to wait " +
+                "for an Admin to verify your account again."}
               </Text>
               <Item floatingLabel
                 style={styles.item}>
                 <Label>BSB</Label>
                 <Input
                   keyboardType="numeric"
-                  value={this.state.bsb}
-                  onChangeText={bsb => this.setState({bsb})}
+                  value={this.state.user.bsb}
+                  onChangeText={bsb => {
+                    let user = this.state.user;
+                    user.bsb = bsb;
+                    this.setState({user});
+                  }}
                   onSubmitEditing={() => {
                     this.bankAccountNoInput._root.focus();
                   }}
@@ -61,8 +66,12 @@ class MechanicVerificationScreen extends React.Component {
                 <Input
                   keyboardType="numeric"
                   getRef={input => { this.bankAccountNoInput = input; }}
-                  value={this.state.bankAccountNo}
-                  onChangeText={bankAccountNo => this.setState({bankAccountNo})}
+                  value={this.state.user.bankAccountNo}
+                  onChangeText={bankAccountNo => {
+                    let user = this.state.user;
+                    user.bankAccountNo = bankAccountNo;
+                    this.setState({bankAccountNo});
+                  }}
                   onSubmitEditing={() => this.mechanicLicenceNoInput._root.focus()}
                 />
               </Item>
@@ -72,9 +81,11 @@ class MechanicVerificationScreen extends React.Component {
                 <Input
                   keyboardType="numeric"
                   getRef={input => { this.mechanicLicenceNoInput = input; }}
-                  value={this.state.mechanicLicenceNo}
+                  value={this.state.user.mechanicLicenceNo}
                   onChangeText={mechanicLicenceNo => {
-                    this.setState({mechanicLicenceNo});
+                    let user = this.state.user;
+                    user.mechanicLicenceNo = mechanicLicenceNo;
+                    this.setState({user});
                   }}
                   onSubmitEditing={async () => { await this._submit(); }}
                 />
@@ -82,7 +93,9 @@ class MechanicVerificationScreen extends React.Component {
               <Button info full rounded
                 style={{marginTop: 10}}
                 onPress={async () => { await this._submit(); }}>
-                <Text style={{fontSize: 17}}>Submit</Text>
+                <Text style={{fontSize: 17}}>
+                  {this.state.user.verifiedMechanic ? "Update" : "Submit"}
+                </Text>
               </Button>
             </ScrollView>
           </KeyboardAvoidingView>
@@ -102,11 +115,11 @@ class MechanicVerificationScreen extends React.Component {
       });
       return false;
     };
-    if (!this.state.bsb.trim().match(Patterns.bsb)) {
+    if (!this.state.user.bsb.trim().match(Patterns.bsb)) {
       return errorToast("Invalid BSB, must be 6 digits long.");
-    } else if (!this.state.bankAccountNo.trim().match(Patterns.bankAccountNo)) {
+    } else if (!this.state.user.bankAccountNo.trim().match(Patterns.bankAccountNo)) {
       return errorToast("Invalid bank account number, must be 10 NON-ZERO digits long.");
-    } else if (!this.state.mechanicLicenceNo.trim().match(Patterns.mechanicLicenceNo)) {
+    } else if (!this.state.user.mechanicLicenceNo.trim().match(Patterns.mechanicLicenceNo)) {
       return errorToast("Invalid licence number, must be 7 digits long.");
     }
     return true;
@@ -115,9 +128,7 @@ class MechanicVerificationScreen extends React.Component {
   async _submit () {
     if (this._validateTextInputs()) {
       let user = this.state.user;
-      user.bsb = this.state.bsb;
-      user.bankAccountNo = this.state.bankAccountNo;
-      user.mechanicLicenceNo = this.state.mechanicLicenceNo;
+      user.verifiedMechanic = false;
       user.awaitingVerification = true;
       await DatabaseService.saveUserChanges(user);
       Toast.show({

@@ -45,7 +45,6 @@ class MechanicHomeScreen extends React.Component {
         />
         {this.state.user &&
         <View style={{flex: 1}}>
-          {!this.state.user.verifiedMechanic &&
           <View style={styles.buttonContainer}>
             <Button full info
               style={styles.button}
@@ -57,10 +56,13 @@ class MechanicHomeScreen extends React.Component {
                   ? {fontSize: 17, color: "green"}
                   : {fontSize: 17}
               }>
-                {this.state.user.awaitingVerification ? "Verification in progress..." : "Verify your Account"}
+                {this.state.user.awaitingVerification ? "Verification in progress..." // If user is waiting to be verified.
+                  : this.state.user.verifiedMechanic ? "Update your verification details" // Else if, user is verified.
+                    : "Verify your Account" // Else if, user isn't verified.
+                }
               </Text>
             </Button>
-          </View>}
+          </View>
           <View style={styles.buttonContainer}>
             <Button full info
               style={styles.button}
