@@ -67,7 +67,7 @@ class DBConnector {
         selector: {
           [field.name]: {$gte: term}
         }
-      });
+      }).docs;
       // Create aggregated list of objects
       match.docs.map((doc) => {
         results[doc._id] = doc;

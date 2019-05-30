@@ -166,7 +166,7 @@ class UserDB extends DBConnector {
     return this.db.find({
       selector: {vehicles: {$elemMatch: vehicleID}},
       fields: ["_id"]
-    });
+    }).docs;
   }
 
   /**
