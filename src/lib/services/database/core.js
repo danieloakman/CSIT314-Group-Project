@@ -96,6 +96,40 @@ class DBConnector {
 
     return result;
   }
+
+  /**
+   * Returns a record given its id
+   * @param {String} recordID
+   */
+  async getRecord (recordID) {
+    return this.db.get(recordID);
+  }
+
+  /**
+   * Creates a record in the database for the given object
+   * @param {Object} record Object instance inheriting ModelWithDbConnection
+   */
+  async createRecord (record) {
+    const resp = await this.db.post(record._doc);
+    await record.setDoc(this.db.get(resp.id));
+    return {ok: true, record};
+  }
+
+  /**
+   * Updates an existing record using the given delta object
+   * @param {Object} RecordInstance
+   * @param {Object} delta
+   */
+  async updateRecord (RecordInstance, delta) {
+    const doc = RecordInstance._doc;
+    await this._emitter.db.put({...doc, ...delta, _rev: doc._rev});
+    await RecordInstance.setDoc(await this.db.get(doc._id));
+    this.emit("updatedRecord");
+  }
+
+  async deleteRecord (recordID) {
+    await this.db.remove(recordID);
+  }
 }
 
 export default DBConnector;

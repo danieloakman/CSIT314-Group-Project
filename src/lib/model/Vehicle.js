@@ -9,7 +9,7 @@ export default class Vehicle extends ModelWithDbConnection {
   }
 
   static async getVehicle (identifier) {
-    const record = await VehicleDB.getVehicle(identifier);
+    const record = await VehicleDB.getRecord(identifier);
     if (record) { return new Vehicle(record); }
     return null;
   }
@@ -20,7 +20,7 @@ export default class Vehicle extends ModelWithDbConnection {
     };
     const newVehicle = new Vehicle(record);
     await newVehicle.init();
-    return VehicleDB.createVehicle(newVehicle);
+    return VehicleDB.createRecord(newVehicle);
   }
 
   static async deleteVehicle (vehicleID) {
@@ -29,7 +29,7 @@ export default class Vehicle extends ModelWithDbConnection {
     await Promise.all(owners.map((id) => { UserDB.getUser({id}).removeVehicle(vehicleID); }));
 
     // Delete the vehicle
-    await VehicleDB.deleteVehicle(vehicleID);
+    await VehicleDB.deleteRecord(vehicleID);
   }
 
   get make () { return this._doc.make; }
@@ -41,27 +41,27 @@ export default class Vehicle extends ModelWithDbConnection {
   get imageURI () { return this._doc.imageURI; }
 
   async setMake (make) {
-    await VehicleDB.updateVehicle(this, {make});
+    await VehicleDB.updateRecord(this, {make});
   }
 
   async setModel (model) {
-    await VehicleDB.updateVehicle(this, {model});
+    await VehicleDB.updateRecord(this, {model});
   }
 
   async setYear (year) {
-    await VehicleDB.updateVehicle(this, {year});
+    await VehicleDB.updateRecord(this, {year});
   }
 
   async setPlate (plate) {
-    await VehicleDB.updateVehicle(this, {plate});
+    await VehicleDB.updateRecord(this, {plate});
   }
 
   async setVin (vin) {
-    await VehicleDB.updateVehicle(this, {vin});
+    await VehicleDB.updateRecord(this, {vin});
   }
 
   async setImageURI (imageURI) {
-    await VehicleDB.updateVehicle(this, {imageURI});
+    await VehicleDB.updateRecord(this, {imageURI});
   }
 
   /**
@@ -69,6 +69,6 @@ export default class Vehicle extends ModelWithDbConnection {
    * @param {Object} delta The delta object containing changed values
    */
   async setMulti (delta) {
-    await VehicleDB.updateVehicle(this, delta);
+    await VehicleDB.updateRecord(this, delta);
   }
 }
