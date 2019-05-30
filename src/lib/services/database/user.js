@@ -11,7 +11,41 @@ import {AsyncStorage} from "react-native";
 class UserDB extends DBConnector {
   constructor () {
     super("db.users");
-    this.db.createIndex({index: {fields: ["email", "fname", "lname", "pnumber", "type", "vehicles"]}});
+
+    // Indexes may need to be merged into a single createIndex statement (not well documented)
+
+    // User index
+    this.db.createIndex({
+      index: {
+        fields: [
+          "email",
+          "fname",
+          "lname",
+          "pnumber",
+          "type",
+        ],
+      },
+    });
+
+    // Driver index
+    this.db.createIndex({
+      index: {
+        fields: ["vehicles"],
+      },
+    });
+
+    // Mechanic index
+    this.db.createIndex({
+      index: {
+        fields: [
+          "isVerified",
+          "aggregateRating",
+          "activeRequest",
+          "offersSent",
+          "awaitingVerification",
+        ],
+      },
+    });
   }
 
   /**
