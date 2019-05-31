@@ -29,7 +29,7 @@ export class AuthProvider extends React.Component {
     if (record !== null) {
       // user is signed in
       const p = new Promise((resolve) => {
-        this.setState({user: record, signedIn: false}, resolve);
+        this.setState({user: record, signedIn: true}, resolve);
       });
       await p;
       // console.log(this.state.user);
@@ -45,7 +45,7 @@ export class AuthProvider extends React.Component {
 
   async unloadUser () {
     const p = new Promise((resolve) => {
-      this.setState({user: {}, signedIn: true}, resolve);
+      this.setState({user: {}, signedIn: false}, resolve);
     });
     await p;
     NavSrvc.navigate(this.state.user.id ? "Main" : "SignIn");

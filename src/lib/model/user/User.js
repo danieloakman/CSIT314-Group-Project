@@ -7,7 +7,7 @@ import {AsyncStorage} from "react-native";
  * @abstract
  */
 export default class User extends ModelWithDbConnection {
-  static UserTypes = [User];
+  static UserTypes = {User};
 
   constructor (record) {
     super(record);
@@ -40,7 +40,7 @@ export default class User extends ModelWithDbConnection {
    */
   static async getCurrentUser () {
     const id = await AsyncStorage.getItem("signedInUserID");
-    if (id) return null;
+    if (!id) return null;
     const record = await this.getUser({id});
     return record;
   }

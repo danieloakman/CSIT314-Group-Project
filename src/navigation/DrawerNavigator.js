@@ -22,6 +22,7 @@ import { createDrawerNavigator, withNavigation, createStackNavigator } from "rea
 import FlexContainer from "@components/FlexContainer";
 import {withAuthContext} from "@lib/context/AuthContext";
 import DB from "@lib/services/DatabaseService";
+import User from "@model/user";
 
 import HomeScreen from "@screens/HomeScreen";
 import LinksScreen from "@screens/LinksScreen";
@@ -34,7 +35,7 @@ import MainTabNavigator from "./MainTabNavigator";
 const entries = [
   {
     name: "Logout",
-    action: DB.signOutCurrentUser.bind(DB),
+    action: User.signOutUser.bind(User),
     route: "SignIn",
     endSection: true,
   },

@@ -65,4 +65,4 @@ export default class Mechanic extends User {
   get mechanicLicenceNo () { return this._doc.mechanicLicenceNo; }
   get awaitingVerification () { return this._doc.awaitingVerification; }
 }
-User.UserTypes.push(Mechanic);
+User.UserTypes["Mechanic"] = Mechanic;
