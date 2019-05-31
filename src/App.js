@@ -6,6 +6,13 @@ import { useScreens } from "react-native-screens";
 import AppNavigator from "./navigation/AppNavigator";
 import NavigationService from "@lib/services/NavigationService";
 import DatabaseService from "@lib/services/DatabaseService";
+import DB from "@database/core";
+
+import "@database/user";
+import "@database/vehicle";
+import "@database/request";
+import "@database/review";
+import "@database/payment";
 
 import {ThemeProvider} from "@lib/context/ThemeContext";
 import {AuthProvider} from "@lib/context/AuthContext";
@@ -61,6 +68,7 @@ class App extends React.Component {
         // This is the font that we are using for our tab bar
         ...Icon.Ionicons.font,
       }),
+      DB.loadTestData(),
       DatabaseService.initialiseDatabase({
         forceWipe: false, mergeDatabaseFile: false
       }),

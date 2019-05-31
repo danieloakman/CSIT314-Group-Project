@@ -1,16 +1,18 @@
 import PouchDB from "pouchdb-react-native";
 import Find from "pouchdb-find";
+import Upsert from "pouchdb-upsert";
 import Emitter from "tiny-emitter";
 import Fuse from "fuse.js";
 
 PouchDB.plugin(Find);
+PouchDB.plugin(Upsert);
 
 class DBConnector {
-  static DBs = [];
+  static DBs = []; // Collects each child class instance
   constructor (name) {
     this.dbName = name; // Allow access to database name
     this.db = new PouchDB(name);
-    DBConnector.DBs.push(this.db);
+    DBConnector.DBs.push(this);
 
     // TODO: Move emitter to mixin
     this._emitter = new Emitter();
@@ -18,13 +20,48 @@ class DBConnector {
     this.once = this._emitter.once;
     this.off = this._emitter.off;
     this.emit = this._emitter.emit;
+    // console.log(`Constructed DB ${name}`);
   }
 
-  static async loadTestData (wipe) {
+  /**
+   * Loads test data from files into databases
+   * @param {Object} opts
+   * @param {Boolean} opts.wipe Should database be wiped first?
+   * @param {Boolean} opts.loadSamples Should sampledata also be loaded (For volume testing)
+   * @param {Boolean} opts.upsert Should existing documents be updated/replaced to match?
+   */
+  static async loadTestData (opts = {wipe: false, loadSamples: false, upsert: false}) {
     // this.DBs.map((db) => { db._loadTestData(); });
-    if (wipe) { await this.wipeAll(); }
-    for (const db in this.DBs) {
-      await db._loadTestData();
+    if (opts.wipe) { await this.wipeAll(); }
+    for (const db of DBConnector.DBs) {
+      await db._loadTestData(opts);
+    }
+  }
+
+  /**
+   * Loads test data into database
+   * @param {Object} opts
+   * @param {Boolean} opts.loadSamples Should sampledata also be loaded (For volume testing)
+   * @param {Boolean} opts.upsert Should existing documents be updated/replaced to match?
+   * @param {Object} data The data to insert
+   * @param {Object[]} data.testData
+   * @param {Object[]} data.sampleData
+   */
+  async _loadTestData (opts, data) {
+    if (!data) return;
+    const {testData, sampleData} = data;
+    const dbInfo = await this.db.info();
+    if (dbInfo.doc_count <= 0) {
+      await this.db.bulkDocs(testData);
+      await this.db.bulkDocs(sampleData);
+    } else {
+      await Promise.all(testData.map((doc) => {
+        if (opts.upsert) {
+          return this.db.upsert(doc._id, doc);
+        } else {
+          return this.db.putIfNotExists(doc);
+        }
+      }));
     }
   }
 

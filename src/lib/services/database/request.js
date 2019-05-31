@@ -46,6 +46,18 @@ class RequestDB extends DBConnector {
       .sort((a, b) => a.distance - b.distance);
   }
 
+  /**
+   * Loads test data into database
+   * @param {Object} opts
+   * @param {Boolean} opts.loadSamples Should sampledata also be loaded (For volume testing)
+   * @param {Boolean} opts.upsert Should existing documents be updated/replaced to match?
+   */
+  async _loadTestData (opts) {
+    const testData = require("@assets/data/testRequests");
+    const sampleData = require("@assets/data/sampleRequests");
+    super._loadTestData(opts, {testData, sampleData});
+  }
+
   // getRequest = this.getRecord.bind(this);
   // createRequest = this.createRecord.bind(this);
   // updateRequest = this.updateRecord.bind(this);

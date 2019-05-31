@@ -171,10 +171,14 @@ class UserDB extends DBConnector {
 
   /**
    * Loads test data into database
+   * @param {Object} opts
+   * @param {Boolean} opts.loadSamples Should sampledata also be loaded (For volume testing)
+   * @param {Boolean} opts.upsert Should existing documents be updated/replaced to match?
    */
-  async _loadTestData () {
-    const source = require("@assets/data/testData");
-    await this.db.bulkDocs(source);
+  async _loadTestData (opts) {
+    const testData = require("@assets/data/testUsers");
+    const sampleData = require("@assets/data/sampleUsers");
+    super._loadTestData(opts, {testData, sampleData});
   }
 }
 
