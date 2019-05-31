@@ -67,6 +67,9 @@ export default class GoogleMapView extends React.Component {
       return (
         <View style={{flex: 1}}>
           <MapView
+            ref={ref => {
+              if (ref && this.props.getRef) this.props.getRef(ref);
+            }}
             style={{flex: 1}}
             initialRegion={{
               latitude: this.state.currentLocation.coords.latitude,

@@ -21,9 +21,12 @@ export default class RequestList extends React.Component {
       serviceRequests: [],
       isLoadingMap: true,
       isLoadingMarkers: false,
-      selectedSR: null,
-      srSelected: false,
-      maxRadius: 5000
+      srIndex: null,
+      maxRadius: 5000,
+    }
+
+    componentDidMount () {
+      this.markerRefs = [];
     }
 
     render () {
@@ -35,6 +38,7 @@ export default class RequestList extends React.Component {
           />
           <View style={{flex: 1}}>
             <GMapView
+              getRef={ref => { this.map = ref; }}
               onLocationRetrieved={async currentLocation => {
                 this.setState({location: currentLocation});
                 let user = await DatabaseService.getSignedInUser();
@@ -47,11 +51,45 @@ export default class RequestList extends React.Component {
               zoomEnabled={!this.state.isLoadingMap && !this.state.isLoadingMarkers}
               rotateEnabled={!this.state.isLoadingMap && !this.state.isLoadingMarkers}
               onPressNext={() => {
-                //
+                // console.log(this.markerRefs);
+                let latLng = {};
+                const srArr = this.state.serviceRequests;
+                let srIndex = this.state.srIndex;
+                if (srIndex === null || srIndex >= srArr.length - 1) {
+                  srIndex = 0;
+                  latLng.latitude = srArr[0].location.coords.latitude;
+                  latLng.longitude = srArr[0].location.coords.longitude;
+                } else {
+                  srIndex++;
+                  latLng.latitude = srArr[srIndex].location.coords.latitude;
+                  latLng.longitude = srArr[srIndex].location.coords.longitude;
+                }
+                this.map.animateToCoordinate(latLng);
+                this.markerRefs[srIndex].showCallout();
+                this.setState({srIndex});
               }}
               onPressPrevious={() => {
-                //
+                let latLng = {};
+                const srArr = this.state.serviceRequests;
+                let srIndex = this.state.srIndex;
+                if (srIndex === null || srIndex <= 0) {
+                  srIndex = srArr.length - 1;
+                  latLng.latitude = srArr[srIndex].location.coords.latitude;
+                  latLng.longitude = srArr[srIndex].location.coords.longitude;
+                } else {
+                  srIndex--;
+                  latLng.latitude = srArr[srIndex].location.coords.latitude;
+                  latLng.longitude = srArr[srIndex].location.coords.longitude;
+                }
+                this.map.animateToCoordinate(latLng);
+                this.markerRefs[srIndex].showCallout();
+                this.setState({srIndex});
               }}
+              topArea={<Text style={{fontSize: 17}}>
+                {this.state.srIndex !== null
+                  ? `Assistance Requests: ${this.state.srIndex + 1}/${this.state.serviceRequests.length}`
+                  : `Assistance Requests: ${this.state.serviceRequests.length}`}
+              </Text>}
               bottomArea={
                 <View style={styles.centeredRowContainer}>
                   <Text>Radius:</Text>
@@ -61,11 +99,13 @@ export default class RequestList extends React.Component {
                     itemStyle={{fontSize: 20}}
                     mode="dropdown"
                     onValueChange={async maxRadius => {
+                      this.markerRefs = [];
                       this.setState({isLoadingMarkers: true});
                       this.setState({
                         maxRadius: maxRadius * 1000,
                         serviceRequests: await DatabaseService.getAllSRsNearLocation(maxRadius, this.state.location),
-                        isLoadingMarkers: false
+                        isLoadingMarkers: false,
+                        srIndex: null
                       });
                     }}>
                     {[5, 10, 25, 50, 100, 200].map((radiusValue, index) => {
@@ -84,6 +124,13 @@ export default class RequestList extends React.Component {
                     }).length === 0
                   ) {
                     return <MapView.Marker
+                      ref={ref => {
+                        if (ref) {
+                          this.markerRefs.push(ref);
+                        } else {
+                          // console.log("ref was undefined");
+                        }
+                      }}
                       key={index}
                       coordinate={{
                         latitude: sr.location.coords.latitude,
