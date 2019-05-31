@@ -1,1 +1,3 @@
-export * from "./User.js";
+import UserModel from "./User";
+
+export default UserModel;

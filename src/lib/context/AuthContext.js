@@ -1,6 +1,7 @@
 import React from "react";
 import {Image} from "react-native";
-import DB from "@lib/services/DatabaseService";
+import User from "@model/user";
+import UserDB from "@database/user";
 import NavSrvc from "@lib/services/NavigationService";
 /*
   database service is responsible for persisting data to disk, not current state (which needs to be within the react tree)
@@ -24,7 +25,7 @@ export class AuthProvider extends React.Component {
   }
 
   async loadUser () {
-    const record = await DB.getSignedInUser();
+    const record = await User.getCurrentUser();
     if (record !== null) {
       // user is signed in
       const p = new Promise((resolve) => {
@@ -35,10 +36,10 @@ export class AuthProvider extends React.Component {
       if (record.pictureURI) {
         Image.prefetch(record.pictureURI);
       }
-      NavSrvc.navigate(this.state.user.email ? "Main" : "SignIn");
+      NavSrvc.navigate(this.state.user.id ? "Main" : "SignIn");
     } else {
       // user is not signed in
-      NavSrvc.navigate(this.state.user.email ? "Main" : "SignIn");
+      NavSrvc.navigate(this.state.user.id ? "Main" : "SignIn");
     }
   }
 
@@ -47,7 +48,7 @@ export class AuthProvider extends React.Component {
       this.setState({user: {}, signedIn: true}, resolve);
     });
     await p;
-    NavSrvc.navigate(this.state.user.email ? "Main" : "SignIn");
+    NavSrvc.navigate(this.state.user.id ? "Main" : "SignIn");
   }
 
   async handleSignOut () {
@@ -60,15 +61,15 @@ export class AuthProvider extends React.Component {
 
   async componentDidMount () {
     // Register listener for changes to user info
-    DB.emitter.on("signedIn", this.handleSignIn, this);
-    DB.emitter.on("signedOut", this.handleSignOut, this);
+    UserDB.on("signedIn", this.handleSignIn, this);
+    UserDB.on("signedOut", this.handleSignOut, this);
     await this.loadUser();
   }
 
   componentWillUnmount () {
     // Deregister all listeners
-    DB.emitter.on("signedIn", this.handleSignIn, this);
-    DB.emitter.off("signedOut", this.handleSignOut, this);
+    UserDB.on("signedIn", this.handleSignIn, this);
+    UserDB.off("signedOut", this.handleSignOut, this);
   }
 
   render () {
