@@ -33,7 +33,7 @@ export default class RequestList extends React.Component {
       return (
         <View style={{flex: 1}}>
           <HeaderBar
-            navLeft={this.state.isLoadingMap ? <View/> : null}
+            navLeft={this.state.isLoadingMap || this.state.isLoadingMarkers ? <View/> : null}
             title="Nearby Requests"
           />
           <View style={{flex: 1}}>
@@ -51,7 +51,6 @@ export default class RequestList extends React.Component {
               zoomEnabled={!this.state.isLoadingMap && !this.state.isLoadingMarkers}
               rotateEnabled={!this.state.isLoadingMap && !this.state.isLoadingMarkers}
               onPressNext={() => {
-                // console.log(this.markerRefs);
                 let latLng = {};
                 const srArr = this.state.serviceRequests;
                 let srIndex = this.state.srIndex;
@@ -125,11 +124,7 @@ export default class RequestList extends React.Component {
                   ) {
                     return <MapView.Marker
                       ref={ref => {
-                        if (ref) {
-                          this.markerRefs.push(ref);
-                        } else {
-                          // console.log("ref was undefined");
-                        }
+                        if (ref) this.markerRefs.push(ref);
                       }}
                       key={index}
                       coordinate={{
