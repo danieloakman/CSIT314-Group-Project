@@ -10,6 +10,4 @@ module.exports = class Admin extends User {
 
     this.restoreAttributesFromUserRecord(userRecord);
   }
-
-  isAdmin () { return true; }
 };
