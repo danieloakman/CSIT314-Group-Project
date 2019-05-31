@@ -128,7 +128,7 @@ export default class OfferList extends React.Component {
                         displayOffers
                       });
                     }}>
-                    {[1, 5, 10, 25, 50, 100, 200].map((radiusValue, index) => {
+                    {[5, 10, 25, 50, 100, 200].map((radiusValue, index) => {
                       return <Picker.Item key={index} label={radiusValue.toString() + "km"} value={radiusValue}/>;
                     })}
                   </Picker>
