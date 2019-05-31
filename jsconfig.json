@@ -5,38 +5,38 @@
       "@src/*": [
         "./src/*"
       ],
-      "@components": [
-        "./src/components"
+      "@components/*": [
+        "./src/components/*"
       ],
-      "@atoms": [
-        "./src/components/atoms"
+      "@atoms/*": [
+        "./src/components/atoms/*"
       ],
-      "@molecules": [
-        "./src/components/molecules"
+      "@molecules/*": [
+        "./src/components/molecules/*"
       ],
-      "@templates": [
-        "./src/components/templates"
+      "@templates/*": [
+        "./src/components/templates/*"
       ],
-      "@screens": [
-        "./src/components/screens"
+      "@screens/*": [
+        "./src/components/screens/*"
       ],
-      "@pages": [
-        "./src/components/screens"
+      "@pages/*": [
+        "./src/components/screens/*"
       ],
-      "@lib": [
-        "./src/lib"
+      "@lib/*": [
+        "./src/lib/*"
       ],
-      "@model": [
-        "./src/lib/model"
+      "@model/*": [
+        "./src/lib/model/*"
       ],
       "@database/*": [
         "./src/lib/services/database/*"
       ],
-      "@constants": [
-        "./src/constants"
+      "@constants/*": [
+        "./src/constants/*"
       ],
-      "@assets": [
-        "./assets"
+      "@assets/*": [
+        "./assets/*"
       ],
     }
   },
