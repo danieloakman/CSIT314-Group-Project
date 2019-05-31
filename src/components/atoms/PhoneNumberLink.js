@@ -1,11 +1,18 @@
 import React from "react";
 import {
   Linking,
-  Text,
   TouchableOpacity
 } from "react-native";
+import {
+  Text
+} from "native-base";
 
-// Open the phone app with the phone number in the phoneNo prop.
+/**
+ * Open the phone app with the phone number in the phoneNo prop.
+ * @prop phoneNo - The phone number that is displayed.
+ * @prop onPress - Optional, this is called right after the phone app is opened.
+ * @prop style - Optional, style of the text used for the phone number.
+ */
 export default class PhoneNumberLink extends React.Component {
   render () {
     return (

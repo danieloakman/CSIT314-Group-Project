@@ -3,16 +3,15 @@ import {
   Image,
   ScrollView,
   StyleSheet,
-  Text,
   View,
-  // Button,
   Picker,
   TextInput,
   KeyboardAvoidingView,
-  TouchableOpacity
 } from "react-native";
 import {
-  Toast
+  Toast,
+  Text,
+  Button
 } from "native-base";
 import WindowBox from "@components/WindowBox";
 import Patterns from "@constants/UserInputRegex";
@@ -33,14 +32,8 @@ class SignInCreateAccScreen extends React.Component {
     crAccEmail: "",
     crAccPassword: "",
     crAccPhoneNo: "",
-    crAccErrorText: "",
-    crAccButtonColor: Colors.screenBackground,
-    crAccButtonTextColor: "black",
     signInEmail: "",
     signInPassword: "",
-    signInErrorText: "",
-    signInButtonColor: Colors.wideButton,
-    signInButtonTextColor: "white",
     users: null // only used for quick sign in when in dev
   }
 
@@ -66,32 +59,28 @@ class SignInCreateAccScreen extends React.Component {
         <ScrollView style={styles.container}>
           <View style={styles.topTab}>
             <View style={styles.topButtonContainer}>
-              <TouchableOpacity
-                style={[styles.topButton, {backgroundColor: this.state.signInButtonColor}]}
+              <Button full
+                info={this.state.selected === "SignIn"}
+                light={this.state.selected !== "SignIn"}
+                style={styles.topButton}
                 onPress={() => this.setState({
                   selected: "SignIn",
-                  signInButtonColor: Colors.wideButton,
-                  signInButtonTextColor: "white",
-                  crAccButtonColor: Colors.screenBackground,
-                  crAccButtonTextColor: "black"
                 })}>
-                <Text style={[styles.topButtonText, {color: this.state.signInButtonTextColor}]}>Sign In</Text>
-              </TouchableOpacity>
+                <Text style={styles.topButtonText}>Sign In</Text>
+              </Button>
             </View>
             <View style={styles.topButtonContainer}>
-              <TouchableOpacity
-                style={[styles.topButton, {backgroundColor: this.state.crAccButtonColor}]}
+              <Button full
+                info={this.state.selected === "CreateAccount"}
+                light={this.state.selected !== "CreateAccount"}
+                style={styles.topButton}
                 onPress={() => this.setState({
-                  selected: "CreateAccount",
-                  crAccButtonColor: Colors.wideButton,
-                  crAccButtonTextColor: "white",
-                  signInButtonColor: Colors.screenBackground,
-                  signInButtonTextColor: "black"
+                  selected: "CreateAccount"
                 })}>
-                <Text style={[styles.topButtonText, {color: this.state.crAccButtonTextColor}]}>
+                <Text style={styles.topButtonText}>
                   Create Account
                 </Text>
-              </TouchableOpacity>
+              </Button>
             </View>
           </View>
           {this._renderMainScreen()}
@@ -146,17 +135,15 @@ class SignInCreateAccScreen extends React.Component {
           </View>
 
           <View style={styles.wideButtonContainer}>
-            <TouchableOpacity
+            <Button full info
               onPress={async () => {
                 await this._validateTextInputs();
                 await this._signInButtonPress();
               }}
               style={styles.wideButton}>
-              <Text style={{color: "white", fontSize: 22, textAlign: "center"}}>Sign In</Text>
-            </TouchableOpacity>
+              <Text style={{fontSize: 22}}>Sign In</Text>
+            </Button>
           </View>
-
-          <Text style={styles.errorText}>{this.state.signInErrorText}</Text>
 
           {__DEV__ &&
             <View style={[styles.centeredRowContainer, {borderWidth: 2, borderRadius: 10, borderColor: "blue"}]}>
@@ -166,7 +153,15 @@ class SignInCreateAccScreen extends React.Component {
                 itemStyle={{fontSize: 20}}
                 onValueChange={async user => {
                   const result = await DatabaseService.signInUser(user.email, user.password);
-                  if (!result.pass) this.setState({ signInErrorText: result.reason });
+                  if (!result.pass) {
+                    Toast.show({
+                      text: result.reason,
+                      buttonText: "Okay",
+                      duration: 5000,
+                      type: "danger",
+                      style: {margin: 10, borderRadius: 15}
+                    });
+                  }
                 }}>
                 {!this.state.users ? null
                   : this.state.users.map((user, index) => {
@@ -288,17 +283,16 @@ class SignInCreateAccScreen extends React.Component {
           </View>
 
           <View style={styles.wideButtonContainer}>
-            <TouchableOpacity
+            <Button full info
               onPress={async () => {
                 await this._validateTextInputs();
                 await this._createAccountButtonPress();
               }}
               style={styles.wideButton}>
-              <Text style={{color: "white", fontSize: 22, textAlign: "center"}}>Create Account</Text>
-            </TouchableOpacity>
+              <Text style={{fontSize: 22}}>Create Account</Text>
+            </Button>
           </View>
 
-          <Text style={styles.errorText}>{this.state.crAccErrorText}</Text>
         </KeyboardAvoidingView>
       );
     }
@@ -306,23 +300,26 @@ class SignInCreateAccScreen extends React.Component {
 
   async _signInButtonPress () {
     // Check for invalid or empty fields:
-    if (this.state.signInErrorText || !this.state.signInEmail || !this.state.signInPassword) {
-      // Alert.alert("Error, one or more of the fields is empty or invalid.");
+    if (!this._validateTextInputs() || !this.state.signInEmail || !this.state.signInPassword) {
       return;
     }
     // Attempt to sign the user in:
     const result = await DatabaseService.signInUser(this.state.signInEmail, this.state.signInPassword);
-    if (!result.pass) this.setState({signInErrorText: result.reason});
-    else {
-      // Change screen to Main:
-      // this.props.navigation.navigate("Main");
+    if (!result.pass) {
+      Toast.show({
+        text: result.reason,
+        buttonText: "Okay",
+        duration: 5000,
+        type: "danger",
+        style: {margin: 10, borderRadius: 15}
+      });
     }
   }
 
   async _createAccountButtonPress () {
     // Check for invalid or empty fields:
     if (
-      this.state.crAccErrorText || !this.state.crAccFirstName || !this.state.crAccLastName ||
+      !this._validateTextInputs() || !this.state.crAccFirstName || !this.state.crAccLastName ||
       !this.state.crAccEmail || !this.state.crAccPassword || !this.state.crAccPhoneNo
     ) {
       // Alert.alert("Error, one or more of the fields is empty or invalid.");
@@ -335,8 +332,15 @@ class SignInCreateAccScreen extends React.Component {
       this.state.crAccPassword, this.state.crAccPhoneNo,
       true // Flag to sign them in as well
     );
-    if (!result.pass) this.setState({crAccErrorText: result.reason});
-    else {
+    if (!result.pass) {
+      Toast.show({
+        text: result.reason,
+        buttonText: "Okay",
+        duration: 5000,
+        type: "danger",
+        style: {margin: 10, borderRadius: 15}
+      });
+    } else {
       Toast.show({
         text: `Created ${this.state.crAccEmail}, you can now sign in.`,
         buttonText: "Okay",
@@ -349,48 +353,39 @@ class SignInCreateAccScreen extends React.Component {
   }
 
   _validateTextInputs () {
+    const errorToast = (text) => {
+      Toast.show({
+        text,
+        buttonText: "Okay",
+        duration: 5000,
+        type: "danger",
+        style: {margin: 10, borderRadius: 15}
+      });
+      return false;
+    };
     if (this.state.selected === "SignIn") {
       // Validate sign in text inputs:
       if (!this.state.signInEmail.trim().match(Patterns.email)) {
-        this.setState({signInErrorText: "Invalid email, please correct it."});
+        return errorToast("Invalid email, please correct it.");
       } else if (!this.state.signInPassword.trim().match(Patterns.password)) {
-        this.setState({signInErrorText: "Password must be between 6 and 20 digits long, and with at least 1 number."});
-      } else this.setState({signInErrorText: ""});
+        return errorToast("Password must be between 6 and 20 digits long, and with at least 1 number.");
+      }
     } else {
       // Validate create account text inputs:
       if (!this.state.crAccFirstName.trim().match(Patterns.name)) {
-        this.setState({ crAccErrorText: "Invalid given name, please correct it." });
+        return errorToast("Invalid given name, please correct it.");
       } else if (!this.state.crAccLastName.trim().match(Patterns.name)) {
-        this.setState({ crAccErrorText: "Invalid surname, please correct it." });
+        return errorToast("Invalid surname, please correct it.");
       } else if (!this.state.crAccEmail.trim().match(Patterns.email)) {
-        this.setState({ crAccErrorText: "Invalid email, please correct it." });
+        return errorToast("Invalid email, please correct it.");
       } else if (!this.state.crAccPassword.trim().match(Patterns.password)) {
-        this.setState({ crAccErrorText: "Password must be between 6 and 20 digits long, and with at least 1 number." });
+        return errorToast("Password must be between 6 and 20 digits long, and with at least 1 number.");
       } else if (!this.state.crAccPhoneNo.trim().match(Patterns.phoneNo)) {
-        this.setState({ crAccErrorText: "Phone number invalid, please correct it." });
-      } else this.setState({ crAccErrorText: "" });
+        return errorToast("Phone number invalid, please correct it.");
+      }
     }
+    return true;
   }
-
-  // _renderDevQuickSignInButton (email, password, index = 0) {
-  //   return (
-  //     <View style={styles.wideButtonContainer} key={index}>
-  //       <Button
-  //         onPress={async () => {
-  //           // Attempt to sign the user in:
-  //           const result = await DatabaseService.signInUser(email, password);
-  //           if (!result.pass) this.setState({ signInErrorText: result.reason });
-  //           else {
-  //             // Change screen to Main:
-  //             // this.props.navigation.navigate("Main");
-  //           }
-  //         }}
-  //         title={`Sign in: ${email}`}
-  //         style={styles.wideButton}
-  //       />
-  //     </View>
-  //   );
-  // }
 }
 export default withAuthContext(SignInCreateAccScreen);
 
@@ -455,19 +450,13 @@ const styles = StyleSheet.create({
     paddingRight: 1
   },
   topButton: {
-    borderRadius: 7,
-    borderWidth: 1
+    borderRadius: 10,
+    // borderWidth: 1
   },
   topButtonText: {
     textAlign: "center",
-    fontSize: 22,
+    fontSize: 18,
     padding: 10
-  },
-  errorText: {
-    color: "red",
-    fontSize: 20,
-    paddingLeft: 20,
-    paddingRight: 20
   },
   wideButtonContainer: {
     paddingLeft: 20,
@@ -476,9 +465,7 @@ const styles = StyleSheet.create({
     paddingBottom: 5
   },
   wideButton: {
-    backgroundColor: Colors.wideButton,
-    borderWidth: 1,
-    borderRadius: 4,
+    borderRadius: 10,
     padding: 5
   }
 });

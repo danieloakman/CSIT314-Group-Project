@@ -1,10 +1,12 @@
 import React from "react";
 import {
   StyleSheet,
-  Text,
   View,
-  Button,
 } from "react-native";
+import {
+  Button,
+  Text
+} from "native-base";
 import {withNavigation} from "react-navigation";
 import DatabaseService from "@lib/services/DatabaseService";
 import HeaderBar from "@molecules/HeaderBar";
@@ -12,10 +14,13 @@ import HeaderBar from "@molecules/HeaderBar";
 class MechanicHomeScreen extends React.Component {
   state = {
     user: null,
-    serviceRequest: null
+    serviceRequest: null,
+    enableNearbyRequests: false,
+    enableViewCurrentOffers: false,
+    enableViewActiveRequest: false,
   }
 
-  componentWillMount () {
+  componentDidMount () {
     let user = this.props.AuthContext.user;
     this.setState({user});
     const {navigation} = this.props;
@@ -23,7 +28,10 @@ class MechanicHomeScreen extends React.Component {
       DatabaseService.getServiceRequest(user.srId)
         .then(sr => {
           this.setState({
-            serviceRequest: sr
+            serviceRequest: sr,
+            enableNearbyRequests: !user.srId && user.verifiedMechanic,
+            enableViewCurrentOffers: !user.srId && user.offersSent.length > 0 && user.verifiedMechanic,
+            enableViewActiveRequest: user.srId && user.verifiedMechanic
           });
         }).catch(err => { throw err; });
     });
@@ -31,29 +39,58 @@ class MechanicHomeScreen extends React.Component {
 
   render () {
     return (
-      <View>
+      <View style={{flex: 1}}>
         <HeaderBar
-          navMid={<Text style={styles.heading}>Mechanic Home Screen</Text>}
-          navRight={<View/>} // Just to center the header
+          title="Mechanic Home Screen"
         />
-        <View style={styles.buttons}>
-          <Button
-            title="View Nearby Requests"
-            onPress={() => this.props.navigation.navigate("MechanicRequestListModal") }
-          />
-        </View>
-        <View style={styles.buttons}>
-          <Button
-            title="View Current Offer"
-            onPress={() => this.props.navigation.navigate("MechanicRequestViewModal") }
-          />
-        </View>
-        <View style={styles.buttons}>
-          <Button
-            title="View Active Assistance Request"
-            onPress={() => this.props.navigation.navigate("MechanicRequestViewModal") }
-          />
-        </View>
+        {this.state.user &&
+        <View style={{flex: 1}}>
+          <View style={styles.buttonContainer}>
+            <Button full info
+              style={styles.button}
+              onPress={() => this.props.navigation.navigate("MechanicVerificationModal", {user: this.state.user}) }
+              disabled={this.state.user.awaitingVerification}
+            >
+              <Text style={
+                this.state.user.awaitingVerification
+                  ? {fontSize: 17, color: "green"}
+                  : {fontSize: 17}
+              }>
+                {this.state.user.awaitingVerification ? "Verification in progress..." // If user is waiting to be verified.
+                  : this.state.user.verifiedMechanic ? "Update your verification details" // Else if, user is verified.
+                    : "Verify your Account" // Else if, user isn't verified.
+                }
+              </Text>
+            </Button>
+          </View>
+          <View style={styles.buttonContainer}>
+            <Button full info
+              style={styles.button}
+              onPress={() => this.props.navigation.navigate("MechanicRequestListModal") }
+              disabled={!this.state.enableNearbyRequests}
+            >
+              <Text style={{fontSize: 17}}>View Nearby Requests</Text>
+            </Button>
+          </View>
+          <View style={styles.buttonContainer}>
+            <Button full info
+              style={styles.button}
+              onPress={() => this.props.navigation.navigate("MechanicRequestViewModal") }
+              disabled={!this.state.enableViewCurrentOffers}
+            >
+              <Text style={{fontSize: 17}}>View Current Offers</Text>
+            </Button>
+          </View>
+          <View style={styles.buttonContainer}>
+            <Button full info
+              style={styles.button}
+              onPress={() => this.props.navigation.navigate("MechanicRequestViewModal") }
+              disabled={!this.state.enableViewActiveRequest}
+            >
+              <Text style={{fontSize: 17}}>View Active Assistance Request</Text>
+            </Button>
+          </View>
+        </View>}
       </View>
     );
   }
@@ -68,73 +105,17 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignSelf: "center"
   },
-  background: {
-    backgroundColor: "black",
-    width: 100,
-    height: 100
-  },
-  buttons: {
-    paddingLeft: 50,
-    paddingRight: 50,
-    marginTop: 2,
-    marginBottom: 2
-  },
-  textBesideInput: {
-    fontSize: 20
-  },
-  textInput: {
-    fontSize: 20,
-    borderWidth: 1,
-    borderRadius: 3,
-    marginLeft: 5,
-    width: "60%",
-    paddingLeft: 5,
-    backgroundColor: "white"
-  },
-  wideButtonContainer: {
+  buttonContainer: {
+    flex: 1,
     paddingLeft: 20,
     paddingRight: 20,
-    paddingTop: 5,
-    paddingBottom: 5
-  },
-  wideButton: {
-    // backgroundColor: Colors.wideButton,
-    borderWidth: 1,
-    borderRadius: 4,
-    padding: 5
-  },
-  centeredRowContainer: {
-    // flex: 1,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginTop: 5,
-    marginBottom: 5,
-    marginLeft: 20,
-    marginRight: 20
-  },
-  textBox: {
-    fontSize: 20,
-    borderWidth: 1,
-    borderRadius: 3,
-    marginLeft: 5,
-    width: "90%",
-    paddingLeft: 5,
-    backgroundColor: "white",
-    marginBottom: 5,
-    alignSelf: "center"
-  },
-  buttonBox: {
-    alignSelf: "center",
-    backgroundColor: "yellow",
-    borderWidth: 1,
-    borderRadius: 3,
+    paddingTop: 10,
+    paddingBottom: 10,
     marginTop: 2,
-    marginBottom: 2
+    marginBottom: 2,
   },
-  buttonBoxText: {
-    justifyContent: "center",
-    padding: 10,
-    fontSize: 20
+  button: {
+    borderRadius: 20,
+    height: "100%"
   }
 });

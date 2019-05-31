@@ -39,8 +39,7 @@ export default class OfferList extends React.Component {
         <View style={{flex: 1}}>
           <HeaderBar
             navLeft={this.state.isLoadingMap ? <View/> : null}
-            navMid={<Text style={styles.heading}>Offers</Text>}
-            navRight={<View/>} // Just to center the header
+            title="Offers"
           />
           <View style={{flex: 1}}>
             <GMapView

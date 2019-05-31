@@ -30,9 +30,18 @@ export default class RequestScreen extends React.Component {
     }
 
     componentDidMount () {
-      LocationService.getCurrentLocation()
-        .then(async location => {
-          let user = this.props.navigation.getParam("user", "The current user");
+      let user = this.props.navigation.getParam("user");
+      new Promise(async resolve => {
+        let vehicles = await Promise.all(
+          user.vehicleIds.map(async id => DatabaseService.getVehicle(id))
+        );
+        let location;
+        if (user.location) {
+          // Try to use the location already in user, if it exists:
+          location = user.location;
+        } else {
+          // Retrieve current location then store in user:
+          location = user.location = await LocationService.getCurrentLocation();
           if (!location) {
             Toast.show({
               text: "Cannot continue unless location permission is enabled.",
@@ -41,22 +50,17 @@ export default class RequestScreen extends React.Component {
               type: "danger",
               style: {margin: 10, borderRadius: 15}
             });
-          }
-          let vehicles = [];
-          for (let id of user.vehicleIds) {
-            vehicles.push(await DatabaseService.getVehicle(id));
-          }
-          this.setState({
-            user,
-            vehicles: vehicles.length > 0 ? vehicles : null,
-            location,
-            selectedVehicle: vehicles.length > 0 ? vehicles[0] : null,
-            isLoading: false
-          });
-        })
-        .catch(err => {
-          throw err;
+          } else await DatabaseService.saveUserChanges(user);
+        }
+        this.setState({
+          user,
+          vehicles: vehicles.length > 0 ? vehicles : null,
+          location,
+          selectedVehicle: vehicles.length > 0 ? vehicles[0] : null,
+          isLoading: false
         });
+        resolve(true);
+      });
     }
 
     render () {
@@ -65,15 +69,13 @@ export default class RequestScreen extends React.Component {
           <ScrollView>
             <HeaderBar
               navLeft={this.state.isLoading ? <View/> : null}
-              navMid={
-                <Text style={[styles.heading, {marginRight: 30}]}>Roadside Assistance Request</Text>
-              }
+              title="Roadside Assistance Request"
             />
             {/* car selection dropdown input */}
             {this.state.isLoading
               ? <View style={styles.centeredRowContainer}>
                 <Text style={{fontSize: 15}}>Fetching your current location... </Text>
-                <LoadingGif style={{width: 25, height: 25, alignSelf: "flex-start"}} />
+                <LoadingGif imageStyle={{width: 25, height: 25, alignSelf: "flex-start"}} />
               </View>
               : !this.state.location
                 ? <View style={styles.centeredRowContainer}>
@@ -86,7 +88,7 @@ export default class RequestScreen extends React.Component {
             {this.state.isLoading
               ? <View style={styles.centeredRowContainer}>
                 <Text style={{fontSize: 15}}>Loading your list of cars... </Text>
-                <LoadingGif style={{width: 25, height: 25, alignSelf: "flex-start"}} />
+                <LoadingGif imageStyle={{width: 25, height: 25, alignSelf: "flex-start"}} />
               </View>
               : !this.state.vehicles
                 ? <View style={styles.centeredRowContainer}>

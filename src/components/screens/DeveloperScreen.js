@@ -244,7 +244,7 @@ export default class DeveloperScreen extends React.Component {
                     // Driver creates service request:
                     result = await DatabaseService.createServiceRequest(
                       LocationService.getRandomLocation(
-                        {latitude: -34.406419, longitude: 150.882327}, 5),
+                        {latitude: -34.406419, longitude: 150.882327}, 100),
                       user.email, vehicle.id, `Random description-${uuid()}`
                     );
 

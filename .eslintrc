@@ -45,6 +45,7 @@
         "node/no-unpublished-require": "warn",
         "promise/always-return": "off",
         "promise/catch-or-return": "warn",
+        "no-new": "off",
         "object-curly-spacing": [
             "off",
             {

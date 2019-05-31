@@ -13,9 +13,13 @@ import DriverActiveRequestScreen from "@screens/DriverActiveRequestScreen";
 import DriverMakeRequestScreen from "@screens/DriverMakeRequestScreen";
 import DriverOffersScreen from "@screens/DriverOffersScreen";
 import DriverViewOfferScreen from "@screens/DriverViewOfferScreen";
+import DriverPayMemDetailsScreen from "@screens/DriverPayMemDetailsScreen";
 
 import MechanicRequestViewScreen from "@components/screens/MechanicRequestView";
 import MechanicRequestListScreen from "@components/screens/MechanicRequestList";
+import MechanicVerificationScreen from "@components/screens/MechanicVerificationScreen";
+
+import AdminVerificationScreen from "@components/screens/AdminVerificationScreen";
 
 import {withAuthContext} from "@lib/context/AuthContext";
 
@@ -99,8 +103,11 @@ const ModalStack = createStackNavigator({
   DriverMakeRequestModal: DriverMakeRequestScreen,
   DriverOffersModal: DriverOffersScreen,
   DriverViewOfferModal: DriverViewOfferScreen,
+  DriverPayMemDetailsModal: DriverPayMemDetailsScreen,
   MechanicRequestViewModal: MechanicRequestViewScreen,
-  MechanicRequestListModal: MechanicRequestListScreen
+  MechanicRequestListModal: MechanicRequestListScreen,
+  MechanicVerificationModal: MechanicVerificationScreen,
+  AdminVerificationModal: AdminVerificationScreen
 },
 {
   initialRouteName: "TabStack",

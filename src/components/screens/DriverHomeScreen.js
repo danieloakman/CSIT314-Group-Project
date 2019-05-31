@@ -1,10 +1,12 @@
 import React from "react";
 import {
   StyleSheet,
-  Text,
-  View,
-  Button
+  View
 } from "react-native";
+import {
+  Button,
+  Text,
+} from "native-base";
 import DatabaseService from "@lib/services/DatabaseService";
 import HeaderBar from "@molecules/HeaderBar";
 import { withNavigation } from "react-navigation";
@@ -25,11 +27,12 @@ class DriverHomeScreen extends React.Component {
     navigation.addListener("willFocus", () => { // todo: maybe make a better refresh screen method
       DatabaseService.getServiceRequest(user.srId)
         .then(sr => {
+          const hasACardOrMembership = user.validCardDetails || user.membership;
           this.setState({
             serviceRequest: sr,
-            enableRequestAssistance: !user.srId,
-            enableViewCurrentOffers: user.srId && sr ? sr.status === "Awaiting offer acceptance" : false,
-            enableViewActiveRequest: user.srId && sr ? sr.status === "Offer accepted" : false
+            enableRequestAssistance: hasACardOrMembership && !user.srId,
+            enableViewCurrentOffers: hasACardOrMembership && user.srId && sr ? sr.status === "Awaiting offer acceptance" : false,
+            enableViewActiveRequest: hasACardOrMembership && user.srId && sr ? sr.status === "Offer accepted" : false
           });
         }).catch(err => { throw err; });
     });
@@ -37,33 +40,44 @@ class DriverHomeScreen extends React.Component {
 
   render () {
     return (
-      <View>
-        <HeaderBar
-          navMid={<Text style={styles.heading}>Driver Home Screen</Text>}
-          navRight={<View/>} // Just to center the heading
-        />
-        <View style={styles.buttons}>
+      <View style={{flex: 1}}>
+        <HeaderBar title="Driver Home Screen"/>
+        <View style={styles.buttonContainer}>
           {!this.state.user ? null
-            : <Button
-              title="Request Assistance"
+            : <Button full info
+              style={styles.button}
+              onPress={() => this.props.navigation.navigate("DriverPayMemDetailsModal", { user: this.state.user })}
+            >
+              <Text style={{fontSize: 17}}>Membership and Card Details</Text>
+            </Button>
+          }
+        </View>
+        <View style={styles.buttonContainer}>
+          {!this.state.user ? null
+            : <Button full info
+              style={styles.button}
               onPress={() => this.props.navigation.navigate("DriverMakeRequestModal", { user: this.state.user })}
               disabled={!this.state.enableRequestAssistance}
-            />
+            >
+              <Text style={{fontSize: 17}}>Request Assistance</Text>
+            </Button>
           }
         </View>
-        <View style={styles.buttons}>
+        <View style={styles.buttonContainer}>
           {!this.state.user ? null
-            : <Button
-              title="View Current Offers"
+            : <Button full info
+              style={styles.button}
               onPress={() => this.props.navigation.navigate("DriverOffersModal", { user: this.state.user })}
               disabled={!this.state.enableViewCurrentOffers}
-            />
+            >
+              <Text style={{fontSize: 17}}>View Current Offers</Text>
+            </Button>
           }
         </View>
-        <View style={styles.buttons}>
+        <View style={styles.buttonContainer}>
           {!this.state.user ? null
-            : <Button
-              title="View Active Assistance Request"
+            : <Button full info
+              style={styles.button}
               onPress={() => {
                 this.props.navigation.navigate(
                   "DriverActiveRequestModal",
@@ -74,7 +88,9 @@ class DriverHomeScreen extends React.Component {
                 );
               }}
               disabled={!this.state.enableViewActiveRequest}
-            />
+            >
+              <Text style={{fontSize: 17}}>View Active Assistance Request</Text>
+            </Button>
           }
         </View>
       </View>
@@ -91,73 +107,17 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignSelf: "center"
   },
-  background: {
-    backgroundColor: "black",
-    width: 100,
-    height: 100
-  },
-  buttons: {
-    paddingLeft: 50,
-    paddingRight: 50,
-    marginTop: 2,
-    marginBottom: 2
-  },
-  textBesideInput: {
-    fontSize: 20
-  },
-  textInput: {
-    fontSize: 20,
-    borderWidth: 1,
-    borderRadius: 3,
-    marginLeft: 5,
-    width: "60%",
-    paddingLeft: 5,
-    backgroundColor: "white"
-  },
-  wideButtonContainer: {
+  buttonContainer: {
+    flex: 1,
     paddingLeft: 20,
     paddingRight: 20,
-    paddingTop: 5,
-    paddingBottom: 5
-  },
-  wideButton: {
-    // backgroundColor: Colors.wideButton,
-    borderWidth: 1,
-    borderRadius: 4,
-    padding: 5
-  },
-  centeredRowContainer: {
-    // flex: 1,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginTop: 5,
-    marginBottom: 5,
-    marginLeft: 20,
-    marginRight: 20
-  },
-  textBox: {
-    fontSize: 20,
-    borderWidth: 1,
-    borderRadius: 3,
-    marginLeft: 5,
-    width: "90%",
-    paddingLeft: 5,
-    backgroundColor: "white",
-    marginBottom: 5,
-    alignSelf: "center"
-  },
-  buttonBox: {
-    alignSelf: "center",
-    backgroundColor: "yellow",
-    borderWidth: 1,
-    borderRadius: 3,
+    paddingTop: 10,
+    paddingBottom: 10,
     marginTop: 2,
-    marginBottom: 2
+    marginBottom: 2,
   },
-  buttonBoxText: {
-    justifyContent: "center",
-    padding: 10,
-    fontSize: 20
+  button: {
+    borderRadius: 20,
+    height: "100%"
   }
 });

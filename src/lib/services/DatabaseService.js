@@ -546,4 +546,34 @@ export default class DatabaseService {
       })
       .sort((a, b) => a.distance - b.distance);
   }
+
+  static async createPayment (paymentObj) {
+    try {
+      let paymentId = uuid();
+      paymentObj.id = paymentId;
+      await AsyncStorage.setItem(
+        `payment-${paymentId}`,
+        JSON.stringify(paymentObj)
+      );
+      return {pass: true, paymentId: paymentId};
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error(`DatabaseService.createPayment() error: ${err.stack}`);
+      return {
+        pass: false,
+        reason: __DEV__ ? err.stack : "Internal app error at DatabaseService.createPayment()"
+      };
+    }
+  }
+
+  static async getPayment (paymentId) {
+    try {
+      let payment = await AsyncStorage.getItem(`payment-${paymentId}`);
+      return payment ? JSON.parse(payment) : null;
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error(`DatabaseService.getPayment() error: ${err.stack}`);
+      return null;
+    }
+  }
 }

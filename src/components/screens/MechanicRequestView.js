@@ -12,8 +12,9 @@ import {
 } from "native-base";
 import DatabaseService from "@lib/services/DatabaseService";
 import HeaderBar from "@molecules/HeaderBar";
+import { withNavigation } from "react-navigation";
 
-export default class RequestView extends React.Component {
+class RequestView extends React.Component {
     state = {
       offerAmount: null,
       selectedSR: null,
@@ -33,10 +34,7 @@ export default class RequestView extends React.Component {
     render () {
       return (
         <View>
-          <HeaderBar
-            navMid={<Text style={styles.heading}>Request</Text>}
-            navRight={<View/>} // Just to center the header
-          />
+          <HeaderBar title="Request"/>
           <View>
             <Text>Distance: {`${Math.round(this.state.selectedSR.distance * 100) / 100}km`}</Text>
             <Text>Time: {this.state.selectedSR.creationDate}</Text>
@@ -126,10 +124,11 @@ export default class RequestView extends React.Component {
         type: "success",
         style: {margin: 10, marginBottom: 60, borderRadius: 15}
       });
-      // NOTE: need to change active buttons on home screen
       this.props.navigation.goBack();
     }
 }
+
+export default withNavigation(RequestView);
 
 const styles = StyleSheet.create({
   heading: {

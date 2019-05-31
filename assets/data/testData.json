@@ -7,7 +7,8 @@
     "password": "test123",
     "vehicleIds": [
       "9fe70aad-8568-4568-92b7-f96276fdcea6"
-    ]
+    ],
+    "phoneNo": "04123456789"
   },
   "user-driver2@test.com": {
     "type": "driver",
@@ -18,7 +19,20 @@
     "srId": "d0155f80-47b7-434e-ba0d-980cee2da5aa",
     "vehicleIds": [
       "0e3ad9ab-d62f-4a90-b2d4-219227a90de6"
-    ]
+    ],
+    "location": {
+      "timestamp": 1557223186000,
+      "mocked": false,
+      "coords": {
+        "heading": 0,
+        "longitude": 150.874157,
+        "speed": 0,
+        "altitude": 37.599998474121094,
+        "latitude": -34.436349,
+        "accuracy": 16.340999603271484
+      }
+    },
+    "phoneNo": "04023456789"
   },
   "user-mechanic@test.com": {
     "type": "mechanic",
@@ -29,7 +43,12 @@
     "verifiedMechanic": false,
     "rating": "Un-rated",
     "srId": null,
-    "offersSent": []
+    "offersSent": [],
+    "phoneNo": null,
+    "bsb": null,
+    "bankAccountNo": null,
+    "mechanicLicenceNo": null,
+    "awaitingVerification": false
   },
   "user-admin@test.com": {
     "type": "admin",
@@ -37,7 +56,8 @@
     "lastName": "Star",
     "email": "admin@test.com",
     "password": "test123",
-    "jobs": []
+    "jobs": [],
+    "phoneNo": ""
   },
   "vehicle-9fe70aad-8568-4568-92b7-f96276fdcea6": {
     "id": "9fe70aad-8568-4568-92b7-f96276fdcea6",

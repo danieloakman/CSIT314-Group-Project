@@ -14,9 +14,8 @@ import {
   Input,
 } from "native-base";
 import DatabaseService from "@lib/services/DatabaseService";
+import PaymentService from "@lib/services/PaymentService";
 import HeaderBar from "@molecules/HeaderBar";
-
-// import DriverHomeScreen from "@components/screens/DriverHomeScreen";
 
 export default class ActiveServiceRequest extends React.Component {
     state = {
@@ -24,7 +23,6 @@ export default class ActiveServiceRequest extends React.Component {
       serviceRequest: null,
       rating: 5,
       comments: "",
-      isLoading: true
     }
 
     componentDidMount () {
@@ -34,8 +32,60 @@ export default class ActiveServiceRequest extends React.Component {
       });
     }
 
+	// WIP, this still needs testing:
     async _completeServiceRequest () {
-      // todo: await DatabaseService.createPayment();
+      let sr = this.state.serviceRequest;
+      let driver = this.state.user;
+      let mechanic = DatabaseService.getUser(sr.assignedMechanicEmail);
+      let vehicle = await DatabaseService.getVehicle(sr.vehicleId);
+      let result = await PaymentService.payForServiceRequest(driver, mechanic, this.state.amount, sr.id);
+      if (!result.pass) {
+        Toast.show({
+          text: "Could not complete service request, reason: " + result.reason,
+          buttonText: "Okay",
+          duration: 5000,
+          type: "danger",
+          style: {margin: 10, marginBottom: 60, borderRadius: 15}
+        });
+        return;
+      }
+      let payment = await DatabaseService.getPayment(result.paymentId);
+
+      // Update sr:
+      sr.paymentId = result.paymentId;
+      sr.status = "Completed";
+      sr.completionDate = new Date();
+      sr.driverComments = this.state.comments;
+      sr.ratingGiven = this.state.rating;
+
+      // Update driver and the vehicle:
+      driver.serviceRequestHistory.push(sr.id);
+      driver.srId = vehicle.srId = null;
+      driver.paymentIds.push(result.paymentId);
+
+      // Update mechanic:
+      mechanic.serviceRequestHistory.push(sr.id);
+      if (mechanic.rating === "Un-rated") mechanic.rating = this.state.rating;
+      else {
+        mechanic.rating += this.state.rating;
+        mechanic.rating /= 2;
+      }
+      mechanic.srId = null;
+      mechanic.earnings += payment.mechanicCut;
+
+      await Promise.all([
+        await DatabaseService.saveUserChanges(driver),
+        await DatabaseService.saveUserChanges(mechanic),
+        await DatabaseService.saveServiceRequestChanges(sr),
+        sr.offers.map(async offer => {
+          // Remove all the offers from mechanics that made one to this sr:
+          let mechanic = await DatabaseService.getUser(offer.mechanicEmail);
+          mechanic.offersSent = mechanic.offersSent
+            .filter(srId => srId !== this.state.serviceRequest.id);
+          await DatabaseService.saveUserChanges(mechanic);
+        })
+      ]);
+
       Toast.show({
         text: "Completed service request!",
         buttonText: "Okay",
@@ -60,44 +110,39 @@ export default class ActiveServiceRequest extends React.Component {
     render () {
       return (
         <View>
-          <ScrollView>
-            <HeaderBar
-              navMid={<Text style={styles.heading}>Active Request</Text>}
-              navRight={<View/>} // Just to center the heading
+          <HeaderBar title="Active Request" />
+          <View style={styles.centeredRowContainer}>
+            <Text style={styles.textBesideInput}>Rating: {this.state.rating}/5</Text>
+            <Slider
+              value={this.state.rating}
+              onValueChange={rating => this.setState({rating})}
+              maximumValue={5}
+              minimumValue={1}
+              step={0.25}
+              style={{width: "60%"}}
+              ref={ref => { this.sliderInput = ref; }}
             />
-            <View style={styles.centeredRowContainer}>
-              <Text style={styles.textBesideInput}>Rating: {this.state.rating}/5</Text>
-              <Slider
-                value={this.state.rating}
-                onValueChange={rating => this.setState({rating})}
-                maximumValue={5}
-                minimumValue={1}
-                step={0.25}
-                style={{width: "60%"}}
-                ref={ref => { this.sliderInput = ref; }}
-              />
-            </View>
-            <Item floatingLabel style={styles.centeredRowContainer}>
-              <Label style={{lineHeight: 40, textAlignVertical: "top", fontSize: 20}}>Any additional comments:</Label>
-              <Input multiline style={{paddingTop: 20, fontSize: 20}} />
-            </Item>
-            <View style={styles.buttons}>
-              <Button
-                title="Complete Assistance Request"
-                onPress={async () => {
-                  await this._completeServiceRequest();
-                }}
-              />
-            </View>
-            <View style={styles.buttons}>
-              <Button
-                title="Cancel assistance and re-choose another offer"
-                onPress={async () => {
-                  await this._cancelOffer();
-                }}
-              />
-            </View>
-          </ScrollView>
+          </View>
+          <Item floatingLabel style={styles.centeredRowContainer}>
+            <Label style={{lineHeight: 40, textAlignVertical: "top", fontSize: 20}}>Any additional comments:</Label>
+            <Input multiline style={{ paddingTop: 20, fontSize: 20 }} />
+          </Item>
+          <View style={styles.buttons}>
+            <Button
+              title="Complete Assistance Request"
+              onPress={async () => {
+                await this._completeServiceRequest();
+              }}
+            />
+          </View>
+          <View style={styles.buttons}>
+            <Button
+              title="Cancel assistance and re-choose another offer"
+              onPress={async () => {
+                await this._cancelOffer();
+              }}
+            />
+          </View>
         </View>
       );
     }
