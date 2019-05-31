@@ -7,19 +7,19 @@ import AdminScreen from "@screens/AdminScreen";
 class HomeScreen extends React.Component {
   render () {
     switch (this.props.AuthContext.user.type) {
-      case "driver":
+      case "Driver":
         return (
           <DriverHomeScreen
             AuthContext={this.props.AuthContext}
           />
         );
-      case "mechanic":
+      case "Mechanic":
         return (
           <MechanicHomeScreen
             AuthContext={this.props.AuthContext}
           />
         );
-      case "admin":
+      case "Admin":
         return (
           <AdminScreen
             AuthContext={this.props.AuthContext}
