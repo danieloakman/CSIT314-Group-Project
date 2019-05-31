@@ -57,7 +57,10 @@ class UserDB extends DBConnector {
    */
   async getUser ({email, id}) {
     let record;
-    if (email) { record = await this.db.find({selector: {email}})[0]; }
+    if (email) {
+      record = await this.db.find({selector: {email: email}});
+      record = record.docs[0];
+    }
     if (id) { record = await this.db.get(id); }
     return record;
   }
