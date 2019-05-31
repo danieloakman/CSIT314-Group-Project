@@ -286,25 +286,25 @@ export default class DeveloperScreen extends React.Component {
         <Button
           title="Navigate to test driver 1"
           onPress={async () => {
-            this.props.navigation.push("ProfileModal", {email: "driver@test.com"});
+            this.props.navigation.push("ProfileModal", {id: "TestUser1"});
           }}
         />
         <Button
           title="Navigate to test driver 2"
           onPress={async () => {
-            this.props.navigation.push("ProfileModal", {email: "driver2@test.com"});
+            this.props.navigation.push("ProfileModal", {id: "TestUser2"});
           }}
         />
         <Button
           title="Navigate to test mechanic"
           onPress={async () => {
-            this.props.navigation.push("ProfileModal", {email: "mechanic@test.com"});
+            this.props.navigation.push("ProfileModal", {id: "TestUser3"});
           }}
         />
         <Button
           title="Navigate to test admin"
           onPress={async () => {
-            this.props.navigation.push("ProfileModal", {email: "admin@test.com"});
+            this.props.navigation.push("ProfileModal", {id: "TestUser4"});
           }}
         />
         <Button

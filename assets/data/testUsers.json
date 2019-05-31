@@ -2,8 +2,8 @@
   {
     "_id": "TestUser1",
     "type": "Driver",
-    "firstName": "John",
-    "lastName": "Lennon",
+    "givenName": "John",
+    "surname": "Lennon",
     "email": "driver@test.com",
     "password": "test123",
     "vehicles": [
@@ -14,8 +14,8 @@
   {
     "_id": "TestUser2",
     "type": "Driver",
-    "firstName": "Paul",
-    "lastName": "Mccartney",
+    "givenName": "Paul",
+    "surname": "Mccartney",
     "email": "driver2@test.com",
     "password": "test123",
     "activeRequest": "d0155f80-47b7-434e-ba0d-980cee2da5aa",
@@ -39,8 +39,8 @@
   {
     "_id": "TestUser3",
     "type": "Mechanic",
-    "firstName": "George",
-    "lastName": "Harrison",
+    "givenName": "George",
+    "surname": "Harrison",
     "email": "mechanic@test.com",
     "password": "test123",
     "isVerified": false,
@@ -56,8 +56,8 @@
   {
     "_id": "TestUser4",
     "type": "Admin",
-    "firstName": "Ringo",
-    "lastName": "Star",
+    "givenName": "Ringo",
+    "surname": "Star",
     "email": "admin@test.com",
     "password": "test123",
     "jobs": [],

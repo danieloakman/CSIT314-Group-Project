@@ -21,6 +21,7 @@ import VehicleCard from "@molecules/VehicleCard";
 import {withAuthContext} from "@lib/context/AuthContext";
 
 import DB from "@lib/services/DatabaseService";
+import User from "@model/user";
 import StickyTabTemplate from "@templates/StickyTabTemplate";
 
 /**
@@ -30,17 +31,18 @@ import StickyTabTemplate from "@templates/StickyTabTemplate";
 class ProfileScreen extends React.Component {
   constructor (props) {
     super(props);
+    // TODO: if given an email instead of id, resolve to id
     this.state = {
       authUser: false,
-      activeUser: this.props.navigation.getParam("email", null),
+      activeUser: this.props.navigation.getParam("id", null),
       test: 150,
       isLoading: true,
     };
-    if (this.state.activeUser === null && this.props.AuthContext.user.email) {
+    if (this.state.activeUser === null && this.props.AuthContext.user.id) {
       this.state = {
         ...this.state,
         authUser: true,
-        activeUser: this.props.AuthContext.user.email,
+        activeUser: this.props.AuthContext.user.id,
       };
     }
     this.state.tabData = [];
@@ -65,10 +67,10 @@ class ProfileScreen extends React.Component {
    * Retrieves a user's data from storage and applies it to tab data
    */
   async loadUser () {
-    const record = await DB.getUser(this.state.activeUser);
+    const record = await User.getUser({id: this.state.activeUser});
     // console.log(record);
     this.setState({userRecord: record});
-    if (record.type === "driver") {
+    if (record.type === "Driver") {
       this.setState({tabData: [
         {header: "Vehicles",
           data: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
@@ -86,7 +88,7 @@ class ProfileScreen extends React.Component {
 
       ]
       });
-    } else if (record.type === "mechanic") {
+    } else if (record.type === "Mechanic") {
       this.setState({tabData: [
         {header: "Reviews", data: []},
         {header: "Request History", data: []},
@@ -131,7 +133,7 @@ class ProfileScreen extends React.Component {
           navRight={this.state.authUser
             ? <Button rounded small light onPress={() => this.props.navigation.navigate("EditProfileModal")}><Text style={{paddingHorizontal: 10}}>Edit Profile</Text></Button>
             : null}
-          title={this.state.altHeader ? `${this.state.userRecord.firstName} ${this.state.userRecord.lastName}` : null}
+          title={this.state.altHeader ? `${this.state.userRecord.fullName}` : null}
         />
         <StickyTabTemplate
           headerComponent={this._renderProfileHeader.bind(this)}

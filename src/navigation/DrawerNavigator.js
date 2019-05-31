@@ -98,7 +98,7 @@ class Drawer extends React.Component {
           <FlexContainer columnReverse style={styles.headerBox}>
 
             <View>
-              <Text style={styles.userName}>{auth.user.firstName} {auth.user.lastName}</Text>
+              <Text style={styles.userName}>{auth.user.fullName}</Text>
               <Text style={styles.email}>{auth.user.email}</Text>
             </View>
 
