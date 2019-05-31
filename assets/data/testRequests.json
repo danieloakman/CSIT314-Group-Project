@@ -13,10 +13,10 @@
         "accuracy": 16.340999603271484
       }
     },
-    "driverEmail": "driver2@test.com",
-    "vehicleId": "0e3ad9ab-d62f-4a90-b2d4-219227a90de6",
+    "driverID": "TestUser2",
+    "vehicleID": "0e3ad9ab-d62f-4a90-b2d4-219227a90de6",
     "description": "Engine blew up",
-    "assignedMechanicEmail": null,
+    "assignedMechanicID": null,
     "offers": [],
     "status": "Awaiting offer acceptance",
     "creationDate": "2019-05-07T10:04:27.944Z",
