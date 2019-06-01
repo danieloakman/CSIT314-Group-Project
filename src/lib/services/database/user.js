@@ -176,6 +176,17 @@ class UserDB extends DBConnector {
   }
 
   /**
+   * Gets a list of userIDs which are for mechanics awaiting verification
+   */
+  async getMechanicsAwaitingVerification () {
+    const mechanics = await this.db.find({
+      selector: {type: "Mechanic", awaitingVerification: true},
+      fields: ["_id"]
+    });
+    return mechanics.docs;
+  }
+
+  /**
    * Loads test data into database
    * @param {Object} opts
    * @param {Boolean} opts.loadSamples Should sampledata also be loaded (For volume testing)

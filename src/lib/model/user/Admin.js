@@ -8,6 +8,11 @@ export default class Admin extends User {
     this._doc.jobs = [];
   }
 
+  async getVerifiedMechanics () {
+    // Return mechanics verified by this admin
+    return [];
+  }
+
   get jobs () { return this._doc.jobs; }
 }
 User.UserTypes["Admin"] = Admin;

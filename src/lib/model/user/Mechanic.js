@@ -60,11 +60,22 @@ export default class Mechanic extends User {
 
   /**
    * Verify that this mechanic is certified to work as a mechanic.
-   * @param {String} documentationPath path to documentation
+   * @param {Boolean} [isDenied=false] If true, the mechanic verification request will be denied rather than verified
    */
-  verify (documentationPath) {
-    // todo: maybe create some logic here. Like send documentation to an admin or something
-    if (documentationPath) this.verifiedMechanic = true;
+  async verify (isDenied = false) {
+    if (isDenied) {
+      const delta = {
+        isVerified: false,
+        awaitingVerification: false,
+      };
+      await UserDB.updateRecord(this, delta);
+      return null;
+    }
+    const delta = {
+      isVerified: true,
+      awaitingVerification: false,
+    };
+    await UserDB.updateRecord(this, delta);
   }
 
   get isVerified () { return this._doc.isVerified; }

@@ -82,6 +82,13 @@ export default class User extends ModelWithDbConnection {
     return UserDB.deleteUser(identifier);
   }
 
+  static async getMechanicsAwaitingVerification () {
+    const mechanics = await UserDB.getMechanicsAwaitingVerification();
+    return Promise.all(mechanics.map((entry) => {
+      return this.getUser({id: entry._id});
+    }));
+  }
+
   // Sign in and out should be done through user model (aka this class) rather than db in case we ever want to do more in the abstraction layer
   static signInUser = UserDB.signInUser.bind(UserDB);
   static signOutUser = UserDB.signOutUser.bind(UserDB);

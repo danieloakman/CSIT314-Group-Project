@@ -23,7 +23,7 @@ export default class Vehicle extends ModelWithDbConnection {
     return VehicleDB.createRecord(newVehicle);
   }
 
-  static async deleteVehicle (vehicleID) {
+  static async deleteVehicle (vehicleID) { // TODO: This won't work because removeVehicle is on an instantiated record, not on the document from db
     // Remove vehicle from each owner
     const owners = await UserDB.getUsersWithVehicle(vehicleID);
     await Promise.all(owners.map((id) => { UserDB.getUser({id}).removeVehicle(vehicleID); }));

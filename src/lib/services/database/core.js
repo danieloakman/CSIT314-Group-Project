@@ -138,6 +138,15 @@ class DBConnector {
   }
 
   /**
+   * Allows direct queries on database from higher levels.
+   * Generally should not be used, but if extra control is
+   * needed for a search, then its here
+   */
+  async find (...params) {
+    return this.db.find(...params);
+  }
+
+  /**
    * Returns a record given its id
    * @param {String} recordID
    */
