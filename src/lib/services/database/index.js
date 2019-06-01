@@ -5,6 +5,6 @@ import "./user";
 import "./vehicle";
 import "./request";
 import "./review";
-import "./payment";
+import "./transaction";
 
 export default DBConnector;

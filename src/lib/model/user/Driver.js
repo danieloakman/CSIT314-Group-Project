@@ -1,5 +1,6 @@
 import User from "./User";
 import UserDB from "@database/user";
+import Transaction from "@model/Transaction";
 import _ from "lodash";
 
 /**
@@ -12,6 +13,11 @@ export default class Driver extends User {
     this._doc.activeRequest = null;
     // this._doc.requestHistory = [];
     this._doc.isMember = false;
+    this._doc.membershipEndingDate = null;
+    this._doc.cardNo = "";
+    this._doc.cardExpiry = 0;
+    this._doc.cardCSV = "";
+    this._doc.isCardValid = false;
   }
 
   /**
@@ -34,35 +40,50 @@ export default class Driver extends User {
     await UserDB.updateUser(this, {vehicles});
   }
 
-  // Details about a request, such as who made it, should be stored in the request only
-  // /**
-  //  * Adds a given request to the driver profile
-  //  * @param {String} requestID
-  //  */
-  // async addRequest (requestID) {
-  //   const requestHistory = this._doc.requestHistory;
-  //   requestHistory.push(requestID);
-  //   // TODO: add reference to driver to request
-  //   await UserDB.updateUser(this, {requestHistory});
-  // }
-
-  // /**
-  //  * Removes a given request from the driver profile. Does not actually delete the request
-  //  * @param {String} requestID
-  //  */
-  // async removeRequest (requestID) {
-  //   const requestHistory = this._doc.requestHistory;
-  //   _.pull(requestHistory, requestID);
-  //   // TODO: remove reference to driver from request
-  //   await UserDB.updateUser(this, {requestHistory});
-  // }
+  /**
+   * Adds a given card to the user profile
+   */
+  async addCard (details = {cardNo: "", cardExpiry: new Date(), cardCSV: ""}) {
+    const delta = {
+      isCardValid: true,
+      ...details,
+      cardExpiry: details.cardExpiry.getTime()
+    };
+    await UserDB.updateUser(this, delta);
+  }
 
   /**
-   * Sets the active request for the user. Can be set to null for no active request
-   * @param {String} requestID
+   * Removes the card on the user profile
    */
-  async setActiveRequest (requestID) {
-    await UserDB.updateUser(this, {activeRequest: requestID});
+  async removeCard () {
+    const delta = {
+      isCardValid: false,
+      cardNo: "",
+      cardExpiry: 0,
+      cardCSV: ""
+    };
+    await UserDB.updateUser(this, delta);
+  }
+
+  /**
+   * Adds membership to the user profile
+   */
+  async addMembership (details = {cardNo: "", cardExpiry: new Date(), cardCSV: ""}) {
+    /*
+      Create transaction
+      fill with details about membership
+      finalize transaction
+      set as member
+      set member expiry
+    */
+    let newTransaction = await Transaction.createTransaction("subscription", this.id);
+    newTransaction = newTransaction.record;
+    // console.log(newTransaction);
+    await newTransaction.setMulti(details);
+    await newTransaction.finalize();
+    const today = new Date();
+    const expiry = new Date(today.getFullYear() + 1, today.getMonth(), today.getDate());
+    return UserDB.updateRecord(this, {isMember: true, membershipEndingDate: expiry.getTime()});
   }
 
   get description () { return this._doc.description; }
@@ -70,6 +91,11 @@ export default class Driver extends User {
   get activeRequest () { return this._doc.activeRequest; }
   // get requestHistory () { return this._doc.requestHistory; }
   get isMember () { return this._doc.isMember; }
+  get membershipEndingDate () { return new Date(this._doc.membershipEndingDate); }
+  get isCardValid () { return this._doc.isCardValid; }
+  get cardNo () { return this._doc.cardNo; }
+  get cardExpiry () { return new Date(this._doc.cardExpiry); }
+  get cardCSV () { return this._doc.cardCSV; }
 
   async setDescription (description) {
     await UserDB.updateUser(this, {description});
