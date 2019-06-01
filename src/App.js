@@ -1,3 +1,4 @@
+import "./Polyfill";
 import React from "react";
 import { Platform, StatusBar, StyleSheet, View } from "react-native";
 import { Root } from "native-base";

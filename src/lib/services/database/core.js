@@ -1,11 +1,7 @@
-import PouchDB from "pouchdb-react-native";
-import Find from "pouchdb-find";
-import Upsert from "pouchdb-upsert";
 import Emitter from "tiny-emitter";
 import Fuse from "fuse.js";
+import PouchDB from "./PouchDB";
 
-PouchDB.plugin(Find);
-PouchDB.plugin(Upsert);
 // PouchDB.debug.enable("pouchdb:find");
 
 /**
@@ -19,7 +15,7 @@ class DBConnector {
   static DBs = []; // Collects each child class instance
   constructor (name) {
     this.dbName = name; // Allow access to database name
-    this.db = new PouchDB(name);
+    this.db = new PouchDB(name, {adapter: "react-native-sqlite"});
     DBConnector.DBs.push(this);
 
     // TODO: Move emitter to mixin
