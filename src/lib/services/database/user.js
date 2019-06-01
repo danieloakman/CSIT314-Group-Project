@@ -12,41 +12,29 @@ class UserDB extends DBConnector {
   constructor () {
     super("db.users");
 
-    // Indexes may need to be merged into a single createIndex statement (not well documented)
+    // Each fields that needs to be accessed individually should be its own index
+    // If there are multiple fields that are frequently accessed in the same query, then they should be indexed together (in the same order as query)
 
     // User index
-    this.db.createIndex({
-      index: {
-        fields: [
-          "email",
-          "fname",
-          "lname",
-          "pnumber",
-          "type",
-        ],
-      },
-    });
+    this.db.createIndex({index: {fields: ["type"]}});
+    this.db.createIndex({index: {fields: ["email"]}});
+    this.db.createIndex({index: {fields: ["fname"]}});
+    this.db.createIndex({index: {fields: ["lname"]}});
+    this.db.createIndex({index: {fields: ["phoneNo"]}});
+    this.db.createIndex({index: {fields: ["fname", "lname"]}});
 
     // Driver index
-    this.db.createIndex({
-      index: {
-        fields: ["vehicles"],
-      },
-    });
+    this.db.createIndex({ index: {fields: ["vehicles"]} });
 
     // Mechanic index
-    this.db.createIndex({
-      index: {
-        fields: [
-          "isVerified",
-          "aggregateRating",
-          "activeRequest",
-          "offersSent",
-          "awaitingVerification",
-        ],
-      },
-    });
+    this.db.createIndex({index: {fields: ["isVerified"]}});
+    this.db.createIndex({index: {fields: ["aggregateRating"]}});
+    this.db.createIndex({index: {fields: ["activeRequest"]}});
+    this.db.createIndex({index: {fields: ["offersSent"]}});
+    this.db.createIndex({index: {fields: ["awaitingVerification"]}});
   }
+
+  // TODO: Replace functions specific to User with parent overrides where applicable (e.g. getUser becomes getRecord)
 
   /**
    * Returns a user document
@@ -58,7 +46,10 @@ class UserDB extends DBConnector {
   async getUser ({email, id}) {
     let record;
     if (email) {
-      record = await this.db.find({selector: {email: email}});
+      // console.log(await this.db.allDocs());
+      // console.log(await this.db.explain({selector: {email: {$eq: email}}}));
+      record = await this.db.find({selector: {email: {$eq: email}}});
+      // console.log(record.docs);
       record = record.docs[0];
     }
     if (id) { record = await this.db.get(id); }
@@ -73,6 +64,7 @@ class UserDB extends DBConnector {
    */
   async signInUser (email, password) {
     const record = await this.getUser({email});
+
     if (!record) {
       return {ok: false, reason: "An account with that email doesn't exist."};
     } else if (record.password !== password) {

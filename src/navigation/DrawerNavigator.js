@@ -21,7 +21,6 @@ import {
 import { createDrawerNavigator, withNavigation, createStackNavigator } from "react-navigation";
 import FlexContainer from "@components/FlexContainer";
 import {withAuthContext} from "@lib/context/AuthContext";
-import DB from "@lib/services/DatabaseService";
 import User from "@model/user";
 
 import HomeScreen from "@screens/HomeScreen";

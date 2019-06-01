@@ -11,17 +11,17 @@ class RequestDB extends DBConnector {
           "location.coords",
           "location.coords.latitude",
           "location.coords.longitude",
-          "driverID",
-          "vehicleID",
-          "description",
-          "assignedMechanicID",
-          "offers",
-          "status",
-          "creationDate",
-          "completionDate"
         ],
       },
     });
+    this.db.createIndex({index: {fields: ["driverID"]}});
+    this.db.createIndex({index: {fields: ["vehicleID"]}});
+    this.db.createIndex({index: {fields: ["description"]}});
+    this.db.createIndex({index: {fields: ["assignedMechanicID"]}});
+    this.db.createIndex({index: {fields: ["offers"]}});
+    this.db.createIndex({index: {fields: ["status"]}});
+    this.db.createIndex({index: {fields: ["creationDate"]}});
+    this.db.createIndex({index: {fields: ["completionDate"]}});
   }
 
   /**
@@ -57,11 +57,6 @@ class RequestDB extends DBConnector {
     const sampleData = require("@assets/data/sampleRequests");
     super._loadTestData(opts, {testData, sampleData});
   }
-
-  // getRequest = this.getRecord.bind(this);
-  // createRequest = this.createRecord.bind(this);
-  // updateRequest = this.updateRecord.bind(this);
-  // deleteRequest = this.deleteRecord.bind(this);
 }
 
 export default new RequestDB();

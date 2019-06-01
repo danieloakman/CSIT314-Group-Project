@@ -6,6 +6,14 @@ import Fuse from "fuse.js";
 
 PouchDB.plugin(Find);
 PouchDB.plugin(Upsert);
+// PouchDB.debug.enable("pouchdb:find");
+
+/**
+  * @typedef {Object} DBResponse
+  * @property {Boolean} ok Whether request was successful
+  * @property {String} [reason] Reason for failure
+  * @property {Object} [record] The record successfully created in db
+  */
 
 class DBConnector {
   static DBs = []; // Collects each child class instance
@@ -31,11 +39,10 @@ class DBConnector {
    * @param {Boolean} opts.upsert Should existing documents be updated/replaced to match?
    */
   static async loadTestData (opts = {wipe: false, loadSamples: false, upsert: false}) {
-    // this.DBs.map((db) => { db._loadTestData(); });
     if (opts.wipe) { await this.wipeAll(); }
-    for (const db of DBConnector.DBs) {
-      await db._loadTestData(opts);
-    }
+    await Promise.all(DBConnector.DBs.map((db) => {
+      db._loadTestData(opts);
+    }));
   }
 
   /**
@@ -139,7 +146,11 @@ class DBConnector {
    * @param {String} recordID
    */
   async getRecord (recordID) {
-    return this.db.get(recordID);
+    if (recordID) {
+      try {
+        return this.db.get(recordID);
+      } catch (err) { return null; }
+    }
   }
 
   /**
@@ -148,7 +159,7 @@ class DBConnector {
    */
   async createRecord (record) {
     const resp = await this.db.post(record._doc);
-    await record.setDoc(this.db.get(resp.id));
+    await record.setDoc(await this.db.get(resp.id));
     return {ok: true, record};
   }
 
@@ -159,13 +170,24 @@ class DBConnector {
    */
   async updateRecord (RecordInstance, delta) {
     const doc = RecordInstance._doc;
-    await this._emitter.db.put({...doc, ...delta, _rev: doc._rev});
-    await RecordInstance.setDoc(await this.db.get(doc._id));
+    // Updates should silently fail if the given record is frozen
+    if (!Object.isFrozen(RecordInstance) || !Object.isFrozen(RecordInstance._doc)) {
+      await this.db.put({...doc, ...delta, _rev: doc._rev});
+      await RecordInstance.setDoc(await this.db.get(doc._id));
+      return {ok: false, reason: "Attempting to update a frozen record"};
+    }
     this.emit("updatedRecord");
+    return {ok: true};
   }
 
+  /**
+   * Deletes a record given its id
+   * @param {String} recordID
+   */
   async deleteRecord (recordID) {
-    await this.db.remove(recordID);
+    try {
+      await this.db.remove(recordID);
+    } catch (err) { return null; }
   }
 }
 

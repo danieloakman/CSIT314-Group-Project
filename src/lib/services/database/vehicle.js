@@ -10,7 +10,12 @@ import DBConnector from "./core";
 class VehicleDB extends DBConnector {
   constructor () {
     super("db.vehicles");
-    this.db.createIndex({index: {fields: ["make", "model", "year", "plate", "vin"]}});
+    this.db.createIndex({index: {fields: ["make"]}});
+    this.db.createIndex({index: {fields: ["model"]}});
+    this.db.createIndex({index: {fields: ["year"]}});
+    this.db.createIndex({index: {fields: ["plate"]}});
+    this.db.createIndex({index: {fields: ["vin"]}});
+    this.db.createIndex({index: {fields: ["make", "model", "year"]}});
   }
 
   /**
@@ -24,11 +29,6 @@ class VehicleDB extends DBConnector {
     const sampleData = require("@assets/data/sampleVehicles");
     super._loadTestData(opts, {testData, sampleData});
   }
-
-  // getVehicle = this.getRecord.bind(this);
-  // createVehicle = this.createRecord.bind(this);
-  // updateVehicle = this.updateRecord.bind(this);
-  // deleteVehicle = this.deleteRecord.bind(this);
 }
 
 export default new VehicleDB();
