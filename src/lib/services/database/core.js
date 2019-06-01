@@ -156,7 +156,7 @@ class DBConnector {
   async createRecord (record) {
     const resp = await this.db.post(record._doc);
     await record.setDoc(await this.db.get(resp.id));
-    this.emit("createdRecord");
+    this.emit("createdRecord", resp.id);
     return {ok: true, record};
   }
 
@@ -171,7 +171,7 @@ class DBConnector {
     if (!Object.isFrozen(RecordInstance) && !Object.isFrozen(RecordInstance._doc)) {
       await this.db.put({...doc, ...delta, _rev: doc._rev});
       await RecordInstance.setDoc(await this.db.get(doc._id));
-      this.emit("updatedRecord");
+      this.emit("updatedRecord", doc._id);
       return {ok: true};
     }
     return {ok: false, reason: "Attempting to update a frozen record"};
@@ -183,8 +183,9 @@ class DBConnector {
    */
   async deleteRecord (recordID) {
     try {
-      await this.db.remove(recordID);
-      this.emit("deletedRecord");
+      const record = this.db.get(recordID);
+      await this.db.remove(record);
+      this.emit("deletedRecord", recordID);
     } catch (err) { return null; }
   }
 }

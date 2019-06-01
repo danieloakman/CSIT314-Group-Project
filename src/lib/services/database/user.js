@@ -107,6 +107,7 @@ class UserDB extends DBConnector {
 
     // Set document in class to value from db
     await record.setDoc(this.db.get(resp.id));
+    this.emit("createdRecord", resp.id);
     if (signIn) {
       await AsyncStorage.setItem("signedInUserID", resp.id);
       this.emit("signedIn");
@@ -124,11 +125,17 @@ class UserDB extends DBConnector {
  * @param {String} [obj.id]
  */
   async deleteUser ({email, id}) {
-    if (id) {
-      await this.db.remove(id);
-    } else if (email) {
-      await this.db.remove(this.getUser(email));
-    }
+    try {
+      if (id) {
+        const user = this.getUser({id});
+        await this.db.remove(user);
+        this.emit("deletedRecord", id);
+      } else if (email) {
+        const user = this.getUser({email});
+        await this.db.remove(user);
+        this.emit("deletedRecord", user._id);
+      }
+    } catch (err) { return null; }
   }
 
   /**
@@ -154,7 +161,7 @@ class UserDB extends DBConnector {
 
     // I *think* this is needed in order to get a new _rev value for next update
     await UserInstance.setDoc(await this.db.get(doc._id));
-    this.emit("updatedUser");
+    this.emit("updatedRecord", doc._id);
   }
 
   /**

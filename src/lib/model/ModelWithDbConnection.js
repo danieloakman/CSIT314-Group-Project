@@ -10,6 +10,8 @@ export default class ModelWithDbConnection {
     this._doc = record;
   }
 
+  // TODO: Automatically update the internal doc when the database value changes
+
   /**
    * Initialises the data in the record.
    * Used instead of constructor as it should only be used when a record is being created, not when being restored from db, also allows async to be used.

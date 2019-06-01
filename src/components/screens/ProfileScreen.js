@@ -19,6 +19,7 @@ import HeaderBar from "@molecules/HeaderBar";
 import VehicleCard from "@molecules/VehicleCard";
 
 import {withAuthContext} from "@lib/context/AuthContext";
+import { withNavigation } from "react-navigation";
 
 import User from "@model/user";
 import UserDB from "@database/user";
@@ -51,12 +52,17 @@ class ProfileScreen extends React.Component {
   }
 
   async componentDidMount () {
-    UserDB.on("updateUser", this.handleDataChange.bind(this));
+    UserDB.on("updatedRecord", this.handleDataChange.bind(this));
+    const {navigation} = this.props;
+    navigation.addListener("willFocus", async () => {
+      // this.forceUpdate();
+      await this.loadUser();
+    });
     // setTimeout(() => { this.setState({test: 300}); }, 5000);
   }
 
   async componentWillUnmount () {
-    UserDB.off("updateUser", this.handleDataChange.bind(this));
+    UserDB.off("updatedRecord", this.handleDataChange.bind(this));
   }
 
   // static getDerivedStateFromProps (props, state) {
@@ -154,4 +160,4 @@ class ProfileScreen extends React.Component {
   }
 }
 
-export default withAuthContext(ProfileScreen);
+export default withNavigation(withAuthContext(ProfileScreen));
