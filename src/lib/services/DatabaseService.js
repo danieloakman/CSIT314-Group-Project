@@ -1,5 +1,5 @@
 import {AsyncStorage} from "react-native";
-import Emitter from "tiny-emitter";
+import Emitter from "events";
 import LocationService from "@lib/services/LocationService";
 const uuid = require("uuid/v4"); // random uuid
 

@@ -1,4 +1,4 @@
-import Emitter from "tiny-emitter";
+import Emitter from "events";
 import Fuse from "fuse.js";
 import PouchDB from "./PouchDB";
 
