@@ -8,6 +8,7 @@ import _ from "lodash";
  */
 export default class Driver extends User {
   async init () {
+    await super.init();
     this._doc.description = "";
     this._doc.vehicles = [];
     this._doc.activeRequest = null;

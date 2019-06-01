@@ -7,6 +7,7 @@ import _ from "lodash";
  */
 export default class Mechanic extends User {
   async init () {
+    await super.init();
     this._doc.isVerified = false;
     this._doc.aggregateRating = 0; // Value between 0 and 10, where odd values are half-stars and even values are full stars. Can be decimal. (i.e. 7 = 3.5 stars and 8.4 = 4.2 stars)
     this._doc.activeRequest = null; // Service request ID currently assigned

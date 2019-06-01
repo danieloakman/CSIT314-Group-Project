@@ -4,6 +4,7 @@ import ModelWithDbConnection from "@model/ModelWithDbConnection";
 
 export default class Request extends ModelWithDbConnection {
   async init () {
+    await super.init();
     this._doc.assignedMechanicID = null;
     this._doc.offers = [];
     this._doc.status = "Awaiting offer acceptance";
@@ -15,7 +16,7 @@ export default class Request extends ModelWithDbConnection {
     return RequestDB.getRecord(RequestID);
   }
 
-  getRequestsInRadius = RequestDB.findInRadius.bind(RequestDB);
+  static getRequestsInRadius = RequestDB.findInRadius.bind(RequestDB);
 
   /**
    * Creates a service request.

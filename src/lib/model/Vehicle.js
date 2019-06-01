@@ -5,6 +5,7 @@ import _ from "lodash";
 
 export default class Vehicle extends ModelWithDbConnection {
   async init () {
+    await super.init();
     this._doc.imageURI = "";
   }
 

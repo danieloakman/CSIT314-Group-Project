@@ -5,6 +5,7 @@ import User from "./User";
  */
 export default class Admin extends User {
   async init () {
+    await super.init();
     this._doc.jobs = [];
   }
 

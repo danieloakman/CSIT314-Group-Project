@@ -20,6 +20,7 @@ export default class Transaction extends ModelWithDbConnection {
   }
 
   async init () {
+    await super.init();
     const commonDetails = {
       amount: 0, // Amount due
       cardNo: "",

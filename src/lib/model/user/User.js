@@ -19,7 +19,9 @@ export default class User extends ModelWithDbConnection {
   /**
    * Initialize child fields with default values
    */
-  async init () {}
+  async init () {
+    await super.init();
+  }
 
   /**
    * Returns the correct user class instance for a specified email or id.
