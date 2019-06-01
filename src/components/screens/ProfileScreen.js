@@ -20,8 +20,8 @@ import VehicleCard from "@molecules/VehicleCard";
 
 import {withAuthContext} from "@lib/context/AuthContext";
 
-import DB from "@lib/services/DatabaseService";
 import User from "@model/user";
+import UserDB from "@database/user";
 import StickyTabTemplate from "@templates/StickyTabTemplate";
 
 /**
@@ -51,12 +51,12 @@ class ProfileScreen extends React.Component {
   }
 
   async componentDidMount () {
-    DB.emitter.on("updateUser", this.handleDataChange, this);
+    UserDB.on("updateUser", this.handleDataChange, this);
     // setTimeout(() => { this.setState({test: 300}); }, 5000);
   }
 
   async componentWillUnmount () {
-    DB.emitter.off("updateUser", this.handleDataChange, this);
+    UserDB.off("updateUser", this.handleDataChange, this);
   }
 
   // static getDerivedStateFromProps (props, state) {

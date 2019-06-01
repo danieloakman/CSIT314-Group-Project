@@ -47,7 +47,7 @@ class ProfileHeader extends React.Component {
             <Text style={[{ flex: 2 }, styles.centerText]}>{record.description}</Text>
             <Text >Joined date {record.registerDate}</Text>
             {record.type === "Driver"
-              ? <Text>Subscriber Badge</Text>
+              ? <Text>Is Member: {record.isMember ? "true" : "false"}</Text>
               : null
             }
             {record.type === "Mechanic"
