@@ -21,6 +21,18 @@ export default class User extends ModelWithDbConnection {
    */
   async init () {
     await super.init();
+    this._doc.location = {
+      timestamp: 0,
+      mocked: false,
+      coords: {
+        latitude: null,
+        longitude: null,
+        heading: 0,
+        speed: 0,
+        altitude: 37.5,
+        accuracy: 0
+      }
+    };
   }
 
   /**
@@ -104,6 +116,7 @@ export default class User extends ModelWithDbConnection {
   get phoneNo () { return this._doc.phoneNo; }
   get registerDate () { return this._doc.registerDate; }
   get pictureURI () { return this._doc.pictureURI; }
+  get location () { return this._doc.location; }
 
   // Setters to update properties on a user
 
@@ -131,6 +144,10 @@ export default class User extends ModelWithDbConnection {
 
   async setPictureURI (pictureURI) {
     await UserDB.updateUser(this, {pictureURI});
+  }
+
+  async setLocation (location) {
+    await UserDB.updateUser(this, {location});
   }
 
   /**

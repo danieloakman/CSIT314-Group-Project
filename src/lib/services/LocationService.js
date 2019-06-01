@@ -188,7 +188,7 @@ export default class LocationService {
     let randLatitude = (w * Math.cos(t)) / (Math.cos(location.longitude) / 0.7) + location.latitude;
     let randLongitude = (w * Math.sin(t)) + location.longitude;
     return {
-      timestamp: Math.floor(Date.now() / 1000),
+      timestamp: Date.now(),
       mocked: false,
       coords: {
         latitude: randLatitude,

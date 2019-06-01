@@ -8,13 +8,17 @@ import {
   Button,
   Text
 } from "native-base";
-import DatabaseService from "@lib/services/DatabaseService";
+// import DatabaseService from "@lib/services/DatabaseService";
 import GMapView from "@components/GoogleMapView";
 import {MapView} from "expo";
 import HeaderBar from "@molecules/HeaderBar";
 import LoadingGif from "@components/atoms/LoadingGif";
+import {withAuthContext} from "@lib/context/AuthContext";
 
-export default class RequestList extends React.Component {
+import Request from "@model/Request";
+import User from "@model/user";
+
+class RequestList extends React.Component {
     state = {
       user: null,
       location: null,
@@ -37,8 +41,8 @@ export default class RequestList extends React.Component {
             <GMapView
               onLocationRetrieved={async currentLocation => {
                 this.setState({location: currentLocation});
-                let user = await DatabaseService.getSignedInUser();
-                let srArr = await DatabaseService.getAllSRsNearLocation(this.state.maxRadius / 1000, this.state.location);
+                let user = await User.getCurrentUser();
+                let srArr = await Request.getRequestsInRadius(this.state.location, this.state.maxRadius / 1000);
                 this.setState({
                   user, serviceRequests: srArr, isLoadingMap: false
                 });
@@ -64,7 +68,7 @@ export default class RequestList extends React.Component {
                       this.setState({isLoadingMarkers: true});
                       this.setState({
                         maxRadius: maxRadius * 1000,
-                        serviceRequests: await DatabaseService.getAllSRsNearLocation(maxRadius, this.state.location),
+                        serviceRequests: await Request.getRequestsInRadius(this.state.location, maxRadius),
                         isLoadingMarkers: false
                       });
                     }}>
@@ -129,6 +133,8 @@ export default class RequestList extends React.Component {
       });
     }
 }
+
+export default withAuthContext(RequestList);
 
 const styles = StyleSheet.create({
   centeredRowContainer: {
