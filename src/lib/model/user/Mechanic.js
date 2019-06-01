@@ -17,6 +17,8 @@ export default class Mechanic extends User {
     this._doc.awaitingVerification = false; // if true, this mechanic shows up in the list for verification by an admin
   }
 
+  // TODO: offersSent should not be stored in the mechanic, but should be the result of a query on all offers
+
   /**
    * Adds an offer to the list of sent offers
    * @param {String} requestID

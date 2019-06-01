@@ -14,10 +14,6 @@ export default class Driver extends User {
     this._doc.isMember = false;
   }
 
-  async setDescription (description) {
-    await UserDB.updateUser(this, {description});
-  }
-
   /**
    * Adds a given vehicle to the driver profile
    * @param {String} vehicleID
@@ -72,7 +68,19 @@ export default class Driver extends User {
   get description () { return this._doc.description; }
   get vehicles () { return this._doc.vehicles; }
   get activeRequest () { return this._doc.activeRequest; }
-  get requestHistory () { return this._doc.requestHistory; }
+  // get requestHistory () { return this._doc.requestHistory; }
   get isMember () { return this._doc.isMember; }
+
+  async setDescription (description) {
+    await UserDB.updateUser(this, {description});
+  }
+
+  /**
+   * Sets the active request for the user. Can be set to null for no active request
+   * @param {String} requestID
+   */
+  async setActiveRequest (requestID) {
+    await UserDB.updateUser(this, {activeRequest: requestID});
+  }
 }
 User.UserTypes["Driver"] = Driver;

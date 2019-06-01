@@ -29,7 +29,7 @@ export default class Vehicle extends ModelWithDbConnection {
     await Promise.all(owners.map((id) => { UserDB.getUser({id}).removeVehicle(vehicleID); }));
 
     // Delete the vehicle
-    await VehicleDB.deleteRecord(vehicleID);
+    return VehicleDB.deleteRecord(vehicleID);
   }
 
   get make () { return this._doc.make; }

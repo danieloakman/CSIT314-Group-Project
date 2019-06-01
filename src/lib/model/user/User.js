@@ -79,7 +79,7 @@ export default class User extends ModelWithDbConnection {
  */
   static async deleteUser (identifier) {
     // TODO: Remove all references to user
-    await UserDB.deleteUser(identifier);
+    return UserDB.deleteUser(identifier);
   }
 
   // Sign in and out should be done through user model (aka this class) rather than db in case we ever want to do more in the abstraction layer

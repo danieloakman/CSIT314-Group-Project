@@ -11,6 +11,12 @@ export default class ModelWithDbConnection {
   }
 
   /**
+   * Initialises the data in the record.
+   * Used instead of constructor as it should only be used when a record is being created, not when being restored from db, also allows async to be used.
+   */
+  async init () {}
+
+  /**
    * Set doc to new document. Should only be used by db backend.
    * @param {Object} document
    */
