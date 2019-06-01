@@ -16,13 +16,13 @@ import {
 } from "native-base";
 import {withNavigation} from "react-navigation";
 import HeaderBar from "@molecules/HeaderBar";
-import DatabaseService from "@lib/services/DatabaseService";
-import PaymentService from "@lib/services/PaymentService";
+// import DatabaseService from "@lib/services/DatabaseService";
+// import PaymentService from "@lib/services/PaymentService";
 import Transaction from "@model/Transaction";
 import Patterns from "@constants/UserInputRegex";
-import Driver from "@src/lib/model/user/Driver";
+// import Driver from "@src/lib/model/user/Driver";
 
-const maximumDate = new Date(new Date().getFullYear() + 5, 0, 0);
+// const maximumDate = new Date(new Date().getFullYear() + 5, 0, 0);
 
 class DriverPayMemDetailsScreen extends React.Component {
   state = {

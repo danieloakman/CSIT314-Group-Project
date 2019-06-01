@@ -49,6 +49,15 @@ export default class Mechanic extends User {
     await UserDB.updateUser(this, {activeRequest: requestID});
   }
 
+  async requestVerification (details = {bsb: null, bankAccountNo: null, mechanicLicenceNo: null}) {
+    const delta = {
+      isVerified: false,
+      awaitingVerification: true,
+      ...details
+    };
+    await UserDB.updateRecord(this, delta);
+  }
+
   /**
    * Verify that this mechanic is certified to work as a mechanic.
    * @param {String} documentationPath path to documentation
