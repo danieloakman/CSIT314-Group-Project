@@ -14,6 +14,10 @@ class UserDB extends DBConnector {
 
     // Each fields that needs to be accessed individually should be its own index
     // If there are multiple fields that are frequently accessed in the same query, then they should be indexed together (in the same order as query)
+    /* TODO:
+      It seems that db uses an event emitter internally, and creating >10 indexes at once causes an issue.
+      As the internal event emitter instance doesn't seem to be exposed, the issue has been resolved by increasing the defaultMaxListeners property of emitter. This is not ideal, and if a better solution is found, it should be used.
+    */
 
     // User index
     this.db.createIndex({index: {fields: ["type"]}});

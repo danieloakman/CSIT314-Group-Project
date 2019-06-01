@@ -1,5 +1,5 @@
 import {AsyncStorage} from "react-native";
-import Emitter from "events";
+import {EventEmitter} from "events";
 import LocationService from "@lib/services/LocationService";
 const uuid = require("uuid/v4"); // random uuid
 
@@ -13,7 +13,7 @@ const UserTypes = {
 const databaseFile = require("@assets/data/testData");
 
 export default class DatabaseService {
-  static emitter = new Emitter();
+  static emitter = new EventEmitter();
 
   /**
    * Returns the correct class object for the user with that email.

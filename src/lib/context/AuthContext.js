@@ -61,15 +61,15 @@ export class AuthProvider extends React.Component {
 
   async componentDidMount () {
     // Register listener for changes to user info
-    UserDB.on("signedIn", this.handleSignIn, this);
-    UserDB.on("signedOut", this.handleSignOut, this);
+    UserDB.on("signedIn", this.handleSignIn.bind(this));
+    UserDB.on("signedOut", this.handleSignOut.bind(this));
     await this.loadUser();
   }
 
   componentWillUnmount () {
     // Deregister all listeners
-    UserDB.on("signedIn", this.handleSignIn, this);
-    UserDB.off("signedOut", this.handleSignOut, this);
+    UserDB.off("signedIn", this.handleSignIn.bind(this));
+    UserDB.off("signedOut", this.handleSignOut.bind(this));
   }
 
   render () {

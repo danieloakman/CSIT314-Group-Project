@@ -51,12 +51,12 @@ class ProfileScreen extends React.Component {
   }
 
   async componentDidMount () {
-    UserDB.on("updateUser", this.handleDataChange, this);
+    UserDB.on("updateUser", this.handleDataChange.bind(this));
     // setTimeout(() => { this.setState({test: 300}); }, 5000);
   }
 
   async componentWillUnmount () {
-    UserDB.off("updateUser", this.handleDataChange, this);
+    UserDB.off("updateUser", this.handleDataChange.bind(this));
   }
 
   // static getDerivedStateFromProps (props, state) {

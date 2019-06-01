@@ -1,4 +1,4 @@
-import Emitter from "events";
+import {EventEmitter} from "events";
 import Fuse from "fuse.js";
 import PouchDB from "./PouchDB";
 
@@ -19,7 +19,7 @@ class DBConnector {
     DBConnector.DBs.push(this);
 
     // TODO: Move emitter to mixin
-    this._emitter = new Emitter();
+    this._emitter = new EventEmitter();
     this.on = this._emitter.on;
     this.once = this._emitter.once;
     this.off = this._emitter.off;
