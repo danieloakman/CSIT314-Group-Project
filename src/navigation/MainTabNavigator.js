@@ -20,6 +20,7 @@ import MechanicRequestListScreen from "@components/screens/MechanicRequestList";
 import MechanicVerificationScreen from "@components/screens/MechanicVerificationScreen";
 
 import AdminVerificationScreen from "@components/screens/AdminVerificationScreen";
+import AdminViewReportsScreen from "@components/screens/AdminViewReportsScreen";
 
 import {withAuthContext} from "@lib/context/AuthContext";
 
@@ -107,7 +108,8 @@ const ModalStack = createStackNavigator({
   MechanicRequestViewModal: MechanicRequestViewScreen,
   MechanicRequestListModal: MechanicRequestListScreen,
   MechanicVerificationModal: MechanicVerificationScreen,
-  AdminVerificationModal: AdminVerificationScreen
+  AdminVerificationModal: AdminVerificationScreen,
+  AdminViewReportsModal: AdminViewReportsScreen
 },
 {
   initialRouteName: "TabStack",

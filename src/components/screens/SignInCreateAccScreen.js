@@ -322,7 +322,6 @@ class SignInCreateAccScreen extends React.Component {
       !this._validateTextInputs() || !this.state.crAccFirstName || !this.state.crAccLastName ||
       !this.state.crAccEmail || !this.state.crAccPassword || !this.state.crAccPhoneNo
     ) {
-      // Alert.alert("Error, one or more of the fields is empty or invalid.");
       return;
     }
     // Attempt to create the user:

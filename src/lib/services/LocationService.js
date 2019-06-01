@@ -67,7 +67,7 @@ export default class LocationService {
 
   /**
    * Returns the full address string from an address object.
-   * @param {Object} address
+   * @param {String} address
    */
   static parseAddress (address) {
     try {
