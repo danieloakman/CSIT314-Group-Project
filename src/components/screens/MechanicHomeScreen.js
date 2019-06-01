@@ -8,7 +8,7 @@ import {
   Text
 } from "native-base";
 import {withNavigation} from "react-navigation";
-import DatabaseService from "@lib/services/DatabaseService";
+import Request from "@model/Request";
 import HeaderBar from "@molecules/HeaderBar";
 
 class MechanicHomeScreen extends React.Component {
@@ -25,13 +25,13 @@ class MechanicHomeScreen extends React.Component {
     this.setState({user});
     const {navigation} = this.props;
     navigation.addListener("willFocus", () => { // todo: maybe make a better refresh screen method
-      DatabaseService.getServiceRequest(user.srId)
+      Request.getServiceRequest(user.activeRequest)
         .then(sr => {
           this.setState({
             serviceRequest: sr,
-            enableNearbyRequests: !user.srId && user.verifiedMechanic,
-            enableViewCurrentOffers: !user.srId && user.offersSent.length > 0 && user.verifiedMechanic,
-            enableViewActiveRequest: user.srId && user.verifiedMechanic
+            enableNearbyRequests: !user.activeRequest && user.isVerified,
+            enableViewCurrentOffers: !user.activeRequest && user.offersSent.length > 0 && user.isVerified,
+            enableViewActiveRequest: user.activeRequest && user.isVerified
           });
         }).catch(err => { throw err; });
     });
@@ -57,7 +57,7 @@ class MechanicHomeScreen extends React.Component {
                   : {fontSize: 17}
               }>
                 {this.state.user.awaitingVerification ? "Verification in progress..." // If user is waiting to be verified.
-                  : this.state.user.verifiedMechanic ? "Update your verification details" // Else if, user is verified.
+                  : this.state.user.isVerified ? "Update your verification details" // Else if, user is verified.
                     : "Verify your Account" // Else if, user isn't verified.
                 }
               </Text>
