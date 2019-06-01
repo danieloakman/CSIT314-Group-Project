@@ -186,6 +186,11 @@ class UserDB extends DBConnector {
     const sampleData = require("@assets/data/sampleUsers");
     super._loadTestData(opts, {testData, sampleData});
   }
+
+  getRecord = this.getUser.bind(this);
+  createRecord = this.createUser.bind(this);
+  updateRecord = this.updateUser.bind(this);
+  deleteRecord = this.deleteUser.bind(this);
 }
 
 export default new UserDB();
