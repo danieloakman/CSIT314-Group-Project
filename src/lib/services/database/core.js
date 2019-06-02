@@ -9,13 +9,15 @@ import PouchDB from "./PouchDB";
   * @property {Boolean} ok Whether request was successful
   * @property {String} [reason] Reason for failure
   * @property {Object} [record] The record successfully created in db
+  * @property {String} [id] The id of the document
+  * @property {String} [rev] The revision of the document
   */
 
 class DBConnector {
   static DBs = []; // Collects each child class instance
   constructor (name) {
     this.dbName = name; // Allow access to database name
-    this.db = new PouchDB(name, {adapter: "react-native-sqlite"});
+    this.db = new PouchDB(name, {adapter: "react-native-sqlite", revs_limit: 20});
     DBConnector.DBs.push(this);
 
     // TODO: Move emitter to mixin
@@ -161,29 +163,35 @@ class DBConnector {
   /**
    * Creates a record in the database for the given object
    * @param {Object} record Object instance inheriting ModelWithDbConnection
+   * @return {DBResponse}
    */
   async createRecord (record) {
-    const resp = await this.db.post(record._doc);
-    await record.setDoc(await this.db.get(resp.id));
-    this.emit("createdRecord", resp.id);
-    return {ok: true, record};
+    try {
+      const resp = await this.db.post(record._doc);
+      await record.setDoc(await this.db.get(resp.id));
+      this.emit("createdRecord", resp.id);
+      return {ok: true, record, ...resp};
+    } catch (err) { return {ok: false, reason: err}; }
   }
 
   /**
    * Updates an existing record using the given delta object
    * @param {Object} RecordInstance
    * @param {Object} delta
+   * @return {DBResponse}
    */
   async updateRecord (RecordInstance, delta) {
-    const doc = RecordInstance._doc;
-    // Updates should silently fail if the given record is frozen
-    if (!Object.isFrozen(RecordInstance) && !Object.isFrozen(RecordInstance._doc)) {
-      await this.db.put({...doc, ...delta, _rev: doc._rev});
-      await RecordInstance.setDoc(await this.db.get(doc._id));
-      this.emit("updatedRecord", doc._id);
-      return {ok: true};
-    }
-    return {ok: false, reason: "Attempting to update a frozen record"};
+    try {
+      const doc = RecordInstance._doc;
+      // Updates should silently fail if the given record is frozen
+      if (!Object.isFrozen(RecordInstance) && !Object.isFrozen(RecordInstance._doc)) {
+        const resp = await this.db.put({...doc, ...delta, _rev: doc._rev});
+        await RecordInstance.setDoc(await this.db.get(doc._id));
+        this.emit("updatedRecord", doc._id);
+        return {ok: true, ...resp};
+      }
+      return {ok: false, reason: "Attempting to update a frozen record"};
+    } catch (err) { return {ok: false, reason: err}; }
   }
 
   /**
@@ -193,9 +201,10 @@ class DBConnector {
   async deleteRecord (recordID) {
     try {
       const record = this.db.get(recordID);
-      await this.db.remove(record);
+      const resp = await this.db.remove(record);
       this.emit("deletedRecord", recordID);
-    } catch (err) { return null; }
+      return {ok: true, ...resp};
+    } catch (err) { return {ok: false, reason: err}; }
   }
 }
 
