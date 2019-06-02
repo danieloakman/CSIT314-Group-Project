@@ -25,8 +25,8 @@ export default class User extends ModelWithDbConnection {
       timestamp: 0,
       mocked: false,
       coords: {
-        latitude: null,
-        longitude: null,
+        latitude: 0,
+        longitude: 0,
         heading: 0,
         speed: 0,
         altitude: 37.5,

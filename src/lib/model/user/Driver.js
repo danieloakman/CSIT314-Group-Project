@@ -77,8 +77,8 @@ export default class Driver extends User {
       set as member
       set member expiry
     */
-    let newTransaction = await Transaction.createTransaction("subscription", this.id);
-    newTransaction = newTransaction.record;
+    const response = await Transaction.createTransaction("subscription", this.id);
+    const newTransaction = response.record;
     // console.log(newTransaction);
     await newTransaction.setMulti(details);
     await newTransaction.finalize();

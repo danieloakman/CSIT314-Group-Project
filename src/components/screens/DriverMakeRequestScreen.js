@@ -13,16 +13,19 @@ import {
   Label,
   Input,
 } from "native-base";
-import DatabaseService from "@lib/services/DatabaseService";
+// import DatabaseService from "@lib/services/DatabaseService";
 import LocationService from "@lib/services/LocationService";
 import LoadingGif from "@components/atoms/LoadingGif";
 import Problems from "@constants/CommonFaults";
 import HeaderBar from "@molecules/HeaderBar";
 
+import Vehicle from "@model/Vehicle";
+import Request from "@model/Request";
+
 export default class RequestScreen extends React.Component {
     state = {
       description: "Other",
-      vehicles: null,
+      vehicles: [],
       selectedVehicle: null,
       location: null, // latitude-longitude coordinates
       user: null,
@@ -33,30 +36,44 @@ export default class RequestScreen extends React.Component {
       let user = this.props.navigation.getParam("user");
       new Promise(async resolve => {
         let vehicles = await Promise.all(
-          user.vehicleIds.map(async id => DatabaseService.getVehicle(id))
+          user.vehicles.map(async id => Vehicle.getVehicle(id))
         );
         let location;
-        if (user.location) {
-          // Try to use the location already in user, if it exists:
+        if (!user.location) {
+        // Retrieve the user's location if it doesn't exist:
+          location = await LocationService.getCurrentLocation();
+        } else if (user.location.timestamp >= Date.now() - 2 * 60 * 1000) {
+        // Only use the user's location if it is less than 2 hours old:
           location = user.location;
         } else {
-          // Retrieve current location then store in user:
-          location = user.location = await LocationService.getCurrentLocation();
-          if (!location) {
-            Toast.show({
-              text: "Cannot continue unless location permission is enabled.",
-              buttonText: "Okay",
-              duration: 5000,
-              type: "danger",
-              style: {margin: 10, borderRadius: 15}
-            });
-          } else await DatabaseService.saveUserChanges(user);
+        // Retrieve the user's location:
+          location = await LocationService.getCurrentLocation();
+        }
+        if (!location) {
+          Toast.show({
+            text: "Cannot continue unless location permission is enabled.",
+            buttonText: "Okay",
+            duration: 5000,
+            type: "danger",
+            style: {margin: 10, borderRadius: 15}
+          });
+        } else {
+          if (!location.address) {
+            let address = await LocationService.getAddress(
+              location.coords.latitude, location.coords.longitude
+            );
+            location.address = address ? address.addressStr : "Address unavailable";
+            // user.location = location;
+            // await DatabaseService.saveUserChanges(user);
+            location.title = "Current Location";
+            await user.setLocation(location);
+          }
         }
         this.setState({
           user,
           vehicles: vehicles.length > 0 ? vehicles : null,
           location,
-          selectedVehicle: vehicles.length > 0 ? vehicles[0] : null,
+          selectedVehicle: vehicles.length > 0 ? 0 : null,
           isLoading: false
         });
         resolve(true);
@@ -98,11 +115,11 @@ export default class RequestScreen extends React.Component {
                   <Text style={styles.textBesideInput}>Car:</Text>
                   <View style={{borderWidth: 1, borderRadius: 5}}>
                     <Picker
-                      selectedValue={this.state.selectedVehicleId}
+                      selectedValue={this.state.vehicles[this.state.selectedVehicle]}
                       style={{width: 200}}
                       itemStyle={{fontSize: 20}}
                       mode="dropdown"
-                      onValueChange={vehicle => this.setState({selectedVehicleId: vehicle})}>
+                      onValueChange={(vehicle, pos) => this.setState({selectedVehicle: pos})}>
                       {this.state.vehicles.map((vehicle, index) => {
                         return <Picker.Item
                           key={index}
@@ -132,7 +149,7 @@ export default class RequestScreen extends React.Component {
             {/* Description text input, disable unless 'Other' is selected because that's not in the Problems array. */}
             {Problems.includes(this.state.description) ? null
               : <Item floatingLabel style={styles.centeredRowContainer}>
-                <Label style={{lineHeight: 40, textAlignVertical: "top", fontSize: 20}}>Your description:</Label>
+                <Label style={{lineHeight: 40, textAlignVertical: "top", fontSize: 20}}>Your description</Label>
                 <Input multiline style={{paddingTop: 20, fontSize: 20}}
                   onChangeText={description => this.setState({ description })}
                 />
@@ -152,7 +169,7 @@ export default class RequestScreen extends React.Component {
       );
     }
     async _submitRequest () {
-      if (!this.state.description || !this.state.selectedVehicle) {
+      if (!this.state.description || typeof this.state.selectedVehicle !== "number") {
         Toast.show({
           text: "Please fill in description and select a vehicle.",
           buttonText: "Okay",
@@ -162,10 +179,10 @@ export default class RequestScreen extends React.Component {
         });
         return;
       }
-      let result = await DatabaseService.createServiceRequest(
-        this.state.location, this.state.user.email, this.state.selectedVehicle.id, this.state.description
+      let result = await Request.createServiceRequest(
+        this.state.location, this.state.user.id, this.state.vehicles[this.state.selectedVehicle].id, this.state.description
       );
-      if (!result.pass && !result.srId) {
+      if (!result.ok && !result.id) {
         Toast.show({
           text: result.reason,
           buttonText: "Okay",
@@ -175,14 +192,7 @@ export default class RequestScreen extends React.Component {
         });
         return;
       }
-      // Save user and vehicle changes:
-      let user = this.state.user;
-      let vehicle = JSON.parse(JSON.stringify(this.state.selectedVehicle));
-      user.srId = vehicle.srId = result.srId;
-      await Promise.all([
-        DatabaseService.saveUserChanges(user),
-        DatabaseService.saveVehicleChanges(vehicle)
-      ]);
+      await this.state.user.setActiveRequest(result.id);
       Toast.show({
         text: "Created assistance request! New offers will appear momentarily.",
         buttonText: "Okay",
