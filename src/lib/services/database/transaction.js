@@ -5,7 +5,8 @@ class PaymentDB extends DBConnector {
   constructor () {
     super("db.transactions");
     this.db.createIndex({index: {fields: ["type"]}});
-    this.db.createIndex({index: {fields: ["driverID"]}});
+    this.db.createIndex({index: {fields: ["payerID"]}}); // The person providing the dollarydoos
+    this.db.createIndex({index: {fields: ["payeeID"]}}); // The person receiving the dolarydoos
     this.db.createIndex({index: {fields: ["amount"]}});
     this.db.createIndex({index: {fields: ["cardNo"]}});
     this.db.createIndex({index: {fields: ["cardExpiry"]}});

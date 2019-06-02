@@ -43,7 +43,7 @@ export default class Request extends ModelWithDbConnection {
   get VehicleID () { return this._doc.VehicleID; }
   get description () { return this._doc.description; }
   get assignedMechanicID () { return this._doc.assignedMechanicID; }
-  get Offers () { return this._doc.Offers; }
+  get Offers () { return this._doc.offers; }
   get status () { return this._doc.status; }
   get creationDate () { return new Date(this._doc.creationDate); } // Constructed date objects cannot be stored as is
   get completionDate () { return new Date(this._doc.completionDate); }

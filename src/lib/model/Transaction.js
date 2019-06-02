@@ -46,12 +46,12 @@ export default class Transaction extends ModelWithDbConnection {
   }
 
   /**
-   * All transactions are initiated by a driver
+   * All transactions are initiated by a payer
    * @param {String} type can be "request" or "subscription"
-   * @param {String} driverID The id of the driver initiating the transaction
+   * @param {String} payerID The id of the payer initiating the transaction
    */
-  static async createTransaction (type = "request", driverID) {
-    const newTransaction = new Transaction({type, driverID});
+  static async createTransaction (type = "request", payerID) {
+    const newTransaction = new Transaction({type, payerID});
     await newTransaction.init();
     // console.log(newTransaction);
     return TransactionDB.createRecord(newTransaction);
@@ -103,7 +103,7 @@ export default class Transaction extends ModelWithDbConnection {
   get transactionID () { return this._doc._id; }
   get cardTransactionID () { return this._doc.cardTransactionID; }
   get type () { return this._doc.type; }
-  get driverID () { return this._doc.driverID; }
+  get payerID () { return this._doc.payerID; }
   get amount () { return this._doc.amount; }
   get cardNo () { return this._doc.cardNo; }
   get cardExpiry () { return new Date(this._doc.cardExpiry); }
@@ -113,13 +113,14 @@ export default class Transaction extends ModelWithDbConnection {
 
   // Request details
   get requestID () { return this._doc.requestID; }
+  get payeeID () { return this._doc.payeeID; }
   get providerCut () { return this._doc.providerCut; }
   get companyCut () { return this._doc.companyCut; }
 
   // Subscription details
 
-  async setDriverID (driverID) {
-    await TransactionDB.updateRecord(this, {driverID});
+  async setPayerID (payerID) {
+    await TransactionDB.updateRecord(this, {payerID});
   }
 
   async setCardNo (cardNo) {
