@@ -31,7 +31,7 @@ export default class Request extends ModelWithDbConnection {
     const record = {location, driverID, vehicleID, description};
     const newRequest = new Request(record);
     await newRequest.init();
-    return RequestDB.createRecord(record);
+    return RequestDB.createRecord(newRequest);
   }
 
   static async deleteServiceRequest (RequestID) {
