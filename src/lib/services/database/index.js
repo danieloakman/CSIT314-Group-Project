@@ -4,6 +4,7 @@ import DBConnector from "./core";
 import "./user";
 import "./vehicle";
 import "./request";
+import "./offer";
 import "./review";
 import "./transaction";
 

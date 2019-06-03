@@ -6,8 +6,13 @@ import {AsyncStorage} from "react-native";
   * @property {Boolean} ok Whether request was successful
   * @property {String} [reason] Reason for failure
   * @property {Object} [record] The record successfully created in db
+  *
   */
+{}
 
+/**
+   * @abstract
+   */
 class UserDB extends DBConnector {
   constructor () {
     super("db.users");
