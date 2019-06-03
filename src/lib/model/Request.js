@@ -7,6 +7,11 @@ import Offer from "./Offer";
 import Mechanic from "./user/Mechanic";
 
 export default class Request extends ModelWithDbConnection {
+  constructor (...args) {
+    super(...args);
+    this.db = RequestDB;
+  }
+
   async init () {
     await super.init();
     this._doc.selectedOfferID = null;
@@ -73,7 +78,8 @@ export default class Request extends ModelWithDbConnection {
    */
   async retractOffer (OfferID) {
     const offer = await Offer.getOffer(OfferID);
-    offer.setRetracted();
+    await this.setSelectedOfferID(null);
+    await offer.setRetracted();
   }
 
   /**

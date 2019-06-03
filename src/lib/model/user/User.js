@@ -11,6 +11,7 @@ export default class User extends ModelWithDbConnection {
 
   constructor (record) {
     super(record);
+    this.db = UserDB;
 
     // Derived properties (don't get a getter as it isn't needed)
     this.fullName = `${this.givenName} ${this.surname}`;

@@ -3,6 +3,11 @@ import OfferDB from "@database/offer";
 import ModelWithDbConnection from "@model/ModelWithDbConnection";
 
 export default class Offer extends ModelWithDbConnection {
+  constructor (...args) {
+    super(...args);
+    this.db = OfferDB;
+  }
+
   async init () {
     this._doc.isRetracted = false;
   }

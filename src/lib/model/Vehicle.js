@@ -4,6 +4,11 @@ import UserDB from "@database/user";
 import _ from "lodash";
 
 export default class Vehicle extends ModelWithDbConnection {
+  constructor (...args) {
+    super(...args);
+    this.db = VehicleDB;
+  }
+
   async init () {
     await super.init();
     this._doc.imageURI = "";

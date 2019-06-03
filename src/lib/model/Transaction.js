@@ -12,6 +12,7 @@ export default class Transaction extends ModelWithDbConnection {
 
   constructor (record) {
     super(record);
+    this.db = TransactionDB;
 
     // Freeze the record if it is finished. This will prevent any changes that shouldn't happen
     if (this.isCancelled || this.isFinalized) {

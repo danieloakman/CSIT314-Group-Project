@@ -15,7 +15,7 @@ import PouchDB from "./PouchDB";
 
 class DBConnector {
   static DBs = []; // Collects each child class instance
-  constructor (name) {
+  constructor (name = "db.core") {
     this.dbName = name; // Allow access to database name
     this.db = new PouchDB(name, {adapter: "react-native-sqlite", revs_limit: 20});
     DBConnector.DBs.push(this);

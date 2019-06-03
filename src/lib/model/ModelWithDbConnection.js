@@ -5,11 +5,12 @@ import DBConnector from "@database/core";
  * @abstract
  */
 export default class ModelWithDbConnection {
-  static DB = DBConnector;
   constructor (record) {
+    // This should always be overridden by child
+    this.db = new DBConnector();
     // All data is stored in _doc following single source of truth principles
     this._doc = record;
-    this.DB.once("updatedRecord", this.updateListener.bind(this));
+    this.db.once("updatedRecord", this.updateListener.bind(this));
   }
 
   // TODO: Automatically update the internal doc when the database value changes
@@ -31,8 +32,8 @@ export default class ModelWithDbConnection {
     */
     if (this instanceof DBConnector) {
       // A once listener is used so that if the object is deleted, it will only attempt to be updated once
-      this.DB.once("updatedRecord", this.updateListener.bind(this));
-      if (this.id === id) { await this.setDoc(await this.DB.getRecord(id)); }
+      this.db.once("updatedRecord", this.updateListener.bind(this));
+      if (this.id === id) { await this.setDoc(await this.db.getRecord(id)); }
     }
   }
 
