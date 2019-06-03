@@ -49,12 +49,9 @@ class UserDB extends DBConnector {
    * @return {Promise<Object>} Either a user record or null
    */
   async getUser ({email, id}) {
-    let record;
+    let record = null;
     if (email) {
-      // console.log(await this.db.allDocs());
-      // console.log(await this.db.explain({selector: {email: {$eq: email}}}));
       record = await this.db.find({selector: {email: {$eq: email}}});
-      // console.log(record.docs);
       record = record.docs[0];
     }
     if (id) { record = await this.db.get(id); }
@@ -98,25 +95,24 @@ class UserDB extends DBConnector {
    * @return {Promise<DBResponse>} see DBResponse definition
    */
   async createUser (record, {signIn = false}) {
-    // Check if user exists
-    if (await this.getUser({email: record.email})) {
-      return {ok: false, reason: "An account with that email already exists."};
-    }
+    try {
+      // Check if user exists
+      if (await this.getUser({email: record.email})) {
+        return {ok: false, reason: "An account with that email already exists."};
+      }
 
-    // Insert into db
-    const resp = await this.db.post(record._doc);
+      // Insert into db
+      const resp = await this.db.post(record._doc);
 
-    // Set document in class to value from db
-    await record.setDoc(this.db.get(resp.id));
-    this.emit("createdRecord", resp.id);
-    if (signIn) {
-      await AsyncStorage.setItem("signedInUserID", resp.id);
-      this.emit("signedIn");
-    }
-    return {ok: true, record};
-  }
-
-  async batchCreateUser () {
+      // Set document in class to value from db
+      await record.setDoc(await this.db.get(resp.id));
+      this.emit("createdRecord", resp.id);
+      if (signIn) {
+        await AsyncStorage.setItem("signedInUserID", resp.id);
+        this.emit("signedIn");
+      }
+      return {ok: true, record, ...resp};
+    } catch (err) { return {ok: false, reason: err}; }
   }
 
   /**
@@ -129,14 +125,16 @@ class UserDB extends DBConnector {
     try {
       if (id) {
         const user = this.getUser({id});
-        await this.db.remove(user);
+        const resp = await this.db.remove(user);
         this.emit("deletedRecord", id);
+        return {ok: true, ...resp};
       } else if (email) {
         const user = this.getUser({email});
-        await this.db.remove(user);
+        const resp = await this.db.remove(user);
         this.emit("deletedRecord", user._id);
+        return {ok: true, ...resp};
       }
-    } catch (err) { return null; }
+    } catch (err) { return {ok: false, reason: err}; }
   }
 
   /**
@@ -151,19 +149,24 @@ class UserDB extends DBConnector {
     await Promise.all(emails.map(email => this.deleteUser({email})));
   }
 
-  /**
-   * Updates a user in the database based on a given delta object
-   * @param {Object} UserInstance The user class instance to update
-   * @param {Object} delta An object containing the new values only
-   */
-  async updateUser (UserInstance, delta) {
-    const doc = UserInstance._doc;
-    await this.db.put({...doc, ...delta, _rev: doc._rev});
-
-    // I *think* this is needed in order to get a new _rev value for next update
-    await UserInstance.setDoc(await this.db.get(doc._id));
-    this.emit("updatedRecord", doc._id);
-  }
+  // /**
+  //  * Updates a user in the database based on a given delta object
+  //  * @param {Object} UserInstance The user class instance to update
+  //  * @param {Object} delta An object containing the new values only
+  //  */
+  // async updateUser (UserInstance, delta) {
+  //   try {
+  //     const doc = UserInstance._doc;
+  //     // Updates should silently fail if the given record is frozen
+  //     if (!Object.isFrozen(UserInstance) && !Object.isFrozen(UserInstance._doc)) {
+  //       const resp = await this.db.put({...doc, ...delta, _rev: doc._rev});
+  //       await UserInstance.setDoc(await this.db.get(doc._id));
+  //       this.emit("updatedRecord", doc._id);
+  //       return {ok: true, ...resp};
+  //     }
+  //     return {ok: false, reason: "Attempting to update a frozen record"};
+  //   } catch (err) { return {ok: false, reason: err}; }
+  // }
 
   /**
    * Gets a list of userIDs which contain the given vehicleID
@@ -201,7 +204,7 @@ class UserDB extends DBConnector {
 
   getRecord = this.getUser.bind(this);
   createRecord = this.createUser.bind(this);
-  updateRecord = this.updateUser.bind(this);
+  updateUser = super.updateRecord;
   deleteRecord = this.deleteUser.bind(this);
 }
 
