@@ -84,8 +84,12 @@ export default class Request extends ModelWithDbConnection {
 
   /**
    * Sets an offerID from the list as the accepted offer
+   * @param {String} offerID
    */
-  async acceptOffer () {}
+  async acceptOffer (offerID) {
+    await this.setSelectedOfferID(offerID);
+    await this.setStatus("Offer accepted");
+  }
 
   /**
    * Changes the accepted offer

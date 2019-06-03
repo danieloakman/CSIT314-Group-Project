@@ -189,7 +189,7 @@ class OfferList extends React.Component {
     _selectOffer (offer) {
       this.props.navigation.navigate("DriverViewOfferModal", {
         offerID: offer.id,
-        RequestID: this.state.serviceRequest.id
+        requestID: this.state.serviceRequest.id
       });
     }
 

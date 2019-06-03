@@ -8,22 +8,30 @@ import {
 import {
   Toast
 } from "native-base";
-import DatabaseService from "@lib/services/DatabaseService";
+// import DatabaseService from "@lib/services/DatabaseService";
 import HeaderBar from "@molecules/HeaderBar";
+
+import Offer from "@model/Offer";
+import Request from "@model/Request";
+import User from "@model/user";
 
 export default class OfferView extends React.Component {
     state = {
-      user: null,
-      offer: null,
-      serviceRequest: null
+      offer: {},
+      serviceRequest: {},
+      mechanic: {},
+      isLoading: true
     }
 
-    componentWillMount () {
-      /* get parameters from the list item which was clicked */
+    async componentWillMount () {
+      const offer = await Offer.getOffer(this.props.navigation.getParam("offerID"));
+      const request = await Request.getServiceRequest(this.props.navigation.getParam("requestID"));
+      const mechanic = await User.getUser({id: offer.mechanicID});
       this.setState({
-        offer: this.props.navigation.getParam("offer", "The selected offer"),
-        user: this.props.navigation.getParam("user", "Currently signed in driver"),
-        serviceRequest: this.props.navigation.getParam("serviceRequest", "The driver's service request"),
+        offer,
+        serviceRequest: request,
+        mechanic,
+        isLoading: false
       });
     }
 
@@ -33,50 +41,36 @@ export default class OfferView extends React.Component {
           <HeaderBar
             title="Offer"
           />
-          <View style={styles.buttonBoxText}>
-            {/* <Text>Time: {waitTime}</Text> */}
-            <Text>Cost: {this.state.offer.offerAmount}</Text>
-            <Text>Mechnanic: {this.state.offer.mechanicEmail}</Text>
-            <Text>Average Rating: {this.state.offer.mechanicRating}</Text>
-            <Text>Time when offered: {this.state.offer.creationDate}</Text>
+          {!this.state.isLoading &&
+          <View>
+            <View style={styles.buttonBoxText}>
+              {/* <Text>Time: {waitTime}</Text> */}
+              <Text>Cost: {this.state.offer.cost}</Text>
+              <Text>Mechanic: {this.state.mechanic.email}</Text>
+              <Text>Average Rating: {this.state.mechanic.aggregateRating}</Text>
+              <Text>Time when offered: {this.state.offer.creationDate.toDateString()}</Text>
+            </View>
+            <View style={styles.buttons}>
+              <Button
+                title="View Mechanic Profile"
+                onPress={() => this.props.navigation.push("ProfileModal", {id: this.state.mechanic.id})}
+              />
+            </View>
+            <View style={styles.buttons}>
+              <Button
+                title="Accept Request"
+                onPress={async () => {
+                  await this._acceptRequest();
+                }}
+              />
+            </View>
           </View>
-          <View style={styles.buttons}>
-            <Button
-              title="View Mechanic Profile"
-              onPress={() => this.props.navigation.push("ProfileModal", {email: this.state.offer.mechanicEmail})}
-            />
-          </View>
-          <View style={styles.buttons}>
-            <Button
-              title="Accept Request"
-              onPress={async () => {
-                await this._acceptRequest();
-              }}
-            />
-          </View>
+          }
         </View>
       );
     }
     async _acceptRequest () {
-      await Promise.all([
-        new Promise(async resolve => {
-          // Update the service request:
-          let sr = this.state.serviceRequest;
-          sr.assignedMechanicEmail = this.state.offer.mechanicEmail;
-          sr.status = "Offer accepted";
-          await DatabaseService.saveServiceRequestChanges(sr);
-          resolve(true);
-        }),
-        new Promise(async resolve => {
-          // Update the mechanic:
-          let mechanic = await DatabaseService.getUser(this.state.offer.mechanicEmail);
-          mechanic.srId = this.state.serviceRequest.id;
-          mechanic.offersSent = mechanic.offersSent
-            .filter(srId => srId !== this.state.serviceRequest.id);
-          await DatabaseService.saveUserChanges(mechanic);
-          resolve(true);
-        })
-      ]);
+      this.state.serviceRequest.acceptOffer();
       Toast.show({
         text: "Offer accepted!",
         buttonText: "Okay",
