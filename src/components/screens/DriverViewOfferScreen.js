@@ -70,7 +70,7 @@ export default class OfferView extends React.Component {
       );
     }
     async _acceptRequest () {
-      this.state.serviceRequest.acceptOffer();
+      this.state.serviceRequest.acceptOffer(this.state.offer.id);
       Toast.show({
         text: "Offer accepted!",
         buttonText: "Okay",

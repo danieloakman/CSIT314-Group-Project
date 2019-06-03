@@ -4,7 +4,9 @@ import _ from "lodash";
 import ModelWithDbConnection from "@model/ModelWithDbConnection";
 
 import Offer from "./Offer";
+import User from "./user";
 import Mechanic from "./user/Mechanic";
+import Transaction from "./Transaction";
 
 export default class Request extends ModelWithDbConnection {
   constructor (...args) {
@@ -19,6 +21,7 @@ export default class Request extends ModelWithDbConnection {
     this._doc.status = "Awaiting offer acceptance";
     this._doc.creationDate = Date.now();
     this._doc.completionDate = null;
+    this._doc.transactionID = "";
   }
 
   static async getServiceRequest (RequestID) {
@@ -68,7 +71,7 @@ export default class Request extends ModelWithDbConnection {
     offers.push(OfferID);
     // May need to add request to mechanic here
     const offer = await Offer.getOffer(OfferID);
-    const mechanic = await Mechanic.getUser({id: offer.mechanicID});
+    const mechanic = await User.getUser({id: offer.mechanicID});
     await mechanic.addOffer(OfferID);
     return RequestDB.updateRecord(this, {offers});
   }
@@ -97,14 +100,53 @@ export default class Request extends ModelWithDbConnection {
   async changeOffer () {}
 
   /**
-   * Sets the service request as completed,
-   * then creates new transaction
-   * Also sets activeRequest on all mechanics involved to null
+   * Sets the service request as completed and performs any necessary processing, such as creating and paying transaction
    */
-  async completeRequest () {}
+  async completeRequest () {
+    const driver = await User.getUser({id: this.DriverID});
+    const offer = await Offer.getOffer(this.selectedOfferID);
+    const mechanic = await User.getUser({id: offer.mechanicID});
+    let resp = await Transaction.createTransaction(driver.isMember ? "memberRequest" : "regularRequest", this.DriverID);
+
+    if (!resp.ok) return resp;
+    const newTransaction = resp.record;
+
+    let transactionDetails = {
+      requestID: this.id,
+      offerID: this.selectedOfferID,
+      payerID: this.DriverID,
+      amount: offer.cost,
+      payeeID: offer.mechanicID,
+      payeeAccountNo: mechanic.bankAccountNo,
+      payeeBSB: mechanic.bsb
+    };
+    if (!driver.isMember) {
+      transactionDetails = {
+        ...transactionDetails,
+        cardNo: driver.cardNo,
+        cardExpiry: driver.cardExpiry,
+        cardCSV: driver.cardCSV };
+    }
+
+    resp = newTransaction.setMulti(transactionDetails);
+    if (!resp.ok) return resp;
+    resp = await newTransaction.finalize();
+    if (!resp.ok) return resp;
+
+    const delta = {
+      status: "Completed",
+      transactionID: newTransaction.id,
+      completionDate: Date.now()
+    };
+    await this.setMulti(delta);
+
+    await driver.setActiveRequest();
+    await mechanic.setActiveOffer();
+  }
 
   get location () { return this._doc.location; }
-  get DriverID () { return this._doc.DriverID; }
+  get driverID () { return this._doc.driverID; }
+  get DriverID () { return this._doc.driverID; }
   get VehicleID () { return this._doc.VehicleID; }
   get description () { return this._doc.description; }
   get selectedOfferID () { return this._doc.selectedOfferID; }
@@ -112,6 +154,7 @@ export default class Request extends ModelWithDbConnection {
   get status () { return this._doc.status; }
   get creationDate () { return new Date(this._doc.creationDate); } // Constructed date objects cannot be stored as is
   get completionDate () { return new Date(this._doc.completionDate); }
+  get transactionID () { return this._doc.transactionID; }
 
   async setLocation (location) {
     await RequestDB.updateRecord(this, {location});

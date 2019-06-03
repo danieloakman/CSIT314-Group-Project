@@ -36,10 +36,9 @@ class DriverHomeScreen extends React.Component {
             serviceRequest: sr,
             enableRequestAssistance: hasACardOrMembership &&
             !user.activeRequest,
-            enableViewCurrentOffers: hasACardOrMembership &&
-            user.activeRequest &&
+            enableViewCurrentOffers: user.activeRequestID !== null &&
             sr ? sr.selectedOfferID === null : false,
-            enableViewActiveRequest: hasACardOrMembership && user.activeRequest &&
+            enableViewActiveRequest: user.activeRequestID !== null &&
             sr ? sr.selectedOfferID !== null : false
           });
         }).catch(err => { throw err; });

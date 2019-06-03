@@ -31,6 +31,17 @@ class PaymentDB extends DBConnector {
   }
 
   /**
+   * Deposit cash to (imaginary) account.
+   */
+  async depositCashToAccount (amount, bsb, bankAccountNo) {
+    /**
+     * --- CASH DEPOSITED TO BANK ACCOUNT HERE ---
+     */
+    if (amount && bsb && bankAccountNo) return true;
+    else return false;
+  }
+
+  /**
    * Loads test data into database
    * @param {Object} opts
    * @param {Boolean} opts.loadSamples Should sampledata also be loaded (For volume testing)

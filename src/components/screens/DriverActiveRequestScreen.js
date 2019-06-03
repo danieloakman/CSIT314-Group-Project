@@ -13,33 +13,38 @@ import {
   Label,
   Input,
 } from "native-base";
-import DatabaseService from "@lib/services/DatabaseService";
-import PaymentService from "@lib/services/PaymentService";
+// import DatabaseService from "@lib/services/DatabaseService";
+// import PaymentService from "@lib/services/PaymentService";
 import HeaderBar from "@molecules/HeaderBar";
+import {withAuthContext} from "@lib/context/AuthContext";
 
-export default class ActiveServiceRequest extends React.Component {
+import Request from "@model/Request";
+import Offer from "@model/Offer";
+import Review from "@model/Review";
+import User from "@model/user";
+
+class ActiveServiceRequest extends React.Component {
   state = {
-    user: null,
-    serviceRequest: null,
+    request: null,
+    offer: null,
     rating: 5,
     comments: "",
   }
 
-  componentDidMount () {
+  async componentDidMount () {
+    const request = await Request.getServiceRequest(this.props.AuthContext.user.activeRequestID);
+    const offer = await Offer.getOffer(request.selectedOfferID);
     this.setState({
-      user: this.props.navigation.getParam("user", "Currently signed in driver"),
-      serviceRequest: this.props.navigation.getParam("serviceRequest")
+      request,
+      offer
     });
   }
 
   // WIP, this still needs testing:
   async _completeServiceRequest () {
-    let sr = this.state.serviceRequest;
-    let driver = this.state.user;
-    let mechanic = DatabaseService.getUser(sr.assignedMechanicEmail);
-    let vehicle = await DatabaseService.getVehicle(sr.vehicleId);
-    let result = await PaymentService.payForServiceRequest(driver, mechanic, this.state.amount, sr.id);
-    if (!result.pass) {
+    const result = await this.state.request.completeRequest();
+
+    if (!result.ok) {
       Toast.show({
         text: "Could not complete service request, reason: " + result.reason,
         buttonText: "Okay",
@@ -49,42 +54,15 @@ export default class ActiveServiceRequest extends React.Component {
       });
       return;
     }
-    let payment = await DatabaseService.getPayment(result.paymentId);
-
-    // Update sr:
-    sr.paymentId = result.paymentId;
-    sr.status = "Completed";
-    sr.completionDate = new Date();
-    sr.driverComments = this.state.comments;
-    sr.ratingGiven = this.state.rating;
-
-    // Update driver and the vehicle:
-    driver.serviceRequestHistory.push(sr.id);
-    driver.srId = vehicle.srId = null;
-    driver.paymentIds.push(result.paymentId);
-
-    // Update mechanic:
-    mechanic.serviceRequestHistory.push(sr.id);
-    if (mechanic.rating === "Un-rated") mechanic.rating = this.state.rating;
-    else {
-      mechanic.rating += this.state.rating;
-      mechanic.rating /= 2;
-    }
-    mechanic.srId = null;
-    mechanic.earnings += payment.mechanicCut;
-
-    await Promise.all([
-      await DatabaseService.saveUserChanges(driver),
-      await DatabaseService.saveUserChanges(mechanic),
-      await DatabaseService.saveServiceRequestChanges(sr),
-      sr.offers.map(async offer => {
-        // Remove all the offers from mechanics that made one to this sr:
-        let mechanic = await DatabaseService.getUser(offer.mechanicEmail);
-        mechanic.offersSent = mechanic.offersSent
-          .filter(srId => srId !== this.state.serviceRequest.id);
-        await DatabaseService.saveUserChanges(mechanic);
-      })
-    ]);
+    const mechanic = await User.getUser({id: this.state.offer.mechanicID});
+    const review = await Review.createReview({
+      value: this.state.rating,
+      comment: this.state.comments,
+      requestID: this.state.request.id,
+      driverID: this.state.request.driverID,
+      mechanicID: mechanic.id
+    });
+    mechanic.addRating(review);
 
     Toast.show({
       text: "Completed service request!",
@@ -118,7 +96,7 @@ export default class ActiveServiceRequest extends React.Component {
             onValueChange={rating => this.setState({ rating })}
             maximumValue={5}
             minimumValue={1}
-            step={0.25}
+            step={0.2}
             style={{ width: "60%" }}
             ref={ref => { this.sliderInput = ref; }}
           />
@@ -147,6 +125,8 @@ export default class ActiveServiceRequest extends React.Component {
     );
   }
 }
+
+export default withAuthContext(ActiveServiceRequest);
 
 const styles = StyleSheet.create({
   heading: {

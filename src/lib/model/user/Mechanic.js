@@ -9,7 +9,9 @@ export default class Mechanic extends User {
   async init () {
     await super.init();
     this._doc.isVerified = false;
-    this._doc.aggregateRating = 0; // Value between 0 and 10, where odd values are half-stars and even values are full stars. Can be decimal. (i.e. 7 = 3.5 stars and 8.4 = 4.2 stars)
+    this._doc.ratingCount = 0;
+    this._doc.ratingScore = 0; // The sum of all ratings
+    this._doc.averageRating = 0; // Value between 0 and 10, where odd values are half-stars and even values are full stars. Can be decimal. (i.e. 7 = 3.5 stars and 8.4 = 4.2 stars)
     this._doc.activeOffer = null; // Service request ID currently assigned
     this._doc.offersSent = []; // List of service request IDs where this mechanic sent an offer
     this._doc.bsb = null;
@@ -46,7 +48,7 @@ export default class Mechanic extends User {
    * Sets the active offer for the user. Can be set to null for no active offer
    * @param {String} OfferID
    */
-  async setActiveOffer (OfferID) {
+  async setActiveOffer (OfferID = null) {
     await UserDB.updateUser(this, {activeOffer: OfferID});
   }
 
@@ -79,8 +81,25 @@ export default class Mechanic extends User {
     await UserDB.updateRecord(this, delta);
   }
 
+  /**
+   * Adds rating to mechanic current score
+   * @param {Rating} ratingObj
+   */
+  async addRating (rating) {
+    const count = this.ratingCount + 1;
+    const score = this._doc.ratingScore + rating.value;
+    const delta = {
+      ratingCount: count,
+      ratingScore: score,
+      averateRating: Math.round((score / count) * 10) / 10 // Average and round to 1 decimal
+    };
+    await UserDB.updateRecord(this, delta);
+  }
+
   get isVerified () { return this._doc.isVerified; }
-  get aggregateRating () { return this._doc.aggregateRating; }
+  get aggregateRating () { return this._doc.averageRating; }
+  get averageRating () { return this._doc.averageRating; }
+  get ratingCount () { return this._doc.ratingCount; }
   get activeOffer () { return this._doc.activeOffer; }
   get offersSent () { return this._doc.offersSent; }
   get bsb () { return this._doc.bsb; }

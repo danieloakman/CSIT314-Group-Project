@@ -6,9 +6,22 @@ import _ from "lodash";
 /*
  Realistically, transactions should only be created/updated through the driver model for subscriptions, and through the request model for request payments
  */
+
+/**
+ * Provided fields:
+ * All transactions: type, payerID
+ * Subscriptions and regular requests: cardNo, cardCSV, cardExpiry
+ * Regular and member requests: requestID, offerID, payeeID, amount, payeeBSB, payeeAccountNo
+ *
+ * Generated fields:
+ * All transactions: id, amountPayed, isFinalized, isCancelled
+ * Subscriptions: amount
+ * Subscriptions and regular requests: cardTransactionID
+ * Regular and member requests: companyCut, providerCut
+ */
 export default class Transaction extends ModelWithDbConnection {
   static MEMBERSHIP_PRICE = 200;
-  static SERVICE_FEE = 0.25;
+  static SERVICE_FEE = 0.1; // Percentage of offer taken by comapny
 
   constructor (record) {
     super(record);
@@ -24,22 +37,35 @@ export default class Transaction extends ModelWithDbConnection {
     await super.init();
     const commonDetails = {
       amount: 0, // Amount due
-      cardNo: "",
-      cardExpiry: "",
-      cardCSV: "",
+      amountPayed: 0,
       isCancelled: false, // Has the transaction been cancelled
       isFinalized: false // Has the transaction been finalized/finished
     };
     let extraDetails = {};
 
-    if (this.type === "request") {
+    if (this.type in ["memberRequest", "regularRequest"]) {
       extraDetails = {
         requestID: "", // The request the transaction is tied to
+        offerID: "",
         providerCut: 0, // The cut going to the service provider (the mechanic)
-        companyCut: 0 // The cut going to the company
+        companyCut: 0, // The cut going to the company,
+        payeeID: "",
+        payeeAccountNo: "",
+        payeeBSB: ""
       };
+      if (this.type === "memberRequest") {
+        extraDetails = {
+          ...extraDetails,
+          cardNo: "",
+          cardExpiry: "",
+          cardCSV: "",
+        };
+      }
     } else if (this.type === "subscription") {
       extraDetails = {
+        cardNo: "",
+        cardExpiry: "",
+        cardCSV: "",
         amount: Transaction.MEMBERSHIP_PRICE
       };
     }
@@ -80,9 +106,44 @@ export default class Transaction extends ModelWithDbConnection {
   async finalize () {
     if (this.isCancelled) { return {ok: false, reason: "Attempting to finalize a transaction that has already been cancelled"}; }
     if (this.isFinalized) { return {ok: false, reason: "Attempting to finalize a transaction that has already been finalized"}; }
+
     switch (this.type) {
-      case "request": {
-        break;
+      case "regularRequest": {
+        const cardTransactionID = TransactionDB.chargeCard(this.amount, this.cardNo, this.cardExpiry, this.cardCSV);
+
+        const delta = {
+          cardTransactionID,
+          amountPayed: this.amount,
+          companyCut: this.amount * Transaction.SERVICE_FEE,
+          providerCut: this.amount - (this.amount * Transaction.SERVICE_FEE),
+          isFinalized: true,
+        };
+        const succ = await TransactionDB.depositCashToAccount(this.amount, this.payeeBSB, this.payeeAccountNo);
+
+        if (cardTransactionID && succ) {
+          await TransactionDB.updateRecord(this, delta);
+          Object.freeze(this._doc);
+          return {ok: true, reason: "Payment successful"};
+        } else {
+          return {ok: false, reason: "Payment rejected"};
+        }
+      }
+      case "memberRequest": {
+        const delta = {
+          companyCut: 0,
+          providerCut: this.amount,
+          amountPayed: 0,
+          isFinalized: true
+        };
+        await TransactionDB.updateRecord(this, delta);
+        const succ = await TransactionDB.depositCashToAccount(this.amount, this.payeeBSB, this.payeeAccountNo);
+        if (succ) {
+          await TransactionDB.updateRecord(this, delta);
+          Object.freeze(this._doc);
+          return {ok: true, reason: "Payment successful"};
+        } else {
+          return {ok: false, reason: "Payment rejected"};
+        }
       }
       case "subscription": {
         const cardTransactionID = TransactionDB.chargeCard(this.amount, this.cardNo, this.cardExpiry, this.cardCSV);
@@ -99,7 +160,6 @@ export default class Transaction extends ModelWithDbConnection {
         return {ok: false, reason: "Invalid transaction type"};
       }
     }
-    return {ok: false, reason: "Payment system not fully implemented"};
   }
 
   async cancel () {
@@ -112,19 +172,21 @@ export default class Transaction extends ModelWithDbConnection {
   get type () { return this._doc.type; }
   get payerID () { return this._doc.payerID; }
   get amount () { return this._doc.amount; }
+  get amountPayed () { return this._doc.amountPayed; }
+  get isFinalized () { return this._doc.isFinalized; }
+  get isCancelled () { return this._doc.isCancelled; }
   get cardNo () { return this._doc.cardNo; }
   get cardExpiry () { return new Date(this._doc.cardExpiry); }
   get cardCSV () { return this._doc.cardCSV; }
-  get isFinalized () { return this._doc.isFinalized; }
-  get isCancelled () { return this._doc.isCancelled; }
 
   // Request details
   get requestID () { return this._doc.requestID; }
+  get offerID () { return this._doc.offerID; }
   get payeeID () { return this._doc.payeeID; }
+  get payeeBSB () { return this._doc.payeeBSB; }
+  get payeeAccountNo () { return this._doc.payeeAccountNo; }
   get providerCut () { return this._doc.providerCut; }
   get companyCut () { return this._doc.companyCut; }
-
-  // Subscription details
 
   async setPayerID (payerID) {
     await TransactionDB.updateRecord(this, {payerID});
@@ -159,6 +221,6 @@ export default class Transaction extends ModelWithDbConnection {
    * @param {Object} delta The delta object containing changed values
    */
   async setMulti (delta) {
-    await TransactionDB.updateRecord(this, delta);
+    return TransactionDB.updateRecord(this, delta);
   }
 }

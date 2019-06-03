@@ -89,6 +89,7 @@ export default class Driver extends User {
 
   get description () { return this._doc.description; }
   get vehicles () { return this._doc.vehicles; }
+  get activeRequestID () { return this._doc.activeRequest; }
   get activeRequest () { return this._doc.activeRequest; }
   // get requestHistory () { return this._doc.requestHistory; }
   get isMember () { return this._doc.isMember; }
@@ -106,7 +107,7 @@ export default class Driver extends User {
    * Sets the active request for the user. Can be set to null for no active request
    * @param {String} requestID
    */
-  async setActiveRequest (requestID) {
+  async setActiveRequest (requestID = null) {
     await UserDB.updateUser(this, {activeRequest: requestID});
   }
 }
