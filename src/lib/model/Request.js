@@ -129,8 +129,8 @@ export default class Request extends ModelWithDbConnection {
     await RequestDB.updateRecord(this, {description});
   }
 
-  async setSelectedOfferID (assignedMechanicID) {
-    await RequestDB.updateRecord(this, {assignedMechanicID});
+  async setSelectedOfferID (selectedOfferID) {
+    await RequestDB.updateRecord(this, {selectedOfferID});
   }
 
   async setOffers (offers) {
