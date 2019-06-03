@@ -166,8 +166,9 @@ class RequestList extends React.Component {
       );
     }
 
-    _viewRequest (sr) {
+    async _viewRequest (sr) {
       // console.log(sr);
+      await this.props.AuthContext.user.setLocation(this.state.location);
       this.props.navigation.navigate("MechanicRequestViewModal", {
         RequestID: sr.id,
         location: this.state.location

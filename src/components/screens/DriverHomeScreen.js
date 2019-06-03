@@ -30,15 +30,17 @@ class DriverHomeScreen extends React.Component {
         .then(sr => {
           // console.log(sr);
           const hasACardOrMembership = user.isCardValid || user.isMember;
+          // console.log(user);
+          // console.log(sr);
           this.setState({
             serviceRequest: sr,
             enableRequestAssistance: hasACardOrMembership &&
             !user.activeRequest,
             enableViewCurrentOffers: hasACardOrMembership &&
             user.activeRequest &&
-            sr ? sr.status === "Awaiting offer acceptance" : false,
+            sr ? sr.selectedOfferID === null : false,
             enableViewActiveRequest: hasACardOrMembership && user.activeRequest &&
-            sr ? sr.status === "Offer accepted" : false
+            sr ? sr.selectedOfferID !== null : false
           });
         }).catch(err => { throw err; });
     });

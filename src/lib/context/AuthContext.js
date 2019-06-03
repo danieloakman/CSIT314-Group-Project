@@ -20,8 +20,8 @@ export const AuthContext = React.createContext();
 export class AuthProvider extends React.Component {
   state = {
     user: {},
-    signedIn: false
-
+    signedIn: false,
+    location: {} // TODO: Centralize current location storage
   }
 
   async loadUser () {
