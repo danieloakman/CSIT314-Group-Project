@@ -3,6 +3,7 @@ import {
   Location,
   Permissions
 } from "expo";
+import _ from "lodash";
 
 const toRadians = (degrees) => { return degrees * (Math.PI / 180); };
 // const toDegrees = (radians) => { return radians / (Math.PI / 180); };
@@ -150,6 +151,7 @@ export default class LocationService {
     }
   }
 
+  static memoizeGetDistanceBetween;
   /**
    * Using the Haversine formula, returns the distance between coordsA and coordsB in kilometres or miles.
    * At distances greater than 1km and less than 100km, tested to be accurate within 0.5%.
@@ -158,16 +160,23 @@ export default class LocationService {
    * @param {Boolean} useMilesInstead Optionally get miles instead of the default kilometres returned value.
    */
   static getDistanceBetween (coordsA, coordsB, useMilesInstead = false) {
-    const dLat = toRadians(coordsB.latitude - coordsA.latitude);
-    const dLon = toRadians(coordsB.longitude - coordsA.longitude);
-    const radianDistance = 2 * Math.asin(Math.sqrt(
-      Math.pow(Math.sin(dLat / 2), 2) +
+    this.memoizeGetDistanceBetween = _.memoize((coordsA, coordsB, useMilesInstead) => {
+      const dLat = toRadians(coordsB.latitude - coordsA.latitude);
+      const dLon = toRadians(coordsB.longitude - coordsA.longitude);
+      const radianDistance = 2 * Math.asin(Math.sqrt(
+        Math.pow(Math.sin(dLat / 2), 2) +
       Math.cos(toRadians(coordsA.latitude)) * Math.cos(toRadians(coordsB.latitude)) *
       Math.pow(Math.sin(dLon / 2), 2)
-    ));
-    return useMilesInstead
-      ? 3958.8 * radianDistance // return in miles
-      : 6371 * radianDistance; // return in kilometres
+      ));
+      return useMilesInstead
+        ? 3958.8 * radianDistance // return in miles
+        : 6371 * radianDistance; // return in kilometres
+    }, (...args) => {
+      let key = "";
+      key = key.concat(args.map((arg) => { arg.toString(); }));
+      return key;
+    });
+    return this.memoizeGetDistanceBetween(coordsA, coordsB, useMilesInstead);
   }
 
   /**
