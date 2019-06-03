@@ -155,11 +155,11 @@ export default class RequestScreen extends React.Component {
                 />
               </Item>
             }
-            {/* Submit Button */}
+            {/* Create Request Button */}
             <View style={styles.buttons}>
               <Button
                 style="buttons"
-                title="Submit"
+                title="Create Request"
                 onPress={async () => { await this._submitRequest(); }}
                 disabled={this.state.isLoading}
               />

@@ -65,7 +65,20 @@ export default class OfferView extends React.Component {
               />
             </View>
           </View>
-          }
+          <View style={styles.buttons}>
+            <Button
+              title="View Mechanic Profile"
+              onPress={() => this.props.navigation.push("ProfileModal", {email: this.state.offer.mechanicEmail})}
+            />
+          </View>
+          <View style={styles.buttons}>
+            <Button
+              title="Accept Offer"
+              onPress={async () => {
+                await this._acceptRequest();
+              }}
+            />
+          </View>
         </View>
       );
     }
