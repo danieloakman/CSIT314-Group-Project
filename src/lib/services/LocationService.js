@@ -139,6 +139,7 @@ export default class LocationService {
    * if they don't enable location permissions, since a lot of the app won't be able
    * to function without it.
    */
+
   static async initialiseLocationServices () {
     let {status} = await Permissions.askAsync(Permissions.LOCATION);
     if (status !== "granted") {

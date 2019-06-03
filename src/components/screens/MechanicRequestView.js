@@ -10,9 +10,13 @@ import {
 import {
   Toast
 } from "native-base";
-import DatabaseService from "@lib/services/DatabaseService";
+// import DatabaseService from "@lib/services/DatabaseService";
 import HeaderBar from "@molecules/HeaderBar";
 import { withNavigation } from "react-navigation";
+import LocationService from "@lib/services/LocationService";
+
+import Offer from "@model/Offer";
+import Request from "@model/Request";
 
 class RequestView extends React.Component {
     state = {
@@ -21,65 +25,88 @@ class RequestView extends React.Component {
       user: null,
       location: null,
       offerMade: false,
+      isLoading: true,
+      offer: null
     }
-    componentWillMount () {
+    async componentWillMount () {
       /* get parameters from the list item which was clicked */
       const { navigation } = this.props;
       this.setState({
-        selectedSR: navigation.getParam("selectedSR", "The selected service request"),
+        selectedSR: await Request.getServiceRequest(navigation.getParam("RequestID", null)),
         user: navigation.getParam("user", "Currently signed in mechanic"),
         location: navigation.getParam("location", "Current location")
+      }, async () => {
+        if (this.state.selectedSR) {
+          const offer = await this.state.selectedSR.getOfferByMechanic(this.state.user.id);
+          if (offer) {
+            this.setState({
+              offer,
+              offerMade: true,
+              offerAmount: offer.cost,
+              isLoading: false
+            });
+          } else { this.setState({isLoading: false}); }
+        } else {
+          this.setState({isLoading: false});
+        }
       });
     }
     render () {
+      // console.log(this.state);
       return (
         <View>
           <HeaderBar title="Request"/>
+          {!this.state.isLoading &&
           <View>
-            <Text>Distance: {`${Math.round(this.state.selectedSR.distance * 100) / 100}km`}</Text>
-            <Text>Time: {this.state.selectedSR.creationDate}</Text>
-            <Text>Description: {this.state.selectedSR.description}</Text>
-            <Text>Status: {this.state.selectedSR.status}</Text>
+            <View>
+              <Text>Distance: {`${Math.round(LocationService.getDistanceBetween(this.state.selectedSR.location.coords, this.state.location.coords) * 100) / 100}km`}</Text>
+              <Text>Time: {this.state.selectedSR.creationDate.toDateString()}</Text>
+              <Text>Description: {this.state.selectedSR.description}</Text>
+              <Text>Status: {this.state.selectedSR.status}</Text>
+            </View>
+            <View style={styles.buttons}>
+              <Button
+                title="View Car Info"
+                onPress={() => Alert.alert("go to car info page for requests car")}
+              />
+            </View>
+            <View style={styles.buttons}>
+              <Button
+                title="View Driver Profile"
+                onPress={() => this.props.navigation.push("ProfileModal", {id: this.state.selectedSR.driverID})}
+              />
+            </View>
+            <View style={styles.centeredRowContainer}>
+              <Text style={styles.textBesideInput}>Offer Amount: $</Text>
+              <TextInput
+                style={styles.textInput}
+                onChangeText={offerAmount => this.setState({ offerAmount })}
+                onSubmitEditing={async () => {
+                  await this._submitOfferToServiceRequest();
+                }}
+              />
+            </View>
+            <View style={styles.buttons}>
+              <Button
+                title="Make Offer"
+                disabled={this.state.offerMade}
+                onPress={async () => {
+                  await this._submitOfferToServiceRequest();
+                }}
+              />
+            </View>
+            {/* for cancelling requests (not implemented yet) */}
+            <Text>Offered Amount: ${this.state.offerAmount}</Text>
+            <View style={styles.buttons}>
+              <Button
+                title="Cancel Offer"
+                onPress={() => Alert.alert("cancel request")}
+                disabled={!this.state.offerMade}
+              />
+            </View>
           </View>
-          <View style={styles.buttons}>
-            <Button
-              title="View Car Info"
-              onPress={() => Alert.alert("go to car info page for requests car")}
-            />
-          </View>
-          <View style={styles.buttons}>
-            <Button
-              title="View Driver Profile"
-              onPress={() => this.props.navigation.push("ProfileModal", {email: this.state.selectedSR.driverEmail})}
-            />
-          </View>
-          <View style={styles.centeredRowContainer}>
-            <Text style={styles.textBesideInput}>Offer Amount: $</Text>
-            <TextInput
-              style={styles.textInput}
-              onChangeText={offerAmount => this.setState({ offerAmount })}
-              onSubmitEditing={async () => {
-                await this._submitOfferToServiceRequest();
-              }}
-            />
-          </View>
-          <View style={styles.buttons}>
-            <Button
-              title="Make Offer"
-              onPress={async () => {
-                await this._submitOfferToServiceRequest();
-              }}
-            />
-          </View>
-          {/* for cancelling requests (not implemented yet) */}
-          <Text>Offered Amount: ${this.state.offerAmount}</Text>
-          <View style={styles.buttons}>
-            <Button
-              title="Cancel Offer"
-              onPress={() => Alert.alert("cancel request")}
-              disabled={!this.state.offerMade}
-            />
-          </View>
+          }
+
         </View>
       );
     }
@@ -95,28 +122,10 @@ class RequestView extends React.Component {
         });
         return;
       }
-      await Promise.all([
-        new Promise(async resolve => {
-          // Update the sevice request:
-          let sr = this.state.selectedSR;
-          sr.offers.push({
-            creationDate: new Date(),
-            mechanicEmail: this.state.user.email,
-            mechanicRating: this.state.user.rating,
-            offerAmount: this.state.offerAmount,
-            location: this.state.location
-          });
-          await DatabaseService.saveServiceRequestChanges(sr);
-          resolve(true);
-        }),
-        new Promise(async resolve => {
-          // Update this mechanic:
-          let user = this.state.user;
-          user.offersSent.push(this.state.selectedSR.id);
-          await DatabaseService.saveUserChanges(user);
-          resolve(true);
-        })
-      ]);
+      const sr = this.state.selectedSR;
+      const response = await Offer.createOffer(sr.id, this.state.user.id, this.state.offerAmount);
+      // TODO: Show toast on db fail
+      await sr.submitOffer(response.id);
       Toast.show({
         text: "Offer sent!",
         buttonText: "Okay",

@@ -167,7 +167,7 @@ class RequestList extends React.Component {
     }
 
     _viewRequest (sr) {
-      console.log(sr);
+      // console.log(sr);
       this.props.navigation.navigate("MechanicRequestViewModal", {
         RequestID: sr.id,
         user: this.state.user,

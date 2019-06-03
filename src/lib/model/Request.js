@@ -4,6 +4,7 @@ import _ from "lodash";
 import ModelWithDbConnection from "@model/ModelWithDbConnection";
 
 import Offer from "./Offer";
+import Mechanic from "./user/Mechanic";
 
 export default class Request extends ModelWithDbConnection {
   async init () {
@@ -49,6 +50,10 @@ export default class Request extends ModelWithDbConnection {
     return RequestDB.deleteRecord(RequestID);
   }
 
+  async getOfferByMechanic (UserID) {
+    return Offer.getFirstOfferByMechanic(this._doc.offers, UserID);
+  }
+
   /**
    * Adds an offerID to the list of available offers
    * @param {String} OfferID
@@ -57,22 +62,18 @@ export default class Request extends ModelWithDbConnection {
     const offers = this._doc.offers;
     offers.push(OfferID);
     // May need to add request to mechanic here
+    const offer = await Offer.getOffer(OfferID);
+    const mechanic = await Mechanic.getUser({id: offer.mechanicID});
+    await mechanic.addOffer(OfferID);
     return RequestDB.updateRecord(this, {offers});
   }
 
   /**
-   * Removes an offerID from the list of available offers
-   * Also resets acceptedOffer if it referenced the removed offer.
-   * Finally sets the status to offer retracted
+   * Sets the offer as retracted
    */
   async retractOffer (OfferID) {
-    // pull offer
-    // delete offer
-    // update db
-    const offers = this._doc.offers;
-    _.pull(OfferID);
-    Offer.deleteOffer(OfferID);
-    return RequestDB.updateRecord(this, {offers, selectedOfferID: null});
+    const offer = await Offer.getOffer(OfferID);
+    offer.setRetracted();
   }
 
   /**

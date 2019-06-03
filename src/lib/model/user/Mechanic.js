@@ -22,32 +22,32 @@ export default class Mechanic extends User {
 
   /**
    * Adds an offer to the list of sent offers
-   * @param {String} requestID
+   * @param {String} OfferID
    */
-  async addRequest (requestID) {
+  async addOffer (OfferID) {
     const offersSent = this.offersSent;
-    offersSent.push(requestID);
-    // TODO: Add reference to mechanic to offer
+    offersSent.push(OfferID);
+    await this.setActiveOffer(OfferID);
     await UserDB.updateUser(this, {offersSent});
   }
 
   /**
    * Removes a given offer from the list of sent offers. Does not actually delete the offer
-   * @param {String} requestID
+   * @param {String} OfferID
    */
-  async removeRequest (requestID) {
+  async removeOffer (OfferID) {
     const offersSent = this.offersSent;
-    _.pull(offersSent, requestID);
-    // TODO: Remove reference to mechanic from offer
+    _.pull(offersSent, OfferID);
+    await this.setActiveOffer(null);
     await UserDB.updateUser(this, {offersSent});
   }
 
   /**
-   * Sets the active request for the user. Can be set to null for no active request
-   * @param {String} requestID
+   * Sets the active offer for the user. Can be set to null for no active offer
+   * @param {String} OfferID
    */
-  async setActiveRequest (requestID) {
-    await UserDB.updateUser(this, {activeRequest: requestID});
+  async setActiveOffer (OfferID) {
+    await UserDB.updateUser(this, {activeOffer: OfferID});
   }
 
   async requestVerification (details = {bsb: null, bankAccountNo: null, mechanicLicenceNo: null}) {

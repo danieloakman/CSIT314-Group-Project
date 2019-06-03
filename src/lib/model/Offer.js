@@ -3,17 +3,21 @@ import OfferDB from "@database/offer";
 import ModelWithDbConnection from "@model/ModelWithDbConnection";
 
 export default class Offer extends ModelWithDbConnection {
+  async init () {
+    this._doc.isRetracted = false;
+  }
   static async getOffer (OfferID) {
     const record = await OfferDB.getRecord(OfferID);
     if (record) { return new Offer(record); }
     return null;
   }
 
-  static async createOffer (mechanicID, cost) {
+  static async createOffer (requestID, mechanicID, cost) {
     const record = {
+      requestID,
       creationDate: Date.now(),
       mechanicID,
-      cost
+      cost,
     };
 
     const newOffer = new Offer(record);
@@ -29,12 +33,23 @@ export default class Offer extends ModelWithDbConnection {
     return OfferDB.deleteRecord(offerID);
   }
 
+  static async getFirstOfferByMechanic (...args) {
+    const result = await OfferDB.getFirstOfferByMechanic(...args);
+    if (result) { return Offer.getOffer(result._id); }
+    return null;
+  }
+
   get creationDate () { return new Date(this._doc.creationDate); }
   get cost () { return this._doc.cost; }
+  get isRetracted () { return this._doc.isRetracted; }
   get mechanicID () { return this._doc.mechanicID; }
 
   async setCost (cost) {
     await OfferDB.updateRecord(this, {cost});
+  }
+
+  async setRetracted () {
+    await OfferDB.updateRecord(this, {isRetracted: true});
   }
 
   /**

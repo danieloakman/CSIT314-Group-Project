@@ -15,8 +15,22 @@ class OfferDB extends DBConnector {
     // });
     this.db.createIndex({index: {fields: ["cost"]}});
     this.db.createIndex({index: {fields: ["mechanicID"]}});
-    this.db.createIndex({index: {fields: ["status"]}}); // Don't know yet if this will be used
+    this.db.createIndex({index: {fields: ["requestID"]}});
+    this.db.createIndex({index: {fields: ["isRetracted"]}});
     this.db.createIndex({index: {fields: ["creationDate"]}});
+  }
+
+  /**
+   * Returns the first offer by a given mechanic from a given list of offers
+   * @param {String[]} offerIDs
+   * @param {String} mechanicID
+   */
+  async getFirstOfferByMechanic (offerIDs = [], mechanicID) {
+    const results = await this.db.find({selector: {
+      mechanicID: mechanicID,
+      _id: {$in: offerIDs}
+    }});
+    return results.docs[0];
   }
 }
 
