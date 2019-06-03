@@ -48,7 +48,7 @@ export default class OfferView extends React.Component {
           </View>
           <View style={styles.buttons}>
             <Button
-              title="Accept Request"
+              title="Accept Offer"
               onPress={async () => {
                 await this._acceptRequest();
               }}
