@@ -14,6 +14,7 @@ import {MapView} from "expo";
 import HeaderBar from "@molecules/HeaderBar";
 import LoadingGif from "@components/atoms/LoadingGif";
 import {withAuthContext} from "@lib/context/AuthContext";
+import LocationService from "@lib/services/LocationService";
 
 import Request from "@model/Request";
 import User from "@model/user";
@@ -34,10 +35,11 @@ class RequestList extends React.Component {
     }
 
     render () {
+      // console.log(this.state);
       return (
         <View style={{flex: 1}}>
           <HeaderBar
-            navLeft={this.state.isLoadingMap || this.state.isLoadingMarkers ? <View/> : null}
+            // navLeft={this.state.isLoadingMap ? <View/> : null}
             title="Nearby Requests"
           />
           <View style={{flex: 1}}>
@@ -120,38 +122,35 @@ class RequestList extends React.Component {
             >
               {this.state.isLoadingMap || this.state.isLoadingMarkers ? null
                 : this.state.serviceRequests.map((sr, index) => {
-                  if (
-                    // Don't show any markers that this mechanic has made an offer for already:
-                    sr.offers.filter(offer => {
-                      return offer.mechanicEmail === this.state.user.email;
-                    }).length === 0
-                  ) {
-                    return <MapView.Marker
-                      ref={ref => {
-                        if (ref) this.markerRefs.push(ref);
-                      }}
-                      key={index}
-                      coordinate={{
-                        latitude: sr.location.coords.latitude,
-                        longitude: sr.location.coords.longitude
-                      }}
-                      onCalloutPress={async () => {
-                        this._viewRequest(sr);
-                      }}
-                    >
-                      <MapView.Callout>
-                        <Text style={{fontWeight: "bold", fontSize: 15}}>
-                          {`Distance: ${Math.floor(sr.distance * 100) / 100}km`}
-                        </Text>
-                        <Text style={{fontSize: 13}}>
-                          {sr.description.length < 25 ? sr.description : `${sr.description.substring(0, 20).trim()}...`}
-                        </Text>
-                        <Text style={{fontStyle: "italic", fontSize: 14, alignSelf: "center"}}>
+                  // if (
+                  // Don't show any markers that this mechanic has made an offer for already:
+                  //   sr.offers.filter(offer => {
+                  //     return offer.mechanicID === this.state.user.ID;
+                  //   }).length === 0
+                  // ) {
+                  return <MapView.Marker
+                    key={index}
+                    coordinate={{
+                      latitude: sr.location.coords.latitude,
+                      longitude: sr.location.coords.longitude
+                    }}
+                    onCalloutPress={async () => {
+                      this._viewRequest(sr);
+                    }}
+                  >
+                    <MapView.Callout>
+                      <Text style={{fontWeight: "bold", fontSize: 15}}>
+                        {`Distance: ${Math.floor(LocationService.getDistanceBetween(sr.location.coords, this.state.location.coords) * 100) / 100}km`}
+                      </Text>
+                      <Text style={{fontSize: 13}}>
+                        {sr.description.length < 25 ? sr.description : `${sr.description.substring(0, 20).trim()}...`}
+                      </Text>
+                      <Text style={{fontStyle: "italic", fontSize: 14, alignSelf: "center"}}>
                           - Click to view -
-                        </Text>
-                      </MapView.Callout>
-                    </MapView.Marker>;
-                  }
+                      </Text>
+                    </MapView.Callout>
+                  </MapView.Marker>;
+                  // }
                 })}
               {this.state.isLoadingMap || this.state.isLoadingMarkers ? null
                 : <MapView.Circle
@@ -168,8 +167,9 @@ class RequestList extends React.Component {
     }
 
     _viewRequest (sr) {
+      console.log(sr);
       this.props.navigation.navigate("MechanicRequestViewModal", {
-        selectedSR: sr,
+        RequestID: sr.id,
         user: this.state.user,
         location: this.state.location
       });
