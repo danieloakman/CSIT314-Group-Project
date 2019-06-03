@@ -23,7 +23,6 @@ class RequestView extends React.Component {
     state = {
       offerAmount: null,
       selectedSR: null,
-      user: null,
       location: null,
       offerMade: false,
       isLoading: true,
@@ -40,11 +39,10 @@ class RequestView extends React.Component {
 
       this.setState({
         selectedSR: request,
-        user: navigation.getParam("user", this.props.AuthContext.user),
         location: navigation.getParam("location", await LocationService.getCurrentLocation())
       }, async () => {
         if (request) {
-          const offer = await request.getOfferByMechanic(this.state.user.id);
+          const offer = await request.getOfferByMechanic(this.props.AuthContext.user.id);
           if (offer) {
             this.setState({
               offer,
@@ -130,7 +128,8 @@ class RequestView extends React.Component {
         return;
       }
       const sr = this.state.selectedSR;
-      const response = await Offer.createOffer(sr.id, this.state.user.id, this.state.offerAmount);
+      const response = await Offer.createOffer(sr.id, this.props.AuthContext.user.id, this.state.offerAmount);
+      await this.props.AuthContext.user.setLocation(this.state.location);
       // TODO: Show toast on db fail
       await sr.submitOffer(response.id);
       Toast.show({

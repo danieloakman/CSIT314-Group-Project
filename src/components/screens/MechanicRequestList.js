@@ -125,7 +125,7 @@ class RequestList extends React.Component {
                   // if (
                   // Don't show any markers that this mechanic has made an offer for already:
                   //   sr.offers.filter(offer => {
-                  //     return offer.mechanicID === this.state.user.ID;
+                  //     return offer.mechanicID === this.props.AuthContext.user.ID;
                   //   }).length === 0
                   // ) {
                   return <MapView.Marker
@@ -170,7 +170,6 @@ class RequestList extends React.Component {
       // console.log(sr);
       this.props.navigation.navigate("MechanicRequestViewModal", {
         RequestID: sr.id,
-        user: this.state.user,
         location: this.state.location
       });
     }
