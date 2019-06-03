@@ -17,7 +17,7 @@ class RequestDB extends DBConnector {
     this.db.createIndex({index: {fields: ["driverID"]}});
     this.db.createIndex({index: {fields: ["vehicleID"]}});
     this.db.createIndex({index: {fields: ["description"]}});
-    this.db.createIndex({index: {fields: ["assignedMechanicID"]}});
+    this.db.createIndex({index: {fields: ["selectedOfferID"]}});
     this.db.createIndex({index: {fields: ["offers"]}});
     this.db.createIndex({index: {fields: ["status"]}});
     this.db.createIndex({index: {fields: ["creationDate"]}});
@@ -29,12 +29,15 @@ class RequestDB extends DBConnector {
    * that are within radius distance from location.coords.
    * @param {locationObject} location
    * @param {number} radius
+   * @return {Object[]}
    */
   async findInRadius (location, radius) {
     // Get all active requests (Could be improved by querying a reduced area before processing radius, although then the coordinate boundary needs to be accounted for)
-    const activeRequests = await this.db.find({
+    const response = await this.db.find({
       selector: {completionDate: {$exists: true}}
-    }).docs;
+    }); // TODO: This will find ALL requests, not just active requests
+    const activeRequests = response.docs;
+    // console.log(activeRequests);
 
     // Return an array of requests in specified radius
     if (!activeRequests) return [];
