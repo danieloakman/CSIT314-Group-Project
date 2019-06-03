@@ -1,3 +1,4 @@
+import "./Polyfill";
 import React from "react";
 import { Platform, StatusBar, StyleSheet, View } from "react-native";
 import { Root } from "native-base";
@@ -6,6 +7,10 @@ import { useScreens } from "react-native-screens";
 import AppNavigator from "./navigation/AppNavigator";
 import NavigationService from "@lib/services/NavigationService";
 import DatabaseService from "@lib/services/DatabaseService";
+
+// Initialize databases and models
+import DB from "@database";
+import "@model";
 
 import {ThemeProvider} from "@lib/context/ThemeContext";
 import {AuthProvider} from "@lib/context/AuthContext";
@@ -61,9 +66,10 @@ class App extends React.Component {
         // This is the font that we are using for our tab bar
         ...Icon.Ionicons.font,
       }),
-      DatabaseService.initialiseDatabase({
-        forceWipe: false, mergeDatabaseFile: false
-      }),
+      DB.loadTestData(),
+      // DatabaseService.initialiseDatabase({
+      //   forceWipe: false, mergeDatabaseFile: false
+      // }),
     ]);
   };
 

@@ -10,15 +10,20 @@ import {
 import {
   Toast,
 } from "native-base";
-import DatabaseService from "@lib/services/DatabaseService";
+// import DatabaseService from "@lib/services/DatabaseService";
 import LocationService from "@lib/services/LocationService";
 import GMapView from "@components/GoogleMapView";
 import {MapView} from "expo";
 import HeaderBar from "@molecules/HeaderBar";
 
-export default class OfferList extends React.Component {
+import {withAuthContext} from "@lib/context/AuthContext";
+
+import Request from "@model/Request";
+import Offer from "@model/Offer";
+import User from "@model/user";
+
+class OfferList extends React.Component {
     state = {
-      user: null,
       serviceRequest: null,
       displayOffers: null,
       location: null,
@@ -26,11 +31,11 @@ export default class OfferList extends React.Component {
       isLoadingMarkers: false,
       offerIndex: null,
       maxRadius: 5000,
+      offers: [],
+      mechanics: [],
     }
 
-    componentDidMount () {
-      let user = this.props.navigation.getParam("user", "The current user");
-      this.setState({user});
+    async componentDidMount () {
       this.markerRefs = [];
     }
 
@@ -45,18 +50,8 @@ export default class OfferList extends React.Component {
             <GMapView
               getRef={ref => { this.map = ref; }}
               onLocationRetrieved={async currentLocation => {
-                let serviceRequest = await DatabaseService.getServiceRequest(this.state.user.srId);
-                let displayOffers = serviceRequest.offers
-                  .filter(offer => {
-                    const distance = LocationService.getDistanceBetween(offer.location.coords, currentLocation.coords);
-                    if (distance < this.state.maxRadius / 1000) return true;
-                  }).sort((a, b) => {
-                    return LocationService.getDistanceBetween(a.location.coords, currentLocation.coords) -
-                      LocationService.getDistanceBetween(b.location.coords, currentLocation.coords);
-                  });
+                await this._updateDisplayOffers(5, currentLocation);
                 this.setState({
-                  serviceRequest,
-                  displayOffers,
                   isLoadingMap: false,
                   location: currentLocation
                 });
@@ -70,12 +65,12 @@ export default class OfferList extends React.Component {
                 let offerIndex = this.state.offerIndex;
                 if (offerIndex === null || offerIndex >= offers.length - 1) {
                   offerIndex = 0;
-                  latLng.latitude = offers[0].location.coords.latitude;
-                  latLng.longitude = offers[0].location.coords.longitude;
+                  latLng.latitude = this.state.mechanics[offers[0].mechanicID].location.coords.latitude;
+                  latLng.longitude = this.state.mechanics[offers[0].mechanicID].location.coords.longitude;
                 } else {
                   offerIndex++;
-                  latLng.latitude = offers[offerIndex].location.coords.latitude;
-                  latLng.longitude = offers[offerIndex].location.coords.longitude;
+                  latLng.latitude = this.state.mechanics[offers[offerIndex].mechanicID].location.coords.latitude;
+                  latLng.longitude = this.state.mechanics[offers[offerIndex].mechanicID].location.coords.longitude;
                 }
                 this.map.animateToCoordinate(latLng);
                 this.markerRefs[offerIndex].showCallout();
@@ -87,12 +82,12 @@ export default class OfferList extends React.Component {
                 let offerIndex = this.state.offerIndex;
                 if (offerIndex === null || offerIndex <= 0) {
                   offerIndex = offers.length - 1;
-                  latLng.latitude = offers[offerIndex].location.coords.latitude;
-                  latLng.longitude = offers[offerIndex].location.coords.longitude;
+                  latLng.latitude = this.state.mechanics[offers[offerIndex].mechanicID].location.coords.latitude;
+                  latLng.longitude = this.state.mechanics[offers[offerIndex].mechanicID].location.coords.longitude;
                 } else {
                   offerIndex--;
-                  latLng.latitude = offers[offerIndex].location.coords.latitude;
-                  latLng.longitude = offers[offerIndex].location.coords.longitude;
+                  latLng.latitude = this.state.mechanics[offers[offerIndex].mechanicID].location.coords.latitude;
+                  latLng.longitude = this.state.mechanics[offers[offerIndex].mechanicID].location.coords.longitude;
                 }
                 this.map.animateToCoordinate(latLng);
                 this.markerRefs[offerIndex].showCallout();
@@ -114,18 +109,9 @@ export default class OfferList extends React.Component {
                     mode="dropdown"
                     onValueChange={async maxRadius => {
                       this.markerRefs = [];
-                      let displayOffers = this.state.serviceRequest.offers
-                        .filter(offer => {
-                          const distance = LocationService.getDistanceBetween(offer.location.coords, this.state.location.coords);
-                          if (distance < maxRadius) return true;
-                        }).sort((a, b) => {
-                          return LocationService.getDistanceBetween(a.location.coords, this.state.location.coords) -
-                            LocationService.getDistanceBetween(b.location.coords, this.state.location.coords);
-                        });
+                      await this._updateDisplayOffers(maxRadius);
                       this.setState({
-                        maxRadius: maxRadius * 1000,
-                        offerIndex: null,
-                        displayOffers
+                        offerIndex: null
                       });
                     }}>
                     {[5, 10, 25, 50, 100, 200].map((radiusValue, index) => {
@@ -136,7 +122,7 @@ export default class OfferList extends React.Component {
               }>
               {this.state.isLoadingMap ? null
                 : this.state.displayOffers.map((offer, index) => {
-                  const distance = LocationService.getDistanceBetween(offer.location.coords, this.state.location.coords);
+                  const distance = LocationService.getDistanceBetween(this.state.mechanics[offer.mechanicID].location.coords, this.state.location.coords);
                   const rating = !isNaN(parseFloat(offer.mechanicRating))
                     ? offer.mechanicRating + "/5"
                     : offer.mechanicRating;
@@ -146,8 +132,8 @@ export default class OfferList extends React.Component {
                     }}
                     key={index}
                     coordinate={{
-                      latitude: offer.location.coords.latitude,
-                      longitude: offer.location.coords.longitude
+                      latitude: this.state.mechanics[offer.mechanicID].location.coords.latitude,
+                      longitude: this.state.mechanics[offer.mechanicID].location.coords.longitude
                     }}
                     onCalloutPress={() => this._selectOffer(offer)}
                   >
@@ -156,7 +142,7 @@ export default class OfferList extends React.Component {
                         {`Distance: ${Math.floor(distance * 100) / 100}km`}
                       </Text>
                       <Text style={{fontSize: 13}}>
-                        {`$${offer.offerAmount}, Rating: ${rating}`}
+                        {`$${offer.cost}, Rating: ${this.state.mechanics[offer.mechanicID].aggregateRating}`}
                       </Text>
                       <Text style={{fontStyle: "italic", fontSize: 14, alignSelf: "center"}}>
                         - Click to view -
@@ -202,12 +188,41 @@ export default class OfferList extends React.Component {
 
     _selectOffer (offer) {
       this.props.navigation.navigate("DriverViewOfferModal", {
-        offer,
-        user: this.state.user,
-        serviceRequest: this.state.serviceRequest
+        offerID: offer.id,
+        requestID: this.state.serviceRequest.id
+      });
+    }
+
+    async _updateDisplayOffers (maxRadius, location = this.state.location) {
+      const serviceRequest = await Request.getServiceRequest(this.props.AuthContext.user.activeRequest);
+      const offers = await Promise.all(serviceRequest.offers.map((id) => {
+        return Offer.getOffer(id);
+      }));
+      const mechanics = {};
+      await Promise.all(offers.map(async (offer) => {
+        mechanics[offer.mechanicID] = await User.getUser({id: offer.mechanicID});
+      }));
+      // console.log(mechanics);
+      let displayOffers = offers
+        .filter(offer => {
+          // console.log(offer);
+          // console.log(mechanics[offer.mechanicID]);
+          const distance = LocationService.getDistanceBetween(mechanics[offer.mechanicID].location.coords, location.coords);
+          if (distance < maxRadius) return true;
+        }).sort((a, b) => {
+          return LocationService.getDistanceBetween(mechanics[a.mechanicID].location.coords, location.coords) - LocationService.getDistanceBetween(mechanics[b.mechanicID].location.coords, location.coords);
+        });
+      this.setState({
+        serviceRequest,
+        mechanics,
+        offers,
+        displayOffers,
+        maxRadius: maxRadius * 1000,
       });
     }
 }
+
+export default withAuthContext(OfferList);
 
 const styles = StyleSheet.create({
   centeredRowContainer: {

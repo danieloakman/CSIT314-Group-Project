@@ -7,7 +7,8 @@ import {
   Button,
   Text,
 } from "native-base";
-import DatabaseService from "@lib/services/DatabaseService";
+// import DatabaseService from "@lib/services/DatabaseService";
+import Request from "@model/Request";
 import HeaderBar from "@molecules/HeaderBar";
 import { withNavigation } from "react-navigation";
 
@@ -25,14 +26,20 @@ class DriverHomeScreen extends React.Component {
     this.setState({user});
     const {navigation} = this.props;
     navigation.addListener("willFocus", () => { // todo: maybe make a better refresh screen method
-      DatabaseService.getServiceRequest(user.srId)
+      Request.getServiceRequest(user.activeRequest)
         .then(sr => {
-          const hasACardOrMembership = user.validCardDetails || user.membership;
+          // console.log(sr);
+          const hasACardOrMembership = user.isCardValid || user.isMember;
+          // console.log(user);
+          // console.log(sr);
           this.setState({
             serviceRequest: sr,
-            enableRequestAssistance: hasACardOrMembership && !user.srId,
-            enableViewCurrentOffers: hasACardOrMembership && user.srId && sr ? sr.status === "Awaiting offer acceptance" : false,
-            enableViewActiveRequest: hasACardOrMembership && user.srId && sr ? sr.status === "Offer accepted" : false
+            enableRequestAssistance: hasACardOrMembership &&
+            !user.activeRequest,
+            enableViewCurrentOffers: user.activeRequestID !== null &&
+            sr ? sr.selectedOfferID === null : false,
+            enableViewActiveRequest: user.activeRequestID !== null &&
+            sr ? sr.selectedOfferID !== null : false
           });
         }).catch(err => { throw err; });
     });

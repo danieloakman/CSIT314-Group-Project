@@ -10,7 +10,8 @@ import {
 } from "native-base";
 import {MapView} from "expo";
 import LocationService from "@lib/services/LocationService";
-import DatabaseService from "@lib/services/DatabaseService";
+// import DatabaseService from "@lib/services/DatabaseService";
+import User from "@model/user";
 import LoadingGif from "@components/atoms/LoadingGif";
 
 /**
@@ -33,24 +34,29 @@ export default class GoogleMapView extends React.Component {
   }
 
   componentDidMount () {
-    DatabaseService.getSignedInUser().then(async user => {
+    User.getCurrentUser().then(async user => {
       let location;
-      if (user.location) {
-        // Try to use the user's already stored location:
+      if (!user.location) {
+        // Retrieve the user's location if it doesn't exist:
+        location = await LocationService.getCurrentLocation();
+      } else if (user.location.timestamp >= Date.now() - 2 * 60 * 1000) {
+        // Only use the user's location if it is less than 2 hours old:
         location = user.location;
       } else {
         // Retrieve the user's location:
         location = await LocationService.getCurrentLocation();
       }
+      // location = await LocationService.getCurrentLocation();
       if (location) {
         if (!location.address) {
           let address = await LocationService.getAddress(
             location.coords.latitude, location.coords.longitude
           );
           location.address = address ? address.addressStr : "Address unavailable";
-          user.location = location;
-          await DatabaseService.saveUserChanges(user);
+          // user.location = location;
+          // await DatabaseService.saveUserChanges(user);
           location.title = "Current Location";
+          await user.setLocation(location);
         }
         this.setState({
           isLoading: false,

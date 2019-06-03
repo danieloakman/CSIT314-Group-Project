@@ -30,7 +30,7 @@ class AdminScreen extends React.Component {
               />
               <View>
                 <Text>Account Type: Admin</Text>
-                <Text>Name: {user.firstName} {user.lastName}</Text>
+                <Text>Name: {user.fullName}</Text>
               </View>
             </View>
             {/* <View style={styles.buttonContainer}>

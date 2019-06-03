@@ -16,19 +16,28 @@ import {
 import {withNavigation} from "react-navigation";
 import HeaderBar from "@molecules/HeaderBar";
 import PhoneNumberLink from "@components/atoms/PhoneNumberLink";
-import DatabaseService from "@lib/services/DatabaseService";
+// import DatabaseService from "@lib/services/DatabaseService";
 import HelpButton from "@atoms/HelpButton";
+import _ from "lodash";
+
+import User from "@model/user";
 
 class AdminVerificationScreen extends React.Component {
   state = {
-    mechanics: null
+    mechanics: []
   };
 
   componentDidMount () {
-    DatabaseService.getUserBySearch({type: "mechanic"})
-      .then(mechanics => {
-        this.setState({mechanics});
-      })
+    let currentUser = this.props.navigation.getParam("user");
+    Promise.all([
+      User.getMechanicsAwaitingVerification(),
+      currentUser.getVerifiedMechanics() // Gets all verified mechanics who have been verified by the current admin
+    ])
+      .then(
+        (values) => {
+          this.setState({mechanics: _.union([values[0], values[1]])});
+        }
+      )
       .catch(err => { throw err; });
   }
 
@@ -37,7 +46,7 @@ class AdminVerificationScreen extends React.Component {
     return (
       <View style={{flex: 1}}>
         <HeaderBar
-          title="Verification of Mechanics"
+          title="Mechanic Verification"
           navRight={<HelpButton
             message="Swipe left and right then press the green and red buttons to approve and deny mechanics."
           />}
@@ -47,13 +56,13 @@ class AdminVerificationScreen extends React.Component {
             tabStyle={{backgroundColor: "blue"}}
             // activeTabStyle={{backgroundColor: "blue"}}
           >
-            <Tab heading="Verify Mechanics"
+            <Tab heading="Unverified"
               activeTabStyle={{backgroundColor: "grey"}}
               tabStyle={{backgroundColor: "grey"}}
             >
               <ScrollView>
                 {this.state.mechanics
-                  .filter(mechanic => !mechanic.verifiedMechanic && mechanic.awaitingVerification)
+                  .filter(mechanic => !mechanic.isVerified && mechanic.awaitingVerification)
                   .map((mechanic, index) => {
                     return (
                       <SwipeRow key={index}
@@ -79,13 +88,13 @@ class AdminVerificationScreen extends React.Component {
                   })}
               </ScrollView>
             </Tab>
-            <Tab heading="Verified Mechanics"
+            <Tab heading="Verified"
               activeTabStyle={{backgroundColor: "grey"}}
               tabStyle={{backgroundColor: "grey"}}
             >
               <ScrollView>
                 {this.state.mechanics
-                  .filter(mechanic => mechanic.verifiedMechanic)
+                  .filter(mechanic => mechanic.isVerified)
                   .map((mechanic, index) => {
                     return (
                       <SwipeRow key={index}
@@ -114,42 +123,48 @@ class AdminVerificationScreen extends React.Component {
 
   async _approve (mechanic) {
     Toast.show({
-      text: `Approved ${mechanic.firstName} ${mechanic.lastName}`,
+      text: `Approved ${mechanic.fullName}`,
       buttonText: "Okay",
       duration: 5000,
       type: "success",
       style: {margin: 10, borderRadius: 15}
     });
-    mechanic.verifiedMechanic = true;
-    mechanic.awaitingVerification = false;
-    await DatabaseService.saveUserChanges(mechanic);
-    this.setState({
-      mechanics: this.state.mechanics.map(listedMechanic => {
-        if (listedMechanic.email === mechanic.email) {
-          return mechanic;
-        } else return listedMechanic;
-      })
-    });
+    // mechanic.verifiedMechanic = true;
+    // mechanic.awaitingVerification = false;
+    // await DatabaseService.saveUserChanges(mechanic);
+    await mechanic.verify();
+    this.forceUpdate();
+
+    // Dunno what this was doing, seems kinda redundant
+    // this.setState({
+    //   mechanics: this.state.mechanics.map(listedMechanic => {
+    //     if (listedMechanic.id === mechanic.id) {
+    //       return mechanic;
+    //     } else return listedMechanic;
+    //   })
+    // });
   }
 
   async _deny (mechanic) {
     Toast.show({
-      text: `Denied ${mechanic.firstName} ${mechanic.lastName}`,
+      text: `Denied ${mechanic.fullName}`,
       buttonText: "Okay",
       duration: 5000,
       type: "danger",
       style: {margin: 10, borderRadius: 15}
     });
-    mechanic.verifiedMechanic = false;
-    mechanic.awaitingVerification = false;
-    await DatabaseService.saveUserChanges(mechanic);
-    this.setState({
-      mechanics: this.state.mechanics.map(listedMechanic => {
-        if (listedMechanic.email === mechanic.email) {
-          return mechanic;
-        } else return listedMechanic;
-      })
-    });
+    // mechanic.verifiedMechanic = false;
+    // mechanic.awaitingVerification = false;
+    // await DatabaseService.saveUserChanges(mechanic);
+    await mechanic.verify(true);
+    this.forceUpdate();
+    // this.setState({
+    //   mechanics: this.state.mechanics.map(listedMechanic => {
+    //     if (listedMechanic.id === mechanic.id) {
+    //       return mechanic;
+    //     } else return listedMechanic;
+    //   })
+    // });
   }
 }
 
@@ -161,7 +176,7 @@ class MechanicListItem extends React.Component {
     return (
       <View style={{flex: 1}}>
         <View style={{flex: 1}}>
-          <Text>{mechanic.firstName} {mechanic.lastName}, {mechanic.email}.</Text>
+          <Text>{mechanic.fullName}, {mechanic.email}.</Text>
           <Left>
             <Text>Phone NO: </Text><PhoneNumberLink phoneNo={mechanic.phoneNo} style={{fontSize: 16}} />
           </Left>

@@ -10,16 +10,18 @@ module.exports = function (api) {
               root: ["./src"
               ],
               alias: {
-                "@assets": "./assets",
                 "@src": "./src",
                 "@components": "./src/components",
-                "@constants": "./src/constants",
                 "@atoms": "./src/components/atoms",
                 "@molecules": "./src/components/molecules",
                 "@templates": "./src/components/templates",
                 "@screens": "./src/components/screens",
                 "@pages": "./src/components/screens",
-                "@lib": "./src/lib"
+                "@lib": "./src/lib",
+                "@model": "./src/lib/model",
+                "@database": "./src/lib/services/database",
+                "@constants": "./src/constants",
+                "@assets": "./assets",
               },
             }
           ],
@@ -32,16 +34,18 @@ module.exports = function (api) {
               root: ["./src"
               ],
               alias: {
-                "@assets": "./assets",
                 "@src": "./src",
                 "@components": "./src/components",
-                "@constants": "./src/constants",
                 "@atoms": "./src/components/atoms",
                 "@molecules": "./src/components/molecules",
                 "@templates": "./src/components/templates",
                 "@screens": "./src/components/screens",
                 "@pages": "./src/components/screens",
-                "@lib": "./src/lib"
+                "@lib": "./src/lib",
+                "@model": "./src/lib/model",
+                "@database": "./src/lib/services/database",
+                "@constants": "./src/constants",
+                "@assets": "./assets",
               },
             }
           ],

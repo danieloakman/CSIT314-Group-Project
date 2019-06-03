@@ -21,7 +21,7 @@ import {
 import { createDrawerNavigator, withNavigation, createStackNavigator } from "react-navigation";
 import FlexContainer from "@components/FlexContainer";
 import {withAuthContext} from "@lib/context/AuthContext";
-import DB from "@lib/services/DatabaseService";
+import User from "@model/user";
 
 // import HomeScreen from "@screens/HomeScreen";
 import LinksScreen from "@screens/LinksScreen";
@@ -35,7 +35,7 @@ import DemoScreen from "@screens/DemoScreen";
 const entries = [
   {
     name: "Logout",
-    action: DB.signOutCurrentUser.bind(DB),
+    action: User.signOutUser.bind(User),
     route: "SignIn",
     endSection: true,
   },
@@ -102,7 +102,7 @@ class Drawer extends React.Component {
           <FlexContainer columnReverse style={styles.headerBox}>
 
             <View>
-              <Text style={styles.userName}>{auth.user.firstName} {auth.user.lastName}</Text>
+              <Text style={styles.userName}>{auth.user.fullName}</Text>
               <Text style={styles.email}>{auth.user.email}</Text>
             </View>
 

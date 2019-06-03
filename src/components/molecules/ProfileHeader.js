@@ -31,7 +31,7 @@ class ProfileHeader extends React.Component {
           <View style={{flex: 1, alignSelf: "center", alignItems: "center"}}>
             <View>
               <Text style={styles.userName}>
-                {record.firstName} {record.lastName}
+                {record.fullName}
               </Text>
               <Text style={styles.userEmail}>
                 {record.email}
@@ -46,11 +46,11 @@ class ProfileHeader extends React.Component {
           <View style={{flex: 1, alignSelf: "center", alignItems: "flex-start", minWidth: 150}}>
             <Text style={[{ flex: 2 }, styles.centerText]}>{record.description}</Text>
             <Text >Joined date {record.registerDate}</Text>
-            {record.type === "driver"
-              ? <Text>Subscriber Badge</Text>
+            {record.type === "Driver"
+              ? <Text>Is Member: {record.isMember ? "true" : "false"}</Text>
               : null
             }
-            {record.type === "mechanic"
+            {record.type === "Mechanic"
               ? <Text>Rating goes here</Text>
               : null
             }

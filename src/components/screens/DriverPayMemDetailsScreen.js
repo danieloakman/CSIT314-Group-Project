@@ -16,11 +16,13 @@ import {
 } from "native-base";
 import {withNavigation} from "react-navigation";
 import HeaderBar from "@molecules/HeaderBar";
-import DatabaseService from "@lib/services/DatabaseService";
-import PaymentService from "@lib/services/PaymentService";
+// import DatabaseService from "@lib/services/DatabaseService";
+// import PaymentService from "@lib/services/PaymentService";
+import Transaction from "@model/Transaction";
 import Patterns from "@constants/UserInputRegex";
+// import Driver from "@src/lib/model/user/Driver";
 
-const maximumDate = new Date(new Date().getFullYear() + 5, 0, 0);
+// const maximumDate = new Date(new Date().getFullYear() + 5, 0, 0);
 
 class DriverPayMemDetailsScreen extends React.Component {
   state = {
@@ -28,7 +30,13 @@ class DriverPayMemDetailsScreen extends React.Component {
   };
 
   componentWillMount () {
-    this.setState({user: this.props.navigation.getParam("user")});
+    const user = this.props.navigation.getParam("user");
+    this.setState({
+      user,
+      cardNo: user.cardNo,
+      cardExpiry: user.cardExpiry,
+      cardCSV: user.cardCSV
+    });
   }
 
   render () {
@@ -44,7 +52,7 @@ class DriverPayMemDetailsScreen extends React.Component {
                 {"  -  Pay-on-demand: \nSave your card details now and pay for road side assisstance as you need it. " +
                 "Note, there is a 25% service fee added with every assistance request." +
                 "\n  -  Membership Subscription: \n" +
-                `For $${PaymentService.MEMBERSHIP_PRICE} you can have free unlimited road side assitance for one year! No other costs included. ` +
+                `For $${Transaction.MEMBERSHIP_PRICE} you can have free unlimited road side assitance for one year! No other costs included. ` +
                 "\nAlso, you do not need to save your card details if you have membership."}
                 {/* {this.state.user.validCardDetails &&
                 "You have a valid card saved!"}
@@ -56,22 +64,20 @@ class DriverPayMemDetailsScreen extends React.Component {
                 <Label>Number on Card</Label>
                 <Input
                   keyboardType="numeric"
-                  value={this.state.user.cardNo}
+                  value={this.state.cardNo}
                   onChangeText={cardNo => {
-                    let user = this.state.user;
-                    user.cardNo = cardNo;
-                    this.setState({user});
+                    this.setState({cardNo});
                   }}
                 />
               </Item>
               <View style={[styles.centeredRowContainer, {borderBottomWidth: 1, borderColor: "lightgrey"}]}>
                 <Text style={{fontSize: 17, color: "grey", marginTop: 20, marginLeft: 2}}>
-                  Card Expiry Date: {this.state.user.cardExpiry
-                    ? this.state.user.cardExpiry
+                  Card Expiry Date: {this.state.cardExpiry.getTime() > 0
+                    ? `${this.state.cardExpiry.getMonth()}/${this.state.cardExpiry.getFullYear()}`
                     : "Missing date"}
                 </Text>
                 <DatePicker
-                  defaultDate={new Date()}
+                  defaultDate={this.state.user.cardExpiry}
                   minimumDate={new Date()}
                   maximumDate={new Date(new Date().getFullYear() + 5, 0, 0)} // today's date + 5 years
                   locale="en"
@@ -80,9 +86,7 @@ class DriverPayMemDetailsScreen extends React.Component {
                   placeHolderText=""
                   textStyle={{color: "rgba(0,0,0,0)", marginHorizontal: -170}}
                   onDateChange={date => {
-                    let user = this.state.user;
-                    user.cardExpiry = `${date.getMonth() + 1}/${date.getFullYear().toString().substring(2)}`;
-                    this.setState({user});
+                    this.setState({cardExpiry: date});
                   }}
                 />
               </View>
@@ -91,11 +95,9 @@ class DriverPayMemDetailsScreen extends React.Component {
                 <Label>Card CSV (3 digits on the back)</Label>
                 <Input
                   keyboardType="numeric"
-                  value={this.state.user.cardCSV}
+                  value={this.state.cardCSV}
                   onChangeText={cardCSV => {
-                    let user = this.state.user;
-                    user.cardCSV = cardCSV;
-                    this.setState({user});
+                    this.setState({cardCSV});
                   }}
                   // onSubmitEditing={async () => { await this._saveCardDetails(); }}
                 />
@@ -103,9 +105,9 @@ class DriverPayMemDetailsScreen extends React.Component {
               <Button info full rounded
                 style={{marginTop: 10}}
                 onPress={async () => { await this._saveCardDetails(); }}>
-                <Text style={{fontSize: 17}}>{this.state.user.validCardDetails ? "Update" : "Save"} Card Details</Text>
+                <Text style={{fontSize: 17}}>{this.state.user.isCardValid ? "Update" : "Save"} Card Details</Text>
               </Button>
-              {this.state.user.validCardDetails &&
+              {this.state.user.isCardValid &&
               <Button info full rounded
                 style={{marginTop: 10}}
                 onPress={async () => { await this._deleteCardDetails(); }}
@@ -119,9 +121,9 @@ class DriverPayMemDetailsScreen extends React.Component {
               <Button info full rounded
                 style={{marginTop: 10}}
                 onPress={async () => { await this._signUpForMembership(); }}
-                disabled={this.state.user.membership}>
-                <Text style={{fontSize: 17, color: this.state.user.membership ? "green" : "white"}}>
-                  {this.state.user.membership ? "You have Membership!" : "Sign up for membership"}
+                disabled={this.state.user.isMember}>
+                <Text style={{fontSize: 17, color: this.state.user.isMember ? "green" : "white"}}>
+                  {this.state.user.isMember ? "You have Membership!" : "Sign up for membership"}
                 </Text>
               </Button>
             </ScrollView>
@@ -142,11 +144,11 @@ class DriverPayMemDetailsScreen extends React.Component {
       });
       return false;
     };
-    if (!this.state.user.cardNo.trim().match(Patterns.cardNo)) {
+    if (!this.state.cardNo.trim().match(Patterns.cardNo)) {
       return errorToast("Invalid card number, must be 16 digits long.");
-    } else if (!this.state.user.cardExpiry.trim().match(Patterns.cardExpiry)) {
-      return errorToast("Invalid card expiry date, e.g. '12/22'");
-    } else if (!this.state.user.cardCSV.trim().match(Patterns.cardCSV)) {
+    } else if (!this.state.cardExpiry.getTime() > 0) {
+      return errorToast("Please enter an expiry date.");
+    } else if (!this.state.cardCSV.trim().match(Patterns.cardCSV)) {
       return errorToast("Invalid card CSV, must be 3 digits long.");
     }
     return true;
@@ -154,10 +156,12 @@ class DriverPayMemDetailsScreen extends React.Component {
 
   async _saveCardDetails () {
     if (this._validateTextInputs()) {
-      let user = this.state.user;
-      user.validCardDetails = true;
-      await DatabaseService.saveUserChanges(user);
-      this.setState({user});
+      // let user = this.state.user;
+      // user.validCardDetails = true;
+      // await DatabaseService.saveUserChanges(user);
+      await this.state.user.addCard({cardNo: this.state.cardNo, cardExpiry: this.state.cardExpiry, cardCSV: this.state.cardCSV});
+      // this.setState({user});
+      this.forceUpdate();
       Toast.show({
         text: "Successfully updated card details!",
         buttonText: "Okay",
@@ -169,11 +173,9 @@ class DriverPayMemDetailsScreen extends React.Component {
   }
 
   async _deleteCardDetails () {
-    let user = this.state.user;
-    user.validCardDetails = false;
-    user.cardNo = user.cardExpiry = user.cardCSV = "";
-    await DatabaseService.saveUserChanges(user);
-    this.setState({user});
+    await this.state.user.removeCard();
+    this.setState({cardNo: "", cardCSV: "", cardExpiry: new Date(0)});
+    this.forceUpdate();
     Toast.show({
       text: "Successfully deleted card details.",
       buttonText: "Okay",
@@ -185,9 +187,14 @@ class DriverPayMemDetailsScreen extends React.Component {
 
   async _signUpForMembership () {
     if (this._validateTextInputs()) {
-      let user = this.state.user;
-      let result = await PaymentService.payForMembership(user);
-      if (!result.pass) {
+      // let user = this.state.user;
+      // let result = await PaymentService.payForMembership(user);
+      let result = await this.state.user.addMembership({
+        cardNo: this.state.cardNo,
+        cardExpiry: this.state.cardExpiry,
+        cardCSV: this.state.cardCSV
+      });
+      if (!result.ok) {
         Toast.show({
           text: "Unsuccessful membership subscription. Reason/error: " + result.reason,
           buttonText: "Okay",
@@ -197,14 +204,11 @@ class DriverPayMemDetailsScreen extends React.Component {
         });
         return;
       }
-      user.paymentIds.push(result.paymentId);
-      user.membership = true;
-      const today = new Date();
-      user.membershipEndingDate = new Date(today.getFullYear() + 1, today.getMonth(), today.getDate());
-      user.cardNo = user.cardExpiry = user.cardCSV = ""; // User didn't press save card button, so don't save it.
-      await DatabaseService.saveUserChanges(user);
+      // user.paymentIds.push(result.paymentId);
+      // user.cardNo = user.cardExpiry = user.cardCSV = ""; // User didn't press save card button, so don't save it.
+      // await DatabaseService.saveUserChanges(user);
       Toast.show({
-        text: `$200 has been charged to your card. You now have Membership until ${user.membershipEndingDate.toLocaleDateString()}`,
+        text: `$200 has been charged to your account. You now have Membership until ${this.state.user.membershipEndingDate.toLocaleDateString()}`,
         buttonText: "Okay",
         duration: 5000,
         type: "success",

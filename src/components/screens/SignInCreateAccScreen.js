@@ -15,7 +15,7 @@ import {
 } from "native-base";
 import WindowBox from "@components/WindowBox";
 import Patterns from "@constants/UserInputRegex";
-import DatabaseService from "@lib/services/DatabaseService";
+import User from "@model/user";
 import Colors from "@constants/Colors";
 import {withAuthContext} from "@lib/context/AuthContext";
 
@@ -39,17 +39,32 @@ class SignInCreateAccScreen extends React.Component {
 
   componentWillMount () {
     if (__DEV__) {
-      DatabaseService.getDatabase(/user-/, true)
-        .then(users => {
-          users.unshift([
-            "NONE",
-            JSON.stringify({
-              type: "NONE",
-              email: "No user selected"
-            })
-          ]);
-          this.setState({users});
-        }).catch(err => { throw err; });
+      this.setState({testUsers: [
+        {
+          email: "NONE",
+          label: "No user selected"
+        },
+        {
+          email: "driver@test.com",
+          password: "test123",
+          label: "TestUser1: driver@test.com"
+        },
+        {
+          email: "driver2@test.com",
+          password: "test123",
+          label: "TestUser2: driver2@test.com"
+        },
+        {
+          email: "mechanic@test.com",
+          password: "test123",
+          label: "TestUser3: mechanic@test.com"
+        },
+        {
+          email: "admin@test.com",
+          password: "test123",
+          label: "TestUser4: admin@test.com"
+        }
+      ]});
     }
   }
 
@@ -152,8 +167,9 @@ class SignInCreateAccScreen extends React.Component {
                 style={{width: 200}}
                 itemStyle={{fontSize: 20}}
                 onValueChange={async user => {
-                  const result = await DatabaseService.signInUser(user.email, user.password);
-                  if (!result.pass) {
+                  // const result = await DatabaseService.signInUser(user.email, user.password);
+                  const result = await User.signInUser(user.email, user.password);
+                  if (!result.ok) {
                     Toast.show({
                       text: result.reason,
                       buttonText: "Okay",
@@ -163,12 +179,12 @@ class SignInCreateAccScreen extends React.Component {
                     });
                   }
                 }}>
-                {!this.state.users ? null
-                  : this.state.users.map((user, index) => {
-                    user = JSON.parse(user[1]);
+                {!this.state.testUsers ? null
+                  : this.state.testUsers.map((user, index) => {
+                    // user = JSON.parse(user[1]);
                     return (<Picker.Item
                       key={index}
-                      label={`${user.type}, ${user.email}`}
+                      label={user.label}
                       value={user}
                     />);
                   })}
@@ -304,8 +320,8 @@ class SignInCreateAccScreen extends React.Component {
       return;
     }
     // Attempt to sign the user in:
-    const result = await DatabaseService.signInUser(this.state.signInEmail, this.state.signInPassword);
-    if (!result.pass) {
+    const result = await User.signInUser(this.state.signInEmail, this.state.signInPassword);
+    if (!result.ok) {
       Toast.show({
         text: result.reason,
         buttonText: "Okay",
@@ -325,13 +341,18 @@ class SignInCreateAccScreen extends React.Component {
       return;
     }
     // Attempt to create the user:
-    const result = await DatabaseService.createUser(
-      this.state.crAccType, this.state.crAccFirstName,
-      this.state.crAccLastName, this.state.crAccEmail,
-      this.state.crAccPassword, this.state.crAccPhoneNo,
-      true // Flag to sign them in as well
+    const result = await User.createUser(
+      {
+        type: this.state.crAccType,
+        givenName: this.state.crAccFirstName,
+        surname: this.state.crAccLastName,
+        email: this.state.crAccEmail,
+        password: this.state.crAccPassword,
+        phoneNo: this.state.crAccPhoneNo
+      },
+      {signIn: true} // Flag to sign them in as well
     );
-    if (!result.pass) {
+    if (!result.ok) {
       Toast.show({
         text: result.reason,
         buttonText: "Okay",

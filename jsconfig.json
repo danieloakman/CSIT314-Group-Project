@@ -1,0 +1,47 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@src/*": [
+        "./src/*"
+      ],
+      "@components/*": [
+        "./src/components/*"
+      ],
+      "@atoms/*": [
+        "./src/components/atoms/*"
+      ],
+      "@molecules/*": [
+        "./src/components/molecules/*"
+      ],
+      "@templates/*": [
+        "./src/components/templates/*"
+      ],
+      "@screens/*": [
+        "./src/components/screens/*"
+      ],
+      "@pages/*": [
+        "./src/components/screens/*"
+      ],
+      "@lib/*": [
+        "./src/lib/*"
+      ],
+      "@model/*": [
+        "./src/lib/model/*"
+      ],
+      "@database/*": [
+        "./src/lib/services/database/*"
+      ],
+      "@constants/*": [
+        "./src/constants/*"
+      ],
+      "@assets/*": [
+        "./assets/*"
+      ],
+    }
+  },
+  "include": [
+    "src/**/*",
+    "assets/**/*"
+  ]
+}
