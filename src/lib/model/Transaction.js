@@ -45,6 +45,12 @@ export default class Transaction extends ModelWithDbConnection {
     this._doc = { ...this._doc, ...commonDetails, ...extraDetails };
   }
 
+  static async getTransaction (TransactionID) {
+    const record = await TransactionDB.getRecord(TransactionID);
+    if (record) { return new Transaction(record); }
+    return null;
+  }
+
   /**
    * All transactions are initiated by a payer
    * @param {String} type can be "request" or "subscription"
