@@ -81,7 +81,7 @@ class MechanicHomeScreen extends React.Component {
               <Text style={{fontSize: 17}}>View Current Offers</Text>
             </Button>
           </View>
-          <View style={styles.buttonContainer}>
+          <View style={[styles.buttonContainer, {marginBottom: 10}]}>
             <Button full info
               style={styles.button}
               onPress={() => this.props.navigation.navigate("MechanicRequestViewModal") }
@@ -110,7 +110,6 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
     paddingRight: 20,
     paddingTop: 10,
-    paddingBottom: 10,
     marginTop: 2,
     marginBottom: 2,
   },

@@ -57,6 +57,14 @@ class AdminScreen extends React.Component {
                 <Text style={{fontSize: 16}}>View Mechanic Verification Requests</Text>
               </Button>
             </View>
+            <View style={[styles.buttonContainer, {marginBottom: 10}]}>
+              <Button full info
+                style={styles.button}
+                onPress={() => this.props.navigation.navigate("AdminViewReportsModal", {user}) }
+              >
+                <Text style={{fontSize: 16}}>View Reports</Text>
+              </Button>
+            </View>
           </View>}
       </View>
     );
@@ -241,7 +249,6 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
     paddingRight: 20,
     paddingTop: 10,
-    paddingBottom: 10,
     marginTop: 2,
     marginBottom: 2
   },

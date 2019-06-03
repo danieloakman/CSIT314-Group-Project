@@ -23,12 +23,13 @@ import FlexContainer from "@components/FlexContainer";
 import {withAuthContext} from "@lib/context/AuthContext";
 import User from "@model/user";
 
-import HomeScreen from "@screens/HomeScreen";
+// import HomeScreen from "@screens/HomeScreen";
 import LinksScreen from "@screens/LinksScreen";
 import SettingsScreen from "@screens/SettingsScreen";
 import ExpoSettingsScreen from "@screens/ExpoSettingsScreen";
 import DeveloperScreen from "@screens/DeveloperScreen";
 import MainTabNavigator from "./MainTabNavigator";
+import DemoScreen from "@screens/DemoScreen";
 
 // Button definitions to be used to construct the drawer
 const entries = [
@@ -50,6 +51,10 @@ const entries = [
     name: "Settings",
     route: "Settings",
     endSection: true,
+  },
+  {
+    name: "Demo Utilities",
+    route: "Demo"
   },
   {
     name: "Links",
@@ -147,12 +152,20 @@ const LinksStack = createStackNavigator({
   headerMode: "float"
 });
 
+const DemoStack = createStackNavigator({
+  Demo: DemoScreen
+},
+{
+  headerMode: "float"
+});
+
 export default createDrawerNavigator({
   Tabs: MainTabNavigator,
   Links: LinksStack,
   Settings: SettingsStack,
   Developer: DeveloperStack,
-  ExpoSettings: ExpoSettingsStack
+  ExpoSettings: ExpoSettingsStack,
+  Demo: DemoStack
 },
 {
   initialRouteName: "Tabs",

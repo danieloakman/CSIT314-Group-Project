@@ -110,8 +110,13 @@ class DriverPayMemDetailsScreen extends React.Component {
               {this.state.user.isCardValid &&
               <Button info full rounded
                 style={{marginTop: 10}}
-                onPress={async () => { await this._deleteCardDetails(); }}>
-                <Text style={{fontSize: 17}}>Delete your Card Details</Text>
+                onPress={async () => { await this._deleteCardDetails(); }}
+                disabled={this.state.user.srId !== null}>
+                <Text style={{fontSize: 17}}>
+                  {this.state.user.srId
+                    ? "Cannot delete card with ongoing assistance request"
+                    : "Delete your Card Details"}
+                </Text>
               </Button>}
               <Button info full rounded
                 style={{marginTop: 10}}

@@ -27,6 +27,4 @@ module.exports = class User {
       }
     }
   }
-
-  isAdmin () { return false; }
 };

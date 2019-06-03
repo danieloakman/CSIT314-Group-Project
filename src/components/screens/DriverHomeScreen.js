@@ -80,7 +80,7 @@ class DriverHomeScreen extends React.Component {
             </Button>
           }
         </View>
-        <View style={styles.buttonContainer}>
+        <View style={[styles.buttonContainer, {marginBottom: 10}]}>
           {!this.state.user ? null
             : <Button full info
               style={styles.button}
@@ -118,7 +118,6 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
     paddingRight: 20,
     paddingTop: 10,
-    paddingBottom: 10,
     marginTop: 2,
     marginBottom: 2,
   },
