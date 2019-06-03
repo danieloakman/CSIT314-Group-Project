@@ -47,8 +47,8 @@ class RequestList extends React.Component {
               getRef={ref => { this.map = ref; }}
               onLocationRetrieved={async currentLocation => {
                 this.setState({location: currentLocation});
-                let user = await User.getCurrentUser();
-                let srArr = await Request.getRequestsInRadius(this.state.location, this.state.maxRadius / 1000);
+                let user = this.props.AuthContext.user;
+                let srArr = await Request.getRequestsInRadius(currentLocation, this.state.maxRadius / 1000);
                 this.setState({
                   user, serviceRequests: srArr, isLoadingMap: false
                 });

@@ -43,6 +43,7 @@ export default class Offer extends ModelWithDbConnection {
   get cost () { return this._doc.cost; }
   get isRetracted () { return this._doc.isRetracted; }
   get mechanicID () { return this._doc.mechanicID; }
+  get requestID () { return this._doc.requestID; }
 
   async setCost (cost) {
     await OfferDB.updateRecord(this, {cost});

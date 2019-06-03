@@ -13,6 +13,7 @@ import {
 // import DatabaseService from "@lib/services/DatabaseService";
 import HeaderBar from "@molecules/HeaderBar";
 import { withNavigation } from "react-navigation";
+import {withAuthContext} from "@lib/context/AuthContext";
 import LocationService from "@lib/services/LocationService";
 
 import Offer from "@model/Offer";
@@ -31,13 +32,15 @@ class RequestView extends React.Component {
     async componentWillMount () {
       /* get parameters from the list item which was clicked */
       const { navigation } = this.props;
+      const offer = await Offer.getOffer(this.props.AuthContext.user.activeOffer);
+      const request = await Request.getServiceRequest(navigation.getParam("RequestID", offer.requestID));
       this.setState({
-        selectedSR: await Request.getServiceRequest(navigation.getParam("RequestID", null)),
-        user: navigation.getParam("user", "Currently signed in mechanic"),
-        location: navigation.getParam("location", "Current location")
+        selectedSR: request,
+        user: navigation.getParam("user", this.props.AuthContext.user),
+        location: navigation.getParam("location", await LocationService.getCurrentLocation())
       }, async () => {
-        if (this.state.selectedSR) {
-          const offer = await this.state.selectedSR.getOfferByMechanic(this.state.user.id);
+        if (request) {
+          const offer = await request.getOfferByMechanic(this.state.user.id);
           if (offer) {
             this.setState({
               offer,
@@ -137,7 +140,7 @@ class RequestView extends React.Component {
     }
 }
 
-export default withNavigation(RequestView);
+export default withAuthContext(withNavigation(RequestView));
 
 const styles = StyleSheet.create({
   heading: {

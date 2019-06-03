@@ -42,8 +42,9 @@ class RequestDB extends DBConnector {
     // Return an array of requests in specified radius
     if (!activeRequests) return [];
     return activeRequests.map(request => {
-      request.distance = LocationService.getDistanceBetween(location.coords, request.location.coords);
-      return request;
+      const distance = LocationService.getDistanceBetween(location.coords, request.location.coords);
+
+      return {distance, _id: request._id};
     })
       .filter(request => request.distance < radius)
       .sort((a, b) => a.distance - b.distance);

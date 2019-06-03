@@ -29,11 +29,12 @@ class UserDB extends DBConnector {
 
     // Driver index
     this.db.createIndex({ index: {fields: ["vehicles"]} });
+    this.db.createIndex({index: {fields: ["activeRequest"]}});
 
     // Mechanic index
     this.db.createIndex({index: {fields: ["isVerified"]}});
     this.db.createIndex({index: {fields: ["aggregateRating"]}});
-    this.db.createIndex({index: {fields: ["activeRequest"]}});
+    this.db.createIndex({index: {fields: ["activeOffer"]}});
     this.db.createIndex({index: {fields: ["offersSent"]}});
     this.db.createIndex({index: {fields: ["awaitingVerification"]}});
   }

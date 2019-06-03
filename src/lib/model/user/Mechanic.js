@@ -10,7 +10,7 @@ export default class Mechanic extends User {
     await super.init();
     this._doc.isVerified = false;
     this._doc.aggregateRating = 0; // Value between 0 and 10, where odd values are half-stars and even values are full stars. Can be decimal. (i.e. 7 = 3.5 stars and 8.4 = 4.2 stars)
-    this._doc.activeRequest = null; // Service request ID currently assigned
+    this._doc.activeOffer = null; // Service request ID currently assigned
     this._doc.offersSent = []; // List of service request IDs where this mechanic sent an offer
     this._doc.bsb = null;
     this._doc.bankAccountNo = null;
@@ -81,7 +81,7 @@ export default class Mechanic extends User {
 
   get isVerified () { return this._doc.isVerified; }
   get aggregateRating () { return this._doc.aggregateRating; }
-  get activeRequest () { return this._doc.activeRequest; }
+  get activeOffer () { return this._doc.activeOffer; }
   get offersSent () { return this._doc.offersSent; }
   get bsb () { return this._doc.bsb; }
   get bankAccountNo () { return this._doc.bankAccountNo; }

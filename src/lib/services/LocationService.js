@@ -21,7 +21,7 @@ export default class LocationService {
     } else {
       return Promise.race([
         new Promise(async resolve => {
-          resolve(await Location.getCurrentPositionAsync({maximumAge}));
+          resolve(await Location.getCurrentPositionAsync({maximumAge, accuracy: Location.Accuracy.BestForNavigation}));
         }),
         new Promise(resolve => {
           let wait = setTimeout(() => {
@@ -36,7 +36,7 @@ export default class LocationService {
                 longitude: 150.882327
               }, 2)
             );
-          }, 2000); // Timeout of 2 seconds.
+          }, 5000); // Timeout of 5 seconds.
         })
       ]);
     }

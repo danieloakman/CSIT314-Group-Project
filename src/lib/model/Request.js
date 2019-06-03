@@ -87,8 +87,9 @@ export default class Request extends ModelWithDbConnection {
   async changeOffer () {}
 
   /**
-   * Sets the service request as completed then creates new transaction
-   * Also purges system of other offers
+   * Sets the service request as completed,
+   * then creates new transaction
+   * Also sets activeRequest on all mechanics involved to null
    */
   async completeRequest () {}
 

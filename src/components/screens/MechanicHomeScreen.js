@@ -14,10 +14,9 @@ import HeaderBar from "@molecules/HeaderBar";
 class MechanicHomeScreen extends React.Component {
   state = {
     user: null,
-    serviceRequest: null,
     enableNearbyRequests: false,
     enableViewCurrentOffers: false,
-    enableViewActiveRequest: false,
+    enableViewActiveOffer: false,
   }
 
   componentDidMount () {
@@ -25,15 +24,11 @@ class MechanicHomeScreen extends React.Component {
     this.setState({user});
     const {navigation} = this.props;
     navigation.addListener("willFocus", () => { // todo: maybe make a better refresh screen method
-      Request.getServiceRequest(user.activeRequest)
-        .then(sr => {
-          this.setState({
-            serviceRequest: sr,
-            enableNearbyRequests: !user.activeRequest && user.isVerified,
-            enableViewCurrentOffers: !user.activeRequest && user.offersSent.length > 0 && user.isVerified,
-            enableViewActiveRequest: user.activeRequest && user.isVerified
-          });
-        }).catch(err => { throw err; });
+      this.setState({
+        enableNearbyRequests: !user.activeOffer && user.isVerified,
+        // enableViewCurrentOffers: user.activeOffer && user.offersSent.length > 0 && user.isVerified,
+        enableViewActiveOffer: user.activeOffer && user.isVerified
+      });
     });
   }
 
@@ -76,20 +71,21 @@ class MechanicHomeScreen extends React.Component {
             <Button full info
               style={styles.button}
               onPress={() => this.props.navigation.navigate("MechanicRequestViewModal") }
-              disabled={!this.state.enableViewCurrentOffers}
+              disabled={!this.state.enableViewActiveOffer}
             >
-              <Text style={{fontSize: 17}}>View Current Offers</Text>
+              <Text style={{fontSize: 17}}>View Current Offer</Text>
             </Button>
           </View>
-          <View style={[styles.buttonContainer, {marginBottom: 10}]}>
+          {/* Dunno what the difference between these two buttons here was, but to simplify things, a mechanic can have only one active offer at a time */}
+          {/* <View style={[styles.buttonContainer, {marginBottom: 10}]}>
             <Button full info
               style={styles.button}
               onPress={() => this.props.navigation.navigate("MechanicRequestViewModal") }
-              disabled={!this.state.enableViewActiveRequest}
+              disabled={!this.state.enableViewActiveOffer}
             >
               <Text style={{fontSize: 17}}>View Active Assistance Request</Text>
             </Button>
-          </View>
+          </View> */}
         </View>}
       </View>
     );
