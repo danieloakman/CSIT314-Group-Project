@@ -29,11 +29,15 @@ class RequestView extends React.Component {
       isLoading: true,
       offer: null
     }
+
     async componentWillMount () {
       /* get parameters from the list item which was clicked */
       const { navigation } = this.props;
       const offer = await Offer.getOffer(this.props.AuthContext.user.activeOffer);
-      const request = await Request.getServiceRequest(navigation.getParam("RequestID", offer.requestID));
+      let requestID = navigation.getParam("RequestID");
+      if (!requestID && offer) { requestID = offer.requestID; }
+      const request = await Request.getServiceRequest(requestID);
+
       this.setState({
         selectedSR: request,
         user: navigation.getParam("user", this.props.AuthContext.user),
