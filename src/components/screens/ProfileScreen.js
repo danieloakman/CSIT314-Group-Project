@@ -22,6 +22,9 @@ import {withAuthContext} from "@lib/context/AuthContext";
 import { withNavigation } from "react-navigation";
 
 import User from "@model/user";
+import Vehicle from "@model/Vehicle";
+import Review from "@model/Review";
+import Request from "@model/Request";
 import UserDB from "@database/user";
 import StickyTabTemplate from "@templates/StickyTabTemplate";
 
@@ -65,10 +68,6 @@ class ProfileScreen extends React.Component {
     UserDB.off("updatedRecord", this.handleDataChange.bind(this));
   }
 
-  // static getDerivedStateFromProps (props, state) {
-
-  // }
-
   /**
    * Retrieves a user's data from storage and applies it to tab data
    */
@@ -77,9 +76,12 @@ class ProfileScreen extends React.Component {
     // console.log(record);
     this.setState({userRecord: record});
     if (record.type === "Driver") {
+      const vehicles = await Promise.all(record.vehicles.map((id) => {
+        return Vehicle.getVehicle(id);
+      }));
       this.setState({tabData: [
         {header: "Vehicles",
-          data: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+          data: vehicles,
           // data: new Array(5000).fill(null),
           renderItem: (data) => <VehicleCard {...data}/>
         },

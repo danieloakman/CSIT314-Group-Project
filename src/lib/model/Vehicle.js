@@ -38,6 +38,7 @@ export default class Vehicle extends ModelWithDbConnection {
     return VehicleDB.deleteRecord(vehicleID);
   }
 
+  get customName () { return null; }
   get make () { return this._doc.make; }
   get model () { return this._doc.model; }
   get year () { return this._doc.year; }
