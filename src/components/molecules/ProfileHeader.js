@@ -42,7 +42,7 @@ class ProfileHeader extends React.Component {
               <Text style={styles.userEmail}>
                 {record.email}
               </Text>
-              {record.phoneNo &&
+              {(record.type === "Mechanic" || record.type === "Driver") && record.phoneNo &&
                 <View style={{flexDirection: "row"}}>
                   <PhoneLink phoneNo={record.phoneNo} style={{color: "#47f"}} />
                   <Text>  </Text>
@@ -67,22 +67,20 @@ class ProfileHeader extends React.Component {
               ? <Text style={styles.memberBadge}>Member</Text>
               : null
             }
-            {record.type === "Mechanic"
-              ? <View style={{paddingTop: 8}}><StarRating
-                disabled={true}
-                maxStars={5}
-                rating={record.averageRating / 2}
-                iconSet="Ionicons"
-                emptyStar="ios-star-outline"
-                halfStar="ios-star-half"
-                fullStar="ios-star"
-                starSize={30}
-              /></View>
-              : null
+            {record.type === "Mechanic" &&
+               <View style={{paddingTop: 8}}><StarRating
+                 disabled={true}
+                 maxStars={5}
+                 rating={record.averageRating / 2}
+                 iconSet="Ionicons"
+                 emptyStar="ios-star-outline"
+                 halfStar="ios-star-half"
+                 fullStar="ios-star"
+                 starSize={30}
+               /></View>
             }
-            {record.type === "Mechanic"
-              ? <Text>Ratings: {record.ratingCount}</Text>
-              : null
+            {record.type === "Mechanic" &&
+               <Text>Ratings: {record.ratingCount}</Text>
             }
           </View>
         </FlexContainer>
