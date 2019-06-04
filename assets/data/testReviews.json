@@ -1,1 +1,11 @@
-[]
+[
+  {
+    "_id": "TestReview1",
+    "value": 7,
+    "comment": "Lorem ipsum dolor sit amet",
+    "requestID": "d0155f80-47b7-434e-ba0d-980cee2da5aa",
+    "driverID": "TestUser2",
+    "mechanicID": "TestUser3",
+    "creationDate": 1559633723000
+  }
+]

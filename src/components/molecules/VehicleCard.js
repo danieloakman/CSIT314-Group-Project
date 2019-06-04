@@ -2,7 +2,8 @@ import React from "react";
 import {
   Image,
   Alert,
-  TouchableWithoutFeedback
+  TouchableWithoutFeedback,
+  StyleSheet
 } from "react-native";
 import {
   Container, Header, Content, Card,
@@ -21,7 +22,12 @@ export default class VehicleCard extends React.Component {
         <Card style={{width: "100%"}}>
           <CardItem>
             <Left>
-              <Thumbnail square large source={{uri: this.props.item.imageURI ? this.props.item.imageURI : "https://appleton.wi-autosales.com/wp-content/themes/car-dealer-deluxe/assets/images/product-images/placeholder_car.png"}}/>
+              <Thumbnail circle large
+                source={ this.props.item.imageURI
+                  ? {uri: this.props.item.imageURI}
+                  : require("@assets/images/placeholder-vehicle.png")}
+                style={styles.vehicleImage}
+              />
               <Body>
                 {/* <Text>{this.props.item.customName}</Text> */}
                 <Text>{year} {make} {model}</Text>
@@ -35,3 +41,11 @@ export default class VehicleCard extends React.Component {
     );
   }
 }
+
+const styles = StyleSheet.create({
+  vehicleImage: {
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: "black",
+    resizeMode: "cover",
+  },
+});

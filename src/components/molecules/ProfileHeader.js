@@ -8,9 +8,9 @@ import {
 
 import FlexContainer from "@components/FlexContainer";
 import StarRating from "react-native-star-rating";
-import { Ionicons } from "@expo/vector-icons";
 import {withAuthContext} from "@lib/context/AuthContext";
 import {month} from "@constants/common";
+import { Thumbnail } from "native-base";
 
 class ProfileHeader extends React.Component {
   render () {
@@ -25,11 +25,11 @@ class ProfileHeader extends React.Component {
       }} >
         {/* User image and name */}
         <FlexContainer size={1} style={{ justifyContent: "flex-start" }}>
-          <Image
-            source={record.pictureURI
+          <Thumbnail circle large source={
+            record.pictureURI
               ? {uri: record.pictureURI}
-              : require("@assets/images/robot-prod.png")}
-            style={styles.userImage}
+              : require("@assets/images/placeholder-user.png")}
+          style={styles.userImage}
           />
 
           <View style={{flex: 1, alignSelf: "center", alignItems: "center"}}>
@@ -99,13 +99,10 @@ const styles = StyleSheet.create({
     color: "grey"
   },
   userImage: {
-    borderRadius: 75,
-    borderWidth: 1,
+    borderWidth: StyleSheet.hairlineWidth,
     borderColor: "black",
     marginTop: 10,
     resizeMode: "cover",
-    // maxWidth: 75,
-    // maxHeight: 75,
     width: 75,
     height: 75,
     alignSelf: "center"

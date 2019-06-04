@@ -87,6 +87,10 @@ export default class Driver extends User {
     return UserDB.updateRecord(this, {isMember: true, membershipEndingDate: expiry.getTime()});
   }
 
+  async getReviewsByDriver () {
+    return ReviewDB.getReviewsByDriver(this.id);
+  }
+
   get description () { return this._doc.description; }
   get vehicles () { return this._doc.vehicles; }
   get activeRequestID () { return this._doc.activeRequest; }

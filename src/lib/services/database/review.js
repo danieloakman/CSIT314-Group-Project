@@ -10,6 +10,15 @@ class ReviewDB extends DBConnector {
     this.db.createIndex({index: {fields: ["mechanicID"]}});
   }
 
+  async getReviewsByDriver (driverID) {
+    const response = await this.db.find({
+      selector: {driverID: driverID},
+      fields: ["_id"]
+    }); // TODO: This will find ALL requests, not just active requests
+    const reviews = response.docs;
+    return reviews;
+  }
+
   /**
    * Loads test data into database
    * @param {Object} opts

@@ -17,6 +17,8 @@ import {
 import ProfileHeader from "@molecules/ProfileHeader";
 import HeaderBar from "@molecules/HeaderBar";
 import VehicleCard from "@molecules/VehicleCard";
+import ReviewCard from "@molecules/ReviewCard";
+import RequestCard from "@molecules/RequestCard";
 
 import {withAuthContext} from "@lib/context/AuthContext";
 import { withNavigation } from "react-navigation";
@@ -79,6 +81,14 @@ class ProfileScreen extends React.Component {
       const vehicles = await Promise.all(record.vehicles.map((id) => {
         return Vehicle.getVehicle(id);
       }));
+      const reviewIDs = await record.getReviewsByDriver();
+      const reviews = await Promise.all(reviewIDs.map((entry) => {
+        return Review.getReview(entry._id);
+      }));
+      const requestIDs = await record.getRequestsByDriver();
+      const requests = await Promise.all(requestIDs.map((entry) => {
+        return Request.getRequest(entry._id);
+      }));
       this.setState({tabData: [
         {header: "Vehicles",
           data: vehicles,
@@ -86,11 +96,11 @@ class ProfileScreen extends React.Component {
           renderItem: (data) => <VehicleCard {...data}/>
         },
         {header: "Reviews",
-          data: [1, 2, 3, 4, 5, 6, 7, 8],
-          renderItem: ({item, index}) => <Card><CardItem><Text>Mechanic Review #{index}</Text></CardItem></Card>
+          data: reviews,
+          renderItem: (data) => <ReviewCard {...data}/>
         },
         {header: "Request History",
-          data: [1, 2, 3],
+          data: requests,
           renderItem: ({item, index}) => <Card><CardItem><Text>Request history #{index}</Text></CardItem></Card>
         },
 
