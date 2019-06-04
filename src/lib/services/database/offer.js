@@ -17,7 +17,6 @@ class OfferDB extends DBConnector {
     this.db.createIndex({index: {fields: ["mechanicID"]}});
     this.db.createIndex({index: {fields: ["requestID"]}});
     this.db.createIndex({index: {fields: ["isRetracted"]}});
-    this.db.createIndex({index: {fields: ["creationDate"]}});
   }
 
   /**

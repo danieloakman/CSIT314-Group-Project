@@ -20,7 +20,6 @@ class RequestDB extends DBConnector {
     this.db.createIndex({index: {fields: ["selectedOfferID"]}});
     this.db.createIndex({index: {fields: ["offers"]}});
     this.db.createIndex({index: {fields: ["status"]}});
-    this.db.createIndex({index: {fields: ["creationDate"]}});
     this.db.createIndex({index: {fields: ["completionDate"]}});
   }
 

@@ -19,6 +19,7 @@ class DBConnector {
     this.dbName = name; // Allow access to database name
     this.db = new PouchDB(name, {adapter: "react-native-sqlite", revs_limit: 20});
     DBConnector.DBs.push(this);
+    this.db.createIndex({index: {fields: ["creationDate"]}});
 
     // TODO: Move emitter to mixin
     this._emitter = new EventEmitter();

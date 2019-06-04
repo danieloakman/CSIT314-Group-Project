@@ -9,7 +9,8 @@
     "vehicles": [
       "9fe70aad-8568-4568-92b7-f96276fdcea6"
     ],
-    "phoneNo": "04123456789"
+    "phoneNo": "04123456789",
+    "creationDate": 1559633723000
   },
   {
     "_id": "TestUser2",
@@ -34,7 +35,8 @@
         "accuracy": 16.340999603271484
       }
     },
-    "phoneNo": "04023456789"
+    "phoneNo": "04023456789",
+    "creationDate": 1559633723000
   },
   {
     "_id": "TestUser3",
@@ -51,7 +53,8 @@
     "bsb": null,
     "bankAccountNo": null,
     "mechanicLicenceNo": null,
-    "awaitingVerification": false
+    "awaitingVerification": false,
+    "creationDate": 1559633723000
   },
   {
     "_id": "TestUser4",
@@ -61,6 +64,7 @@
     "email": "admin@test.com",
     "password": "test123",
     "jobs": [],
-    "phoneNo": ""
+    "phoneNo": "",
+    "creationDate": 1559633723000
   }
 ]

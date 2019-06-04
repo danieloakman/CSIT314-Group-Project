@@ -19,8 +19,8 @@
     "assignedMechanicID": null,
     "offers": [],
     "status": "Awaiting offer acceptance",
-    "creationDate": "2019-05-07T10:04:27.944Z",
     "completionDate": null,
-    "selectedOfferID": null
+    "selectedOfferID": null,
+    "creationDate": 1559633723000
   }
 ]

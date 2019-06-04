@@ -20,7 +20,6 @@ export default class Offer extends ModelWithDbConnection {
   static async createOffer (requestID, mechanicID, cost) {
     const record = {
       requestID,
-      creationDate: Date.now(),
       mechanicID,
       cost,
     };
@@ -44,7 +43,6 @@ export default class Offer extends ModelWithDbConnection {
     return null;
   }
 
-  get creationDate () { return new Date(this._doc.creationDate); }
   get cost () { return this._doc.cost; }
   get isRetracted () { return this._doc.isRetracted; }
   get mechanicID () { return this._doc.mechanicID; }

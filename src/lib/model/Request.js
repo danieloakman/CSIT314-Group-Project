@@ -5,7 +5,7 @@ import ModelWithDbConnection from "@model/ModelWithDbConnection";
 
 import Offer from "./Offer";
 import User from "./user";
-import Mechanic from "./user/Mechanic";
+// import Mechanic from "./user/Mechanic";
 import Transaction from "./Transaction";
 
 export default class Request extends ModelWithDbConnection {
@@ -19,7 +19,6 @@ export default class Request extends ModelWithDbConnection {
     this._doc.selectedOfferID = null;
     this._doc.offers = []; // List of offer ids on the request
     this._doc.status = "Awaiting offer acceptance";
-    this._doc.creationDate = Date.now();
     this._doc.completionDate = null;
     this._doc.transactionID = "";
   }
@@ -152,7 +151,6 @@ export default class Request extends ModelWithDbConnection {
   get selectedOfferID () { return this._doc.selectedOfferID; }
   get offers () { return this._doc.offers; }
   get status () { return this._doc.status; }
-  get creationDate () { return new Date(this._doc.creationDate); } // Constructed date objects cannot be stored as is
   get completionDate () { return new Date(this._doc.completionDate); }
   get transactionID () { return this._doc.transactionID; }
 
@@ -182,17 +180,6 @@ export default class Request extends ModelWithDbConnection {
 
   async setStatus (status) {
     await RequestDB.updateRecord(this, {status});
-  }
-
-  /**
-   *
-   * @param {Date} creationDate
-   */
-  async setCreationDate (creationDate) {
-    if (creationDate.constructor === Date) {
-      const date = creationDate.getTime();
-      await RequestDB.updateRecord(this, {date});
-    }
   }
 
   /**

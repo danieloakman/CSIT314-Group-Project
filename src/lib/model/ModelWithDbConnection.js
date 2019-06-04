@@ -19,7 +19,9 @@ export default class ModelWithDbConnection {
    * Initialises the data in the record.
    * Used instead of constructor as it should only be used when a record is being created, not when being restored from db, also allows async to be used.
    */
-  async init () {}
+  async init () {
+    this._doc.creationDate = Date.now();
+  }
 
   /**
    * Update document if it changes in DB (UNTESTED!)
@@ -46,4 +48,5 @@ export default class ModelWithDbConnection {
   }
 
   get id () { return this._doc._id; }
+  get creationDate () { return new Date(this._doc.creationDate); } // Stored as epoch time
 }
