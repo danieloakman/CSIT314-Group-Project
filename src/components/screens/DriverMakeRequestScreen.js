@@ -124,7 +124,6 @@ export default class RequestScreen extends React.Component {
                         return <Picker.Item
                           key={index}
                           label={`${vehicle.year} ${vehicle.make}`}
-                          value={vehicle}
                         />;
                       })}
                     </Picker>
