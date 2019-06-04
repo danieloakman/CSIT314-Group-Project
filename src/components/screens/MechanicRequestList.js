@@ -60,6 +60,8 @@ class RequestList extends React.Component {
                 let latLng = {};
                 const srArr = this.state.serviceRequests;
                 let srIndex = this.state.srIndex;
+                if (srArr.length <= 0) return;
+
                 if (srIndex === null || srIndex >= srArr.length - 1) {
                   srIndex = 0;
                   latLng.latitude = srArr[0].location.coords.latitude;
@@ -77,6 +79,8 @@ class RequestList extends React.Component {
                 let latLng = {};
                 const srArr = this.state.serviceRequests;
                 let srIndex = this.state.srIndex;
+                if (srArr.length <= 0) return;
+
                 if (srIndex === null || srIndex <= 0) {
                   srIndex = srArr.length - 1;
                   latLng.latitude = srArr[srIndex].location.coords.latitude;
@@ -129,6 +133,9 @@ class RequestList extends React.Component {
                   //   }).length === 0
                   // ) {
                   return <MapView.Marker
+                    ref={ref => {
+                      if (ref) this.markerRefs.push(ref);
+                    }}
                     key={index}
                     coordinate={{
                       latitude: sr.location.coords.latitude,
