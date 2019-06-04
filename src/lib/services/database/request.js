@@ -38,7 +38,7 @@ class RequestDB extends DBConnector {
   async findInRadius (location, radius) {
     // Get all active requests (Could be improved by querying a reduced area before processing radius, although then the coordinate boundary needs to be accounted for)
     const response = await this.db.find({
-      selector: {completionDate: {$exists: true}}
+      selector: {completionDate: {$eq: null}}
     }); // TODO: This will find ALL requests, not just active requests
     const activeRequests = response.docs;
     // console.log(activeRequests);
