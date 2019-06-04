@@ -6,7 +6,8 @@
     "ios": "expo start --ios",
     "eject": "expo eject",
     "test": "node ./node_modules/jest/bin/jest.js --watchAll",
-    "eslint": "eslint ."
+    "eslint": "eslint .",
+    "datagen": "node ./dataGenerator/dataGen"
   },
   "jest": {
     "preset": "jest-expo"
