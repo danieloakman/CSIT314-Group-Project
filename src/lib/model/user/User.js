@@ -54,10 +54,12 @@ export default class User extends ModelWithDbConnection {
    * @return {Promise<Object> | Promise<null>} User instance
    */
   static async getCurrentUser () {
-    const id = await AsyncStorage.getItem("signedInUserID");
-    if (!id) return null;
-    const record = await this.getUser({id});
-    return record;
+    try {
+      const id = await AsyncStorage.getItem("signedInUserID");
+      if (!id) return null;
+      const record = await this.getUser({id});
+      return record;
+    } catch (err) { return null; }
   }
 
   /**
