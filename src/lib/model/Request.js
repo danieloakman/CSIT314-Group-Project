@@ -125,7 +125,7 @@ export default class Request extends ModelWithDbConnection {
       transactionDetails = {
         ...transactionDetails,
         cardNo: driver.cardNo,
-        cardExpiry: driver.cardExpiry,
+        cardExpiry: driver.cardExpiry.getTime(),
         cardCSV: driver.cardCSV };
     }
 
