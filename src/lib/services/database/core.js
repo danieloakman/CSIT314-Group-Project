@@ -61,9 +61,13 @@ class DBConnector {
       await this.db.bulkDocs(testData);
       await this.db.bulkDocs(sampleData);
     } else {
-      await Promise.all(testData.map((doc) => {
+      await Promise.all(testData.map(async (doc) => {
         if (opts.upsert) {
           return this.db.upsert(doc._id, doc);
+        } else if (opts.wipe) {
+          const oldDoc = await this.db.get(doc._id);
+          if (oldDoc) this.db.remove(oldDoc);
+          return this.db.put(doc);
         } else {
           return this.db.putIfNotExists(doc);
         }
@@ -75,14 +79,25 @@ class DBConnector {
    * Deletes all entries in this database
    */
   async wipe () {
-    await this.db.destroy();
+    const oldRecords = await this.db.allDocs();
+    const newRecords = [];
+    oldRecords.rows.map((record) => {
+      newRecords.push({
+        _id: record._id,
+        _rev: record._rev,
+        _deleted: true
+      });
+    });
+    await this.db.bulkDocs(newRecords);
+    await this.db.compact();
   }
 
   /**
    * Deletes all entries in all databases
    */
   static async wipeAll () {
-    for (const db in this.DBs) {
+    for (const db of this.DBs) {
+      // console.log(db.dbName);
       await db.wipe();
     }
   }

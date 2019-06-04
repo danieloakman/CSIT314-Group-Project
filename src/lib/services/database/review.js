@@ -9,6 +9,18 @@ class ReviewDB extends DBConnector {
     this.db.createIndex({index: {fields: ["driverID"]}});
     this.db.createIndex({index: {fields: ["mechanicID"]}});
   }
+
+  /**
+   * Loads test data into database
+   * @param {Object} opts
+   * @param {Boolean} opts.loadSamples Should sampledata also be loaded (For volume testing)
+   * @param {Boolean} opts.upsert Should existing documents be updated/replaced to match?
+   */
+  async _loadTestData (opts) {
+    const testData = require("@assets/data/testReviews");
+    const sampleData = require("@assets/data/sampleReviews");
+    super._loadTestData(opts, {testData, sampleData});
+  }
 }
 
 export default new ReviewDB();
