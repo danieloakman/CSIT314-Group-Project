@@ -1,6 +1,7 @@
 [
   {
     "_id": "d0155f80-47b7-434e-ba0d-980cee2da5aa",
+    "description": "",
     "location": {
       "timestamp": 1557223186000,
       "mocked": false,

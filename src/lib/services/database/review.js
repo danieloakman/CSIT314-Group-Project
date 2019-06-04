@@ -19,7 +19,16 @@ class ReviewDB extends DBConnector {
     const response = await this.db.find({
       selector: {driverID: driverID},
       fields: ["_id"]
-    }); // TODO: This will find ALL requests, not just active requests
+    });
+    const reviews = response.docs;
+    return reviews;
+  }
+
+  async getReviewsByMechanic (mechanicID) {
+    const response = await this.db.find({
+      selector: {mechanicID: mechanicID},
+      fields: ["_id"]
+    });
     const reviews = response.docs;
     return reviews;
   }

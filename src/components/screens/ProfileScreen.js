@@ -108,8 +108,16 @@ class ProfileScreen extends React.Component {
       ]
       });
     } else if (record.type === "Mechanic") {
+      const reviewIDs = await record.getReviewsByMechanic();
+      const reviews = await Promise.all(reviewIDs.map((entry) => {
+        return Review.getReview(entry._id);
+      }));
+
       this.setState({tabData: [
-        {header: "Reviews", data: []},
+        {header: "Reviews",
+          data: reviews,
+          renderItem: (data) => <ReviewCard {...data}/>
+        },
         {header: "Request History", data: []},
       ]
       });
@@ -157,10 +165,11 @@ class ProfileScreen extends React.Component {
         <StickyTabTemplate
           headerComponent={this._renderProfileHeader.bind(this)}
           tabData={this.state.tabData}
-          renderItem={({item, index}) => <Card><CardItem><Text>Default render method user for item #{index}</Text></CardItem></Card>}
+          renderItem={({item, index}) => <Card><CardItem><Text>Request history #{index}</Text></CardItem></Card>}
           onHeaderOffset={this._onHeaderScroll.bind(this)}
           renderEmpty={() => <Text style={{color: "lightgrey", fontWeight: "bold", fontSize: 16, textAlign: "center", paddingTop: 20}}>No items here...</Text>}
         />
+
       </View>
     );
   }

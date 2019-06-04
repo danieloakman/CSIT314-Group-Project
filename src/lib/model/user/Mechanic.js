@@ -1,5 +1,6 @@
 import User from "./User";
 import UserDB from "@database/user";
+import ReviewDB from "@database/review";
 import _ from "lodash";
 
 /**
@@ -97,6 +98,10 @@ export default class Mechanic extends User {
       averateRating: Math.round((score / count) * 10) / 10 // Average and round to 1 decimal
     };
     await UserDB.updateRecord(this, delta);
+  }
+
+  async getReviewsByMechanic () {
+    return ReviewDB.getReviewsByMechanic(this.id);
   }
 
   get isVerified () { return this._doc.isVerified; }
