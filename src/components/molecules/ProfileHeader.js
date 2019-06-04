@@ -7,7 +7,10 @@ import {
 } from "react-native";
 
 import FlexContainer from "@components/FlexContainer";
+import StarRating from "react-native-star-rating";
+import { Ionicons } from "@expo/vector-icons";
 import {withAuthContext} from "@lib/context/AuthContext";
+import {month} from "@constants/common";
 
 class ProfileHeader extends React.Component {
   render () {
@@ -28,6 +31,7 @@ class ProfileHeader extends React.Component {
               : require("@assets/images/robot-prod.png")}
             style={styles.userImage}
           />
+
           <View style={{flex: 1, alignSelf: "center", alignItems: "center"}}>
             <View>
               <Text style={styles.userName}>
@@ -44,14 +48,31 @@ class ProfileHeader extends React.Component {
         {/* User description */}
         <FlexContainer size={4} style={{ marginTop: 15 }}>
           <View style={{flex: 1, alignSelf: "center", alignItems: "flex-start", minWidth: 150}}>
-            <Text style={[{ flex: 2 }, styles.centerText]}>{record.description}</Text>
-            <Text >Joined date {record.registerDate}</Text>
-            {record.type === "Driver"
-              ? <Text>Is Member: {record.isMember ? "true" : "false"}</Text>
+
+            {record.desciption !== "" && record.description !== null &&
+              <Text style={[{ flex: 2 }, styles.centerText]}>{record.description}</Text>
+            }
+
+            <Text >Joined {month[record.creationDate.getUTCMonth()]} {record.creationDate.getUTCFullYear()}</Text>
+            {record.type === "Driver" && record.isMember
+              ? <Text style={styles.memberBadge}>Member</Text>
               : null
             }
             {record.type === "Mechanic"
-              ? <Text>Rating goes here</Text>
+              ? <View style={{paddingTop: 8}}><StarRating
+                disabled={true}
+                maxStars={5}
+                rating={record.averageRating / 2}
+                iconSet="Ionicons"
+                emptyStar="ios-star-outline"
+                halfStar="ios-star-half"
+                fullStar="ios-star"
+                starSize={30}
+              /></View>
+              : null
+            }
+            {record.type === "Mechanic"
+              ? <Text>Ratings: {record.ratingCount}</Text>
               : null
             }
           </View>
@@ -89,4 +110,18 @@ const styles = StyleSheet.create({
     height: 75,
     alignSelf: "center"
   },
+  memberBadge: {
+    fontSize: 16,
+    color: "white",
+    fontWeight: "bold",
+    alignSelf: "center",
+    backgroundColor: "#0eadf7",
+    marginTop: 20,
+    padding: 2,
+    paddingLeft: 25,
+    paddingRight: 25,
+    borderRadius: 8,
+    // borderColor: "#f2c915",
+    // borderWidth: 2
+  }
 });

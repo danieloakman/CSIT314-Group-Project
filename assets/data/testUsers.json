@@ -54,6 +54,9 @@
     "bankAccountNo": null,
     "mechanicLicenceNo": null,
     "awaitingVerification": false,
+    "averageRating": 0,
+    "ratingScore": 0,
+    "ratingCount": 0,
     "creationDate": 1559633723000
   },
   {
