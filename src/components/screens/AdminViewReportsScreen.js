@@ -19,7 +19,7 @@ import PhoneNumberLink from "@components/atoms/PhoneNumberLink";
 import DatabaseService from "@lib/services/DatabaseService";
 import HelpButton from "@atoms/HelpButton";
 
-class AdminVerificationScreen extends React.Component {
+class AdminViewReportsScreen extends React.Component {
   state = {
     serviceRequests: [],
     payments: []
@@ -64,4 +64,4 @@ class AdminVerificationScreen extends React.Component {
   }
 }
 
-export default withNavigation(AdminVerificationScreen);
+export default withNavigation(AdminViewReportsScreen);
