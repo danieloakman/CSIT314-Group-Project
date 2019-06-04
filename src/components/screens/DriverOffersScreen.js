@@ -63,6 +63,8 @@ class OfferList extends React.Component {
                 let latLng = {};
                 const offers = this.state.displayOffers;
                 let offerIndex = this.state.offerIndex;
+                if (offers.length <= 0) return;
+
                 if (offerIndex === null || offerIndex >= offers.length - 1) {
                   offerIndex = 0;
                   latLng.latitude = this.state.mechanics[offers[0].mechanicID].location.coords.latitude;
@@ -80,6 +82,8 @@ class OfferList extends React.Component {
                 let latLng = {};
                 const offers = this.state.displayOffers;
                 let offerIndex = this.state.offerIndex;
+                if (offers.length <= 0) return;
+
                 if (offerIndex === null || offerIndex <= 0) {
                   offerIndex = offers.length - 1;
                   latLng.latitude = this.state.mechanics[offers[offerIndex].mechanicID].location.coords.latitude;
