@@ -22,7 +22,7 @@
   - Run it through the android studio emulator:
     1. Make sure LAN connection mode is selected (it's default) in the DevTools browser tab.
     2. Go to the Android Virtual Device Manager in Android Studio and create a new virtual device.
-    3. Select any phone but for its optimal to use 4.5" screen phones and bigger since that's what we tested on.
+    3. Select any phone but it's optimal to use 4.5" screen phones or bigger since that's what we tested on.
     4. The minimum version allowed is Android 5. We tested on android 6 and above.
     5. Now go to the SDK Manager in Android Studio and copy the "Android SDK Location" to clipboard.
     6. Windows Button + S -> Search: "environment variables" -> Enter.
