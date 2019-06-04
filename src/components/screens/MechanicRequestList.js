@@ -150,7 +150,10 @@ class RequestList extends React.Component {
                         {`Distance: ${Math.floor(LocationService.getDistanceBetween(sr.location.coords, this.state.location.coords) * 100) / 100}km`}
                       </Text>
                       <Text style={{fontSize: 13}}>
-                        {sr.description.length < 25 ? sr.description : `${sr.description.substring(0, 20).trim()}...`}
+                        {typeof sr.description === "string"
+                          ? sr.description.length < 25 ? sr.description : `${sr.description.substring(0, 20).trim()}...`
+                          : null
+                        }
                       </Text>
                       <Text style={{fontStyle: "italic", fontSize: 14, alignSelf: "center"}}>
                           - Click to view -
