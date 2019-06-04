@@ -1,4 +1,5 @@
 /* eslint-disable no-console */
+// TODO: Change from DatabaseService
 // Only available in developer mode
 import React from "react";
 
@@ -7,7 +8,7 @@ import {
   ScrollView,
   Button
 } from "react-native";
-import DatabaseService from "@lib/services/DatabaseService";
+// import DatabaseService from "@lib/services/DatabaseService";
 import LocationService from "@lib/services/LocationService";
 import {FileSystem} from "expo";
 import PhoneNumberLink from "@components/atoms/PhoneNumberLink";

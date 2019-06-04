@@ -10,7 +10,8 @@ import {
   Toast,
   Text
 } from "native-base";
-import DatabaseService from "@lib/services/DatabaseService";
+// import DatabaseService from "@lib/services/DatabaseService";
+import CoreDB from "@database/core";
 import LocationService from "@lib/services/LocationService";
 import {FileSystem} from "expo";
 import PhoneNumberLink from "@components/atoms/PhoneNumberLink";
@@ -50,7 +51,7 @@ export default class DemoScreen extends React.Component {
         <Button full info
           style={styles.button}
           onPress={async () => {
-            await DatabaseService.wipeDatabase();
+            await CoreDB.wipeAll();
             console.log("Done wipe database. Should sign out now.");
             // todo: show toast, auto sign out
           }}
@@ -60,7 +61,7 @@ export default class DemoScreen extends React.Component {
         <Button full info
           style={styles.button}
           onPress={async () => {
-            await DatabaseService.initialiseDatabase({forceWipe: true});
+            await CoreDB.loadTestData({wipe: true});
             console.log("Done wipe database and re-initialise. Should sign out now.");
             // todo: show toast, auto sign out
           }}

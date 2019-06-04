@@ -1,3 +1,8 @@
+/**
+ * This module is DEPRECATED. Please do not use
+ * @file
+ * @deprecated in favor of DBv2
+ */
 import DatabaseService from "@lib/services/DatabaseService";
 const uuid = require("uuid/v4"); // random uuid
 

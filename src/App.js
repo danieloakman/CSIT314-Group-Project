@@ -6,7 +6,6 @@ import { AppLoading, Asset, Font, Icon, registerRootComponent } from "expo";
 import { useScreens } from "react-native-screens";
 import AppNavigator from "./navigation/AppNavigator";
 import NavigationService from "@lib/services/NavigationService";
-import DatabaseService from "@lib/services/DatabaseService";
 
 // Initialize databases and models
 import DB from "@database";
@@ -67,9 +66,6 @@ class App extends React.Component {
         ...Icon.Ionicons.font,
       }),
       DB.loadTestData(),
-      // DatabaseService.initialiseDatabase({
-      //   forceWipe: false, mergeDatabaseFile: false
-      // }),
     ]);
   };
 

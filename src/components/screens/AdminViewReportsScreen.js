@@ -16,7 +16,7 @@ import {
 import {withNavigation} from "react-navigation";
 import HeaderBar from "@molecules/HeaderBar";
 import PhoneNumberLink from "@components/atoms/PhoneNumberLink";
-import DatabaseService from "@lib/services/DatabaseService";
+// import DatabaseService from "@lib/services/DatabaseService";
 import HelpButton from "@atoms/HelpButton";
 
 class AdminViewReportsScreen extends React.Component {

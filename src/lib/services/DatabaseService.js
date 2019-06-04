@@ -1,3 +1,8 @@
+/**
+ * This module is DEPRECATED. Please do not use
+ * @file
+ * @deprecated in favor of DBv2
+ */
 import {AsyncStorage} from "react-native";
 import {EventEmitter} from "events";
 import LocationService from "@lib/services/LocationService";
