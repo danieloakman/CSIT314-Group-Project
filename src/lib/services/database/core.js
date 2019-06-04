@@ -96,10 +96,7 @@ class DBConnector {
    * Deletes all entries in all databases
    */
   static async wipeAll () {
-    for (const db of this.DBs) {
-      // console.log(db.dbName);
-      await db.wipe();
-    }
+    return Promise.all(this.DBs.map((db) => db.wipe()));
   }
 
   /**
