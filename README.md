@@ -28,7 +28,7 @@
     6. Windows Button + S -> Search: "environment variables" -> Enter.
     7. Click "Environment Variables..." button.
     8. Under "User variables for 'your_username'", click Path, then "Edit...".
-    9. Click "New", then paste the path you copied to your clipboard earlier.
+    9. Click "New", then paste the path you copied to your clipboard earlier and append \platform-tools to the end. adb.exe should be in this directory.
     10. Click "Ok" on all three screens to close them.
     11. Close and re-open any terminals you have open now. In a new terminal verify that `adb` is recognised as a command.
     12. If it is, then with the terminal DevTools and your android emulator running, you should be able to type `a` in the terminal to download the expo app then run the project app in the emulator.
