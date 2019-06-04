@@ -45,7 +45,7 @@
     "password": "test123",
     "isVerified": false,
     "aggregateRating": 0,
-    "activeRequest": null,
+    "activeOffer": null,
     "offersSent": [],
     "phoneNo": null,
     "bsb": null,

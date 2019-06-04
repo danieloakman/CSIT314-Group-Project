@@ -20,6 +20,8 @@ import PhoneNumberLink from "@components/atoms/PhoneNumberLink";
 import HelpButton from "@atoms/HelpButton";
 import _ from "lodash";
 
+import {withAuthContext} from "@lib/context/AuthContext";
+
 import User from "@model/user";
 
 class AdminVerificationScreen extends React.Component {
@@ -28,14 +30,14 @@ class AdminVerificationScreen extends React.Component {
   };
 
   componentDidMount () {
-    let currentUser = this.props.navigation.getParam("user");
+    let currentUser = this.props.AuthContext.user;
     Promise.all([
       User.getMechanicsAwaitingVerification(),
       currentUser.getVerifiedMechanics() // Gets all verified mechanics who have been verified by the current admin
     ])
       .then(
         (values) => {
-          this.setState({mechanics: _.union([values[0], values[1]])});
+          this.setState({mechanics: _.union(values[0], values[1])});
         }
       )
       .catch(err => { throw err; });
@@ -122,6 +124,7 @@ class AdminVerificationScreen extends React.Component {
   }
 
   async _approve (mechanic) {
+    await mechanic.verify(this.props.AuthContext.user.id);
     Toast.show({
       text: `Approved ${mechanic.fullName}`,
       buttonText: "Okay",
@@ -129,10 +132,6 @@ class AdminVerificationScreen extends React.Component {
       type: "success",
       style: {margin: 10, borderRadius: 15}
     });
-    // mechanic.verifiedMechanic = true;
-    // mechanic.awaitingVerification = false;
-    // await DatabaseService.saveUserChanges(mechanic);
-    await mechanic.verify();
     this.forceUpdate();
 
     // Dunno what this was doing, seems kinda redundant
@@ -146,6 +145,7 @@ class AdminVerificationScreen extends React.Component {
   }
 
   async _deny (mechanic) {
+    await mechanic.verify(this.props.AuthContext.user.id, true);
     Toast.show({
       text: `Denied ${mechanic.fullName}`,
       buttonText: "Okay",
@@ -153,10 +153,6 @@ class AdminVerificationScreen extends React.Component {
       type: "danger",
       style: {margin: 10, borderRadius: 15}
     });
-    // mechanic.verifiedMechanic = false;
-    // mechanic.awaitingVerification = false;
-    // await DatabaseService.saveUserChanges(mechanic);
-    await mechanic.verify(true);
     this.forceUpdate();
     // this.setState({
     //   mechanics: this.state.mechanics.map(listedMechanic => {
@@ -168,7 +164,7 @@ class AdminVerificationScreen extends React.Component {
   }
 }
 
-export default withNavigation(AdminVerificationScreen);
+export default withNavigation(withAuthContext(AdminVerificationScreen));
 
 class MechanicListItem extends React.Component {
   render () {

@@ -18,6 +18,7 @@ export default class Mechanic extends User {
     this._doc.bankAccountNo = null;
     this._doc.mechanicLicenceNo = null; // References their NSW motor vehicle repairer licence
     this._doc.awaitingVerification = false; // if true, this mechanic shows up in the list for verification by an admin
+    this._doc.verifiedBy = null; // The userID of the admin who verified the mechanic
   }
 
   // TODO: offersSent should not be stored in the mechanic, but should be the result of a query on all offers
@@ -63,9 +64,10 @@ export default class Mechanic extends User {
 
   /**
    * Verify that this mechanic is certified to work as a mechanic.
+   * @param {String} AdminID The ID of the admin who verified the user
    * @param {Boolean} [isDenied=false] If true, the mechanic verification request will be denied rather than verified
    */
-  async verify (isDenied = false) {
+  async verify (AdminID, isDenied = false) {
     if (isDenied) {
       const delta = {
         isVerified: false,
@@ -77,6 +79,7 @@ export default class Mechanic extends User {
     const delta = {
       isVerified: true,
       awaitingVerification: false,
+      verifiedBy: AdminID
     };
     await UserDB.updateRecord(this, delta);
   }
@@ -97,6 +100,7 @@ export default class Mechanic extends User {
   }
 
   get isVerified () { return this._doc.isVerified; }
+  get verifiedBy () { return this._doc.verifiedBy; }
   get aggregateRating () { return this._doc.averageRating; }
   get averageRating () { return this._doc.averageRating; }
   get ratingCount () { return this._doc.ratingCount; }

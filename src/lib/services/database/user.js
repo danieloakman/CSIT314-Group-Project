@@ -42,6 +42,8 @@ class UserDB extends DBConnector {
     this.db.createIndex({index: {fields: ["activeOffer"]}});
     this.db.createIndex({index: {fields: ["offersSent"]}});
     this.db.createIndex({index: {fields: ["awaitingVerification"]}});
+    this.db.createIndex({index: {fields: ["verifiedBy"]}});
+    this.db.createIndex({index: {fields: ["type", "isVerified", "verifiedBy"]}});
   }
 
   // TODO: Replace functions specific to User with parent overrides where applicable (e.g. getUser becomes getRecord)
@@ -190,6 +192,14 @@ class UserDB extends DBConnector {
   async getMechanicsAwaitingVerification () {
     const mechanics = await this.db.find({
       selector: {type: "Mechanic", awaitingVerification: true},
+      fields: ["_id"]
+    });
+    return mechanics.docs;
+  }
+
+  async getVerifiedMechanicsByVerifier (adminID) {
+    const mechanics = await this.db.find({
+      selector: {type: "Mechanic", isVerified: true, verifiedBy: adminID},
       fields: ["_id"]
     });
     return mechanics.docs;

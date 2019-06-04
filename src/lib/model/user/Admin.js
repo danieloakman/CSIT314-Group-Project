@@ -1,4 +1,5 @@
 import User from "./User";
+import UserDB from "@database/user";
 
 /**
  * Admin class
@@ -11,7 +12,10 @@ export default class Admin extends User {
 
   async getVerifiedMechanics () {
     // Return mechanics verified by this admin
-    return [];
+    const mechanics = await UserDB.getVerifiedMechanicsByVerifier(this.id);
+    return Promise.all(mechanics.map((entry) => {
+      return User.getUser({id: entry._id});
+    }));
   }
 
   get jobs () { return this._doc.jobs; }
