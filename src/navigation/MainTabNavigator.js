@@ -89,7 +89,7 @@ HomeStack.navigationOptions = {
 
 const TabStack = createBottomTabNavigator({
   ProfileStack,
-  SearchStack,
+  // SearchStack, // Unfortunately we won't have enough time to implement this
   HomeStack
 },
 {

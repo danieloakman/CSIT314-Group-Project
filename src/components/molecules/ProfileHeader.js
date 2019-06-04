@@ -11,6 +11,8 @@ import StarRating from "react-native-star-rating";
 import {withAuthContext} from "@lib/context/AuthContext";
 import {month} from "@constants/common";
 import { Thumbnail } from "native-base";
+import PhoneLink from "@atoms/PhoneNumberLink";
+import { Ionicons } from "@expo/vector-icons";
 
 class ProfileHeader extends React.Component {
   render () {
@@ -40,6 +42,13 @@ class ProfileHeader extends React.Component {
               <Text style={styles.userEmail}>
                 {record.email}
               </Text>
+              {record.phoneNo &&
+                <View style={{flexDirection: "row"}}>
+                  <PhoneLink phoneNo={record.phoneNo} style={{color: "#47f"}} />
+                  <Text>  </Text>
+                  <Ionicons name="md-arrow-forward" size={23} color="#47f" />
+                </View>
+              }
             </View>
 
           </View>
