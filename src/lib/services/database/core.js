@@ -35,9 +35,7 @@ class DBConnector extends EventEmitter {
    */
   static async loadTestData (opts = {wipe: false, loadSamples: false, upsert: false}) {
     if (opts.wipe) { await DBConnector.wipeAll(); }
-    await Promise.all(DBConnector.DBs.map((db) => {
-      db._loadTestData(opts);
-    }));
+    await Promise.all(DBConnector.DBs.map(db => db._loadTestData(opts)));
   }
 
   /**
@@ -57,7 +55,7 @@ class DBConnector extends EventEmitter {
       await this.db.bulkDocs(testData);
       await this.db.bulkDocs(sampleData);
     } else {
-      await Promise.all(testData.map(async (doc) => {
+      await Promise.all(testData.map((doc) => {
         if (opts.upsert) {
           return this.db.upsert(doc._id, doc);
         } else {
