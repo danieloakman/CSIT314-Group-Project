@@ -16,6 +16,11 @@ import {AsyncStorage} from "react-native";
 class UserDB extends DBConnector {
   constructor () {
     super("db.users");
+    this.init();
+  }
+
+  async init () {
+    super.init();
 
     // Each fields that needs to be accessed individually should be its own index
     // If there are multiple fields that are frequently accessed in the same query, then they should be indexed together (in the same order as query)

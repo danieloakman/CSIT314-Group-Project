@@ -4,6 +4,11 @@ const uuid = require("uuid/v4"); // random uuid
 class PaymentDB extends DBConnector {
   constructor () {
     super("db.transactions");
+    this.init();
+  }
+
+  async init () {
+    super.init();
     this.db.createIndex({index: {fields: ["type"]}});
     this.db.createIndex({index: {fields: ["payerID"]}}); // The person providing the dollarydoos
     this.db.createIndex({index: {fields: ["payeeID"]}}); // The person receiving the dolarydoos

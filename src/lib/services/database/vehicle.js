@@ -10,6 +10,11 @@ import DBConnector from "./core";
 class VehicleDB extends DBConnector {
   constructor () {
     super("db.vehicles");
+    this.init();
+  }
+
+  async init () {
+    super.init();
     this.db.createIndex({index: {fields: ["make"]}});
     this.db.createIndex({index: {fields: ["model"]}});
     this.db.createIndex({index: {fields: ["year"]}});

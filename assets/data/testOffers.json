@@ -1,0 +1,9 @@
+[
+  {
+    "_id": "TestOffer1",
+    "cost": 420,
+    "mechanicID": "TestUser3",
+    "requestID": "d0155f80-47b7-434e-ba0d-980cee2da5ab",
+    "isRetracted": false
+  }
+]

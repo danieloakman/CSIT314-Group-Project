@@ -13,21 +13,17 @@ import PouchDB from "./PouchDB";
   * @property {String} [rev] The revision of the document
   */
 
-class DBConnector {
+class DBConnector extends EventEmitter {
   static DBs = []; // Collects each child class instance
   constructor (name = "db.core") {
+    super();
     this.dbName = name; // Allow access to database name
     this.db = new PouchDB(name, {adapter: "react-native-sqlite", revs_limit: 20});
     DBConnector.DBs.push(this);
-    this.db.createIndex({index: {fields: ["creationDate"]}});
+  }
 
-    // TODO: Move emitter to mixin
-    this._emitter = new EventEmitter();
-    this.on = this._emitter.on;
-    this.once = this._emitter.once;
-    this.off = this._emitter.off;
-    this.emit = this._emitter.emit;
-    // console.log(`Constructed DB ${name}`);
+  async init () {
+    this.db.createIndex({index: {fields: ["creationDate"]}});
   }
 
   /**
@@ -38,7 +34,7 @@ class DBConnector {
    * @param {Boolean} opts.upsert Should existing documents be updated/replaced to match?
    */
   static async loadTestData (opts = {wipe: false, loadSamples: false, upsert: false}) {
-    if (opts.wipe) { await this.wipeAll(); }
+    if (opts.wipe) { await DBConnector.wipeAll(); }
     await Promise.all(DBConnector.DBs.map((db) => {
       db._loadTestData(opts);
     }));
@@ -64,10 +60,6 @@ class DBConnector {
       await Promise.all(testData.map(async (doc) => {
         if (opts.upsert) {
           return this.db.upsert(doc._id, doc);
-        } else if (opts.wipe) {
-          const oldDoc = await this.db.get(doc._id);
-          if (oldDoc) this.db.remove(oldDoc);
-          return this.db.put(doc);
         } else {
           return this.db.putIfNotExists(doc);
         }
@@ -80,23 +72,18 @@ class DBConnector {
    */
   async wipe () {
     const oldRecords = await this.db.allDocs();
-    const newRecords = [];
-    oldRecords.rows.map((record) => {
-      newRecords.push({
-        _id: record._id,
-        _rev: record._rev,
-        _deleted: true
-      });
-    });
-    await this.db.bulkDocs(newRecords);
-    await this.db.compact();
+    await Promise.all(oldRecords.rows.map((doc) => {
+      if (!doc.id.startsWith("_design/")) {
+        return this.db.remove(doc.id, doc.value.rev);
+      }
+    }));
   }
 
   /**
    * Deletes all entries in all databases
    */
   static async wipeAll () {
-    return Promise.all(this.DBs.map((db) => db.wipe()));
+    return Promise.all(this.DBs.map(db => db.wipe()));
   }
 
   /**

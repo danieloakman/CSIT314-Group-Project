@@ -4,6 +4,11 @@ import LocationService from "@lib/services/LocationService";
 class RequestDB extends DBConnector {
   constructor () {
     super("db.requests");
+    this.init();
+  }
+
+  async init () {
+    super.init();
     this.db.createIndex({
       index: {
         fields: [

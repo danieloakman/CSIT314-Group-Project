@@ -3,6 +3,11 @@ import DBConnector from "./core";
 class ReviewDB extends DBConnector {
   constructor () {
     super("db.reviews");
+    this.init();
+  }
+
+  async init () {
+    super.init();
     this.db.createIndex({index: {fields: ["value"]}});
     this.db.createIndex({index: {fields: ["comment"]}});
     this.db.createIndex({index: {fields: ["requestID"]}});

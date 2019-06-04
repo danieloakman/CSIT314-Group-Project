@@ -3,6 +3,11 @@ import DBConnector from "./core";
 class OfferDB extends DBConnector {
   constructor () {
     super("db.offers");
+    this.init();
+  }
+
+  async init () {
+    super.init();
     // this.db.createIndex({
     //   index: {
     //     fields: [
