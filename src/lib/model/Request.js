@@ -29,6 +29,8 @@ export default class Request extends ModelWithDbConnection {
     return null;
   }
 
+  static getRequest = Request.getServiceRequest;
+
   // static getRequestsInRadius = RequestDB.findInRadius.bind(RequestDB);
   static async getRequestsInRadius (...args) {
     const requests  = await RequestDB.findInRadius(...args);
@@ -146,12 +148,14 @@ export default class Request extends ModelWithDbConnection {
   get location () { return this._doc.location; }
   get driverID () { return this._doc.driverID; }
   get DriverID () { return this._doc.driverID; }
-  get VehicleID () { return this._doc.VehicleID; }
+  get vehicleID () { return this._doc.vehicleID; }
+  get VehicleID () { return this._doc.vehicleID; }
   get description () { return this._doc.description; }
   get selectedOfferID () { return this._doc.selectedOfferID; }
   get offers () { return this._doc.offers; }
   get status () { return this._doc.status; }
   get completionDate () { return new Date(this._doc.completionDate); }
+  get isCompleted () { return this._doc.status === "Completed"; }
   get transactionID () { return this._doc.transactionID; }
 
   async setLocation (location) {

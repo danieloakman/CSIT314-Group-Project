@@ -54,6 +54,15 @@ class RequestDB extends DBConnector {
       .sort((a, b) => a.distance - b.distance);
   }
 
+  async getRequestsByDriver (driverID) {
+    const response = await this.db.find({
+      selector: {driverID: driverID},
+      fields: ["_id"]
+    }); // TODO: This will find ALL requests, not just active requests
+    const requests = response.docs;
+    return requests;
+  }
+
   /**
    * Loads test data into database
    * @param {Object} opts

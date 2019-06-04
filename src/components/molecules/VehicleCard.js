@@ -18,7 +18,7 @@ export default class VehicleCard extends React.Component {
     const creationDate = `${this.props.item.creationDate.getUTCDay()} ${month[this.props.item.creationDate.getUTCMonth()]} ${this.props.item.creationDate.getUTCFullYear()}`;
 
     return (
-      <TouchableWithoutFeedback onPress={() => Alert.alert(`You pressed car number ${this.props.index}`)}>
+      <TouchableWithoutFeedback>
         <Card style={{width: "100%"}}>
           <CardItem>
             <Left>

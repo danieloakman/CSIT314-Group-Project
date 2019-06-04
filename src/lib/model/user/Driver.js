@@ -1,5 +1,7 @@
 import User from "./User";
 import UserDB from "@database/user";
+import RequestDB from "@database/request";
+import ReviewDB from "@database/review";
 import Transaction from "@model/Transaction";
 import _ from "lodash";
 
@@ -89,6 +91,10 @@ export default class Driver extends User {
 
   async getReviewsByDriver () {
     return ReviewDB.getReviewsByDriver(this.id);
+  }
+
+  async getRequestsByDriver () {
+    return RequestDB.getRequestsByDriver(this.id);
   }
 
   get description () { return this._doc.description; }

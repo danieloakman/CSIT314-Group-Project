@@ -86,9 +86,10 @@ class ProfileScreen extends React.Component {
         return Review.getReview(entry._id);
       }));
       const requestIDs = await record.getRequestsByDriver();
-      const requests = await Promise.all(requestIDs.map((entry) => {
+      let requests = await Promise.all(requestIDs.map((entry) => {
         return Request.getRequest(entry._id);
       }));
+      requests = requests.filter(entry => entry.isCompleted);
       this.setState({tabData: [
         {header: "Vehicles",
           data: vehicles,
@@ -101,7 +102,7 @@ class ProfileScreen extends React.Component {
         },
         {header: "Request History",
           data: requests,
-          renderItem: ({item, index}) => <Card><CardItem><Text>Request history #{index}</Text></CardItem></Card>
+          renderItem: (data) => <RequestCard {...data}/>
         },
 
       ]
