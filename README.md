@@ -9,12 +9,34 @@
 4. Run `npm install -g expo-cli` to install expo-cli tool globally
 
 ### Running app through expo cli for testing
-1. run `expo`
-2. Improve these instructions
+1. Open a terminal then navigate to the root directory of the project.
+2. run `npm start`. This will open the expo DevTools.
+3. It should open a new tab in your default web browser. If this didn't happen press d in terminal to open it manually.
+4. Once fully loaded, you can:
+  - Run it through the Expo app on your android phone:
+    1. In the tab that was opened in your web browser, swap the connection to "Tunnel". This will be just above the QR code in the bottom left corner.
+    2. Download Expo on the Google Play store.
+    3. Select the Scan QR code option.
+    4. Scan the QR code in your web browser and not the one in terminal. This will load the app.
+    5. OPTIONAL: Tunnel is slower than using LAN connection mode, so if you wish to speed up the load times, you can use LAN. It may or not work right off the bat though, if it doesn't follow the instructions here: https://answers.microsoft.com/en-us/windows/forum/windows_10-networking/adapter-priority-setting-unavailable-in-windows-10/d2b63caa-e77c-4b46-88b5-eeeaee00c306?auth=1
+  - Run it through the android studio emulator:
+    1. Make sure LAN connection mode is selected (it's default) in the DevTools browser tab.
+    2. Go to the Android Virtual Device Manager in Android Studio and create a new virtual device.
+    3. Select any phone but for its optimal to use 4.5" screen phones and bigger since that's what we tested on.
+    4. The minimum version allowed is Android 5. We tested on android 6 and above.
+    5. Now go to the SDK Manager in Android Studio and copy the "Android SDK Location" to clipboard.
+    6. Windows Button + S -> Search: "environment variables" -> Enter.
+    7. Click "Environment Variables..." button.
+    8. Under "User variables for 'your_username'", click Path, then "Edit...".
+    9. Click "New", then paste the path you copied to your clipboard earlier.
+    10. Click "Ok" on all three screens to close them.
+    11. Close and re-open any terminals you have open now. In a new terminal verify that `adb` is recognised as a command.
+    12. If it is, then with the terminal DevTools and your android emulator running, you should be able to type `a` in the terminal to download the expo app then run the project app in the emulator.
 
 ### Packaging app for deployment
-1. run `expo build:android` or `expo build:ios`
-2. Improve these instructions
+1. Open a terminal then navigate to the root directory of the project
+2. run `expo build:android`, this will take a few minutes.
+3. After it has finished there will be a link where you can download the apk file.
 
 ## Project structure
 
