@@ -4,7 +4,7 @@
 
 ### Setup
 1. Install node.js version 10 or higher
-2. clone/Download repo if not done already
+2. clone/Download repository if if not done already, or if you don't already have the source code.
 3. Run command `npm install` in project root directory
 4. Run `npm install -g expo-cli` to install expo-cli tool globally
 
@@ -37,6 +37,7 @@
 1. Open a terminal then navigate to the root directory of the project
 2. run `expo build:android`, this will take a few minutes.
 3. After it has finished there will be a link where you can download the apk file.
+4. The apk file can be installed on your android phone or emulator directly.
 
 ## Project structure
 
