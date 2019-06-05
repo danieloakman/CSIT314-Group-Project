@@ -31,7 +31,8 @@ const genDriver = () => {
     password: "test123",
     vehicles: [],
     phoneNo: datasets.phoneNumbers[Math.floor((Math.random() * datasets.phoneNumbers.length - 1) + 1)],
-    creationDate: Date.now()
+    creationDate: Date.now(),
+    location: genLocation()
   };
 };
 
@@ -66,11 +67,11 @@ const genMechanic = () => {
   };
 };
 
-const genSR = (driverID, vehicleID) => {
+const genSR = (driverID, vehicleID, location) => {
   return {
     _id: uuid(),
     description: datasets.descriptions[Math.floor((Math.random() * datasets.descriptions.length - 1) + 1)],
-    location: genLocation(),
+    location,
     driverID,
     vehicleID,
     offers: [],
@@ -160,14 +161,14 @@ let testUsers = [
     surname: "Harrison",
     email: "mechanic@test.com",
     password: "test123",
-    isVerified: false,
+    isVerified: true,
     aggregateRating: 0,
     activeOffer: null,
     offersSent: [],
     phoneNo: null,
-    bsb: null,
-    bankAccountNo: null,
-    mechanicLicenceNo: null,
+    bsb: 123456,
+    bankAccountNo: 1234567891,
+    mechanicLicenceNo: 1234567,
     awaitingVerification: false,
     averageRating: 0,
     ratingScore: 0,
@@ -268,7 +269,7 @@ for (let i = 0; i < numberOfDrivers; i++) {
   let vehicle = genVehicle();
   driver.vehicles.push(vehicle._id);
   testVehicles.push(vehicle);
-  let sr = genSR(driver._id, vehicle._id);
+  let sr = genSR(driver._id, vehicle._id, driver.location);
   driver.activeRequest = sr._id;
   testUsers.push(driver);
   testRequests.push(sr);
